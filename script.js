@@ -81,6 +81,17 @@ function showSection(sectionId) {
         sec.classList.remove('active');
     });
 
+    // Remove active class from all nav links
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.classList.remove('active');
+    });
+
+    // Add active class to the clicked nav link
+    const activeLink = document.querySelector(`.nav-links a[onclick*="'${sectionId}'"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+    }
+
     // Show target section
     const target = document.getElementById(sectionId);
     if (target) {
