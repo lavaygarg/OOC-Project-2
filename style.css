@@ -77,13 +77,30 @@ button {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 5%;
+    padding: 1rem 4%;
 }
 
 .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     font-size: 1.4rem;
     font-weight: 700;
     color: var(--primary-dark);
+}
+
+.logo img {
+    height: 48px;
+    width: 48px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.18);
+    background: white;
+}
+
+.dark-theme .logo img {
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+    background: #0f172a;
 }
 
 .nav-actions {
@@ -348,6 +365,18 @@ button {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 24px;
     padding: 40px 0;
+}
+
+/* Tighter columns for About stats to keep three in a row */
+.about-stats {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+@media (min-width: 768px) {
+    /* Force three columns on tablets/desktop to avoid lone wrapping card */
+    .about-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 
 .stats-container {
@@ -824,17 +853,70 @@ button {
 .site-footer {
     background: #0f172a;
     color: #e2e8f0;
-    padding: 40px 0 20px;
+    padding: 56px 0 24px;
+    position: relative;
+    overflow: hidden;
 }
 
 .dark-theme .site-footer {
     background: #0b1220;
 }
 
+.site-footer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(46, 204, 113, 0.12), transparent 35%),
+        radial-gradient(circle at 80% 0%, rgba(255, 161, 54, 0.08), transparent 32%);
+    pointer-events: none;
+}
+
+.footer-top {
+    position: relative;
+    z-index: 1;
+}
+
 .footer-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 24px;
+    gap: 28px;
+    align-items: start;
+}
+
+.site-footer h3 {
+    margin-bottom: 10px;
+}
+
+.site-footer h4 {
+    margin-bottom: 12px;
+}
+
+.footer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+
+.footer-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+.footer-pill {
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .site-footer ul {
@@ -853,6 +935,30 @@ button {
 
 .site-footer a:hover {
     color: var(--primary);
+}
+
+.footer-contact p {
+    margin: 6px 0;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-cta {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 16px;
+    border-radius: var(--radius);
+}
+
+.footer-cta .btn {
+    margin-top: 12px;
+}
+
+.dark-theme .footer-cta {
+    background: rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.06);
 }
 
 .socials {
@@ -880,6 +986,8 @@ button {
     text-align: center;
     margin-top: 24px;
     color: #94a3b8;
+    position: relative;
+    z-index: 1;
 }
 
 /* Testimonials */
