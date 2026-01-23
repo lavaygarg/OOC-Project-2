@@ -20,6 +20,9 @@
         <div class="nav-inner">
             <a class="logo" href="#" onclick="showSection('home')">Hope Foundation</a>
             <div class="nav-actions">
+                <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
                 <ul class="nav-links">
                     <li><a href="#" onclick="showSection('home')">Home</a></li>
                     <li><a href="#" onclick="showSection('about')">About</a></li>
@@ -113,20 +116,46 @@
         <div class="container">
             <div class="section-header">
                 <h2>About Hope Foundation</h2>
-                <p class="muted">We are a registered non-profit dedicated to creating lasting change for underprivileged children.</p>
+                <p class="muted">A community-first nonprofit working with schools, shelters, and local leaders to help every child learn with dignity, stay healthy, and dream bigger.</p>
             </div>
-            <div class="programs-grid">
-                <div class="program-card">
-                    <h3>Our Vision</h3>
-                    <p>A future where every child can learn, grow, and reach their full potential.</p>
+            <div class="split">
+                <div class="card highlight">
+                    <h3>Who we are</h3>
+                    <p>We are educators, social workers, and volunteers who co-create programs with the communities we serve. Our teams run learning centers, nutrition drives, and health camps across urban and rural clusters.</p>
+                    <p class="muted">Every rupee is tracked against clear outcomes—attendance, learning levels, nutrition status, and family engagement—so supporters see real progress.</p>
+                    <h4>What guides us</h4>
+                    <ul class="list">
+                        <li>Community-led design and women-led facilitation wherever possible.</li>
+                        <li>Transparent funds with dashboards and audited reports.</li>
+                        <li>Child safety, dignity, and inclusive classrooms for all abilities.</li>
+                        <li>Impact measured with baselines, follow-ups, and partner reviews.</li>
+                    </ul>
                 </div>
-                <div class="program-card">
-                    <h3>Our Approach</h3>
-                    <p>Community-first delivery with measurable outcomes and transparent reporting.</p>
-                </div>
-                <div class="program-card">
-                    <h3>Our Values</h3>
-                    <p>Integrity, empathy, accountability, and long-term impact.</p>
+                <div>
+                    <div class="card highlight" style="margin-bottom: 18px;">
+                        <h3>What we do each week</h3>
+                        <ul class="list">
+                            <li>Early learning corners for ages 3–10 with story-led teaching.</li>
+                            <li>After-school support, STEM clubs, and board-exam prep for teens.</li>
+                            <li>Nutritious meals, health check-ups, and menstrual health sessions.</li>
+                            <li>Life-skills, career mentoring, and digital literacy labs.</li>
+                            <li>Parent circles that turn caregivers into co-educators.</li>
+                        </ul>
+                    </div>
+                    <div class="impact-grid">
+                        <div class="card">
+                            <h3>12 cities</h3>
+                            <p>Active programs across urban and peri-urban neighborhoods.</p>
+                        </div>
+                        <div class="card">
+                            <h3>86 facilitators</h3>
+                            <p>Frontline educators, counselors, and community volunteers.</p>
+                        </div>
+                        <div class="card">
+                            <h3>92% attendance</h3>
+                            <p>Average monthly retention across learning centers.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -221,10 +250,22 @@
     <!-- Events Section -->
     <section id="events" class="page-section" style="display: none;">
         <div class="container">
-            <h2>Upcoming Events & Announcements</h2>
-            <div id="public-events-list" class="programs-grid">
-                <!-- JS will populate -->
+            <div class="section-header">
+                <h2>Upcoming Events & Announcements</h2>
+                <p class="muted">Join us at our upcoming community events and initiatives.</p>
             </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="public-events-list">
+                    <!-- JS will populate -->
+                </tbody>
+            </table>
         </div>
     </section>
 

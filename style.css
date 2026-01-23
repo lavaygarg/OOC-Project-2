@@ -23,6 +23,19 @@ body {
     line-height: 1.7;
 }
 
+.dark-theme {
+    --primary: #2ecc71;
+    --primary-dark: #34d399;
+    --dark: #e5e7eb;
+    --light: #0b1220;
+    --white: #0f172a;
+    --text-color: #e2e8f0;
+    --muted: #94a3b8;
+    --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    background-color: var(--light);
+    color: var(--text-color);
+}
+
 a {
     color: inherit;
     text-decoration: none;
@@ -55,6 +68,11 @@ button {
     z-index: 1000;
 }
 
+.dark-theme .navbar {
+    background: rgba(17, 24, 39, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .nav-inner {
     display: flex;
     align-items: center;
@@ -72,6 +90,27 @@ button {
     display: flex;
     align-items: center;
     gap: 18px;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    background: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow);
+}
+
+.icon-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary-dark);
+    transform: translateY(-2px);
 }
 
 .nav-links {
@@ -105,6 +144,17 @@ button {
 .nav-cta {
     display: inline-flex;
     align-items: center;
+}
+
+/* Make nav donate button stand out */
+.nav-cta.btn-primary {
+    padding: 0.75rem 1.4rem;
+    font-weight: 700;
+    border-radius: 14px;
+}
+
+.nav-cta.btn-primary:hover {
+    transform: translateY(-1px);
 }
 
 .mobile-menu-btn {
@@ -193,6 +243,12 @@ button {
     min-height: 560px;
 }
 
+.dark-theme .hero {
+    color: #e2e8f0;
+    background: radial-gradient(circle at top left, rgba(46, 204, 113, 0.2), transparent 50%),
+        linear-gradient(120deg, #0b1220, #0f172a 45%, #1f9f58);
+}
+
 .hero-overlay {
     position: absolute;
     top: 0;
@@ -203,6 +259,10 @@ button {
     border-radius: 0 0 40px 40px;
     z-index: 1;
     
+}
+
+.dark-theme .hero-overlay {
+    background: rgba(15, 23, 42, 0.78);
 }
 
 .hero-content {
@@ -278,6 +338,10 @@ button {
     gap: 8px;
 }
 
+.dark-theme .badge {
+    background: rgba(255, 161, 54, 0.75);
+}
+
 /* Stats & Cards */
 .impact-grid {
     display: grid;
@@ -299,6 +363,42 @@ button {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.dark-theme .card,
+.dark-theme .report-card,
+.dark-theme .program-card,
+.dark-theme .small-container,
+.dark-theme .data-table,
+.dark-theme .allocation-card,
+.dark-theme .chart-card,
+.dark-theme .testimonial-card,
+.dark-theme .contact-card,
+.dark-theme .contact-form,
+.dark-theme .receipt,
+.dark-theme .gallery-grid .image-card,
+.dark-theme .sidebar,
+.dark-theme .impact-card {
+    background: #0f172a;
+    color: var(--text-color);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.dark-theme .data-table th {
+    background: #111827;
+    color: var(--text-color);
+}
+
+.dark-theme .data-table td,
+.dark-theme .data-table th,
+.dark-theme .list,
+.dark-theme p,
+.dark-theme h1,
+.dark-theme h2,
+.dark-theme h3,
+.dark-theme h4,
+.dark-theme h5 {
+    color: var(--text-color);
+}
+
 .card:hover {
     transform: translateY(-6px);
     box-shadow: 0 16px 36px rgba(46, 204, 113, 0.12);
@@ -315,6 +415,10 @@ button {
     background: white;
 }
 
+.dark-theme .mission-section {
+    background: #0b1220;
+}
+
 .split {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -322,10 +426,28 @@ button {
     align-items: center;
 }
 
+/* About section top alignment */
+#about .split {
+    align-items: start;
+}
+
 .list {
     list-style: disc;
     padding-left: 18px;
     margin: 12px 0 18px;
+}
+
+/* About section spacing tweaks */
+#about .card p {
+    margin: 8px 0 12px;
+}
+
+#about .card h3 {
+    margin-bottom: 10px;
+}
+
+#about .card .list {
+    margin-top: 8px;
 }
 
 /* Programs */
@@ -410,6 +532,10 @@ button {
     background: rgba(46, 204, 113, 0.15);
     color: var(--primary-dark);
     font-size: 1.1rem;
+}
+
+.dark-theme .impact-icon {
+    background: rgba(52, 211, 153, 0.18);
 }
 
 .impact-metrics {
@@ -512,6 +638,14 @@ button {
     outline: none;
 }
 
+.dark-theme .form-group input,
+.dark-theme .form-group select,
+.dark-theme .form-group textarea {
+    background: #0f172a;
+    color: var(--text-color);
+    border: 1px solid #1f2937;
+}
+
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.12);
@@ -531,6 +665,12 @@ button {
     padding: 8px 14px;
     cursor: pointer;
     font-weight: 600;
+}
+
+.dark-theme .chip {
+    background: #0f172a;
+    border-color: #1f2937;
+    color: var(--text-color);
 }
 
 .chip:hover {
@@ -687,6 +827,10 @@ button {
     padding: 40px 0 20px;
 }
 
+.dark-theme .site-footer {
+    background: #0b1220;
+}
+
 .footer-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -818,6 +962,10 @@ button {
         display: none;
         flex-direction: column;
         gap: 12px;
+    }
+
+    .dark-theme .nav-actions {
+        background: #0f172a;
     }
 
     .nav-links {
