@@ -1,0 +1,24 @@
+{
+  "donations": [
+    { "id": "D001", "name": "Rohan Sharma", "amount": 5000, "method": "UPI", "date": "2023-10-15" },
+    { "id": "D002", "name": "Alice Smith", "amount": 12000, "method": "Credit Card", "date": "2023-10-18" },
+    { "id": "D003", "name": "Tech Corp Inc.", "amount": 50000, "method": "Bank Transfer", "date": "2023-10-20" }
+  ],
+  "volunteers": [
+    { "id": "V001", "name": "Priya Patel", "email": "priya@example.com", "interest": "Teaching", "status": "Approved" },
+    { "id": "V002", "name": "John Doe", "email": "john@example.com", "interest": "Fundraising", "status": "Pending" }
+  ],
+  "events": [
+    { "id": "E001", "title": "Annual Charity Gala", "date": "2023-12-25", "desc": "Join us for an evening of giving and celebration." },
+    { "id": "E002", "title": "Food Drive", "date": "2023-11-10", "desc": "Distributing meals in local communities." },
+    { "id": "E003", "title": "Donation Drive", "date": "2024-02-15", "desc": "Collecting funds and supplies for children’s education and care." },
+    { "id": "E004", "title": "Free Shelter Initiative", "date": "2024-03-05", "desc": "Providing temporary shelter and essentials for families in need." },
+    { "id": "E005", "title": "Free Education Camp", "date": "2024-03-20", "desc": "Enrollment drive with books, uniforms, and tutoring support." },
+    { "id": "E006", "title": "Essentials Distribution", "date": "2024-04-01", "desc": "Distributing hygiene kits, blankets, and basic necessities." }
+  ],
+  "utilizationRatios": {
+    "Education": 0.5,
+    "Nutrition": 0.3,
+    "Healthcare": 0.2
+  }
+}

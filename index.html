@@ -3,11 +3,635 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Hope Foundation | Empowering Underprivileged Children</title>
+    <meta name="description" content="Hope Foundation is a non-profit organization supporting underprivileged children with education, nutrition, and healthcare.">
+    <meta name="theme-color" content="#2ecc71">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a class="logo" href="#" onclick="showSection('home')">Hope Foundation</a>
+            <div class="nav-actions">
+                <ul class="nav-links">
+                    <li><a href="#" onclick="showSection('home')">Home</a></li>
+                    <li><a href="#" onclick="showSection('about')">About</a></li>
+                    <li><a href="#" onclick="showSection('programs')">Programs</a></li>
+                    <li><a href="#" onclick="showSection('gallery')">Gallery</a></li>
+                    <li><a href="#" onclick="showSection('impact')">Impact</a></li>
+                    <li><a href="#" onclick="showSection('events')">Events</a></li>
+                    <li><a href="#" onclick="showSection('testimonials')">Stories</a></li>
+                    <li><a href="#" onclick="showSection('volunteer')">Volunteer</a></li>
+                    <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+                    <li><a href="#" onclick="showSection('admin-login')" class="admin-link">Admin</a></li>
+                </ul>
+                <button class="btn btn-primary nav-cta" onclick="showSection('donate')">Donate</button>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Open navigation menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- PUBLIC VIEW SECTIONS -->
+
+    <!-- Home / Hero Section -->
+    <section id="home" class="page-section active">
+        <header class="hero" style="background-image: url('https://images.unsplash.com/photo-1488521787991-ed7fe863a665?w=1200&h=600&fit=crop'); background-position: center; background-size: cover;">
+            <div class="hero-overlay">
+            <div class="hero-image">
+                <img src="https://manavkartavya.org/wp-content/uploads/2018/08/gallery-banner.jpg" alt="Children community" loading="lazy">
+            </div>
+            </div>
+            <div class="hero-inner">
+                <div class="hero-content">
+                    <span class="eyebrow">Trusted NGO for Children</span>
+                    <h1>Empowering underprivileged children to learn, grow, and thrive.</h1>
+                    <p>We deliver education, nutrition, and healthcare programs that create measurable impact for families and communities.</p>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary" onclick="showSection('donate')">Donate Now</button>
+                        <button class="btn btn-secondary" onclick="showSection('volunteer')">Become a Volunteer</button>
+                    </div>
+                    <div class="hero-badges">
+                        <div class="badge"><i class="fas fa-shield-heart"></i> Verified NGO</div>
+                        <div class="badge"><i class="fas fa-chart-line"></i> Impact Reporting</div>
+                        <div class="badge"><i class="fas fa-receipt"></i> Instant Receipts</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="stats-container">
+            <div class="impact-grid">
+                <div class="card">
+                    <i class="fas fa-child fa-3x"></i>
+                    <h3>10k+</h3>
+                    <p>Children Educated</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-hand-holding-heart fa-3x"></i>
+                    <h3>50+</h3>
+                    <p>Community Programs</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-file-invoice-dollar fa-3x"></i>
+                    <h3>100%</h3>
+                    <p>Transparent Funds</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mission-section">
+            <div class="container split">
+                <div>
+                    <h2>Our Mission</h2>
+                    <p>To ensure every child has access to quality education, healthy nutrition, and safe healthcare with dignity and care.</p>
+                    <p class="muted">We partner with local communities to build long-term solutions and publish transparent reports on every program.</p>
+                </div>
+                <div class="card highlight">
+                    <h3>2025 Impact Snapshot</h3>
+                    <ul class="list">
+                        <li>3,200 learning kits distributed</li>
+                        <li>1,500 health check-ups completed</li>
+                        <li>98% program completion rate</li>
+                    </ul>
+                    <button class="btn btn-outline" onclick="showSection('impact')">View Impact Report</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="page-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2>About Hope Foundation</h2>
+                <p class="muted">We are a registered non-profit dedicated to creating lasting change for underprivileged children.</p>
+            </div>
+            <div class="programs-grid">
+                <div class="program-card">
+                    <h3>Our Vision</h3>
+                    <p>A future where every child can learn, grow, and reach their full potential.</p>
+                </div>
+                <div class="program-card">
+                    <h3>Our Approach</h3>
+                    <p>Community-first delivery with measurable outcomes and transparent reporting.</p>
+                </div>
+                <div class="program-card">
+                    <h3>Our Values</h3>
+                    <p>Integrity, empathy, accountability, and long-term impact.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section id="impact" class="page-section" style="display: none;">
+        <div class="container wide">
+            <div class="section-header">
+                <h2>Impact & Reports</h2>
+                <p class="muted">Clear, transparent updates on how donations are used and the results they achieve.</p>
+            </div>
+            <div class="impact-kpis">
+                <div class="impact-card">
+                    <div class="impact-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                    <div>
+                        <h3>₹2.8Cr</h3>
+                        <p>Total funds utilized across education, health, and nutrition.</p>
+                    </div>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon"><i class="fas fa-school"></i></div>
+                    <div>
+                        <h3>120+</h3>
+                        <p>Partner schools and community centers supported.</p>
+                    </div>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon"><i class="fas fa-chart-line"></i></div>
+                    <div>
+                        <h3>86%</h3>
+                        <p>Children showing measurable improvement within 12 months.</p>
+                    </div>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon"><i class="fas fa-user-graduate"></i></div>
+                    <div>
+                        <h3>3,200</h3>
+                        <p>Learning kits delivered in 2025.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="impact-metrics">
+                <div class="card highlight">
+                    <h3>Program Utilization</h3>
+                    <p class="muted">Monthly allocation performance against planned targets.</p>
+                    <div class="metric">
+                        <div class="metric-label">Education</div>
+                        <div class="metric-bar"><span style="width: 78%;"></span></div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Nutrition</div>
+                        <div class="metric-bar"><span style="width: 64%;"></span></div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Healthcare</div>
+                        <div class="metric-bar"><span style="width: 71%;"></span></div>
+                    </div>
+                </div>
+                <div class="card highlight">
+                    <h3>2025 Impact Highlights</h3>
+                    <ul class="list">
+                        <li>98% attendance improvement across supported schools.</li>
+                        <li>1,500 health check-ups completed in rural communities.</li>
+                        <li>500+ volunteers engaged in local initiatives.</li>
+                    </ul>
+                    <button class="btn btn-outline">View Impact Dashboard</button>
+                </div>
+            </div>
+
+            <div class="reports-grid">
+                <div class="report-card">
+                    <h4>Annual Impact Report 2025</h4>
+                    <p>Program highlights, audited utilization, and outcomes.</p>
+                    <button class="btn btn-outline">Download PDF</button>
+                </div>
+                <div class="report-card">
+                    <h4>Financial Transparency Summary</h4>
+                    <p>Breakdown of fund allocation and operational costs.</p>
+                    <button class="btn btn-outline">View Summary</button>
+                </div>
+                <div class="report-card">
+                    <h4>Child Development Case Studies</h4>
+                    <p>Stories that show measurable impact and growth.</p>
+                    <button class="btn btn-outline">Read Stories</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section id="events" class="page-section" style="display: none;">
+        <div class="container">
+            <h2>Upcoming Events & Announcements</h2>
+            <div id="public-events-list" class="programs-grid">
+                <!-- JS will populate -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Programs Section -->
+    <section id="programs" class="page-section" style="display: none;">
+        <div class="container">
+            <h2>Our Programs</h2>
+            <div class="programs-grid">
+                <div class="program-card">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=280&fit=crop" alt="Education program" class="card-image">
+                    <div class="card-content">
+                        <h3>Education For All</h3>
+                        <p>Providing books, uniforms, and tuition for street children.</p>
+                    </div>
+                </div>
+                <div class="program-card">
+                    <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=280&fit=crop" alt="Nutrition program" class="card-image">
+                    <div class="card-content">
+                        <h3>Healthy Meals</h3>
+                        <p>Daily nutritious meals to combat malnutrition in slums.</p>
+                    </div>
+                </div>
+                <div class="program-card">
+                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=280&fit=crop" alt="Skill development" class="card-image">
+                    <div class="card-content">
+                        <h3>Skill Development</h3>
+                        <p>Vocational training for teenagers to ensure employability.</p>
+                    </div>
+                </div>
+                <div class="program-card">
+                    <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=280&fit=crop" alt="Mentorship program" class="card-image">
+                    <div class="card-content">
+                        <h3>Mentorship & Tutoring</h3>
+                        <p>One-on-one mentoring and after-school tutoring programs.</p>
+                    </div>
+                </div>
+                <div class="program-card">
+                    <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=400&h=280&fit=crop" alt="Healthcare program" class="card-image">
+                    <div class="card-content">
+                        <h3>Community Healthcare</h3>
+                        <p>Health camps and preventive care for children and families.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="page-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2>Gallery</h2>
+                <p class="muted">A glimpse of our programs and community partners.</p>
+            </div>
+            <div class="gallery-grid">
+                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=300&fit=crop'); background-size: cover;"><span>Learning Center</span></div>
+                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop'); background-size: cover;"><span>Nutrition Drive</span></div>
+                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=300&fit=crop'); background-size: cover;"><span>Health Camp</span></div>
+                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1559632595-6ca98bfc8e11?w=400&h=300&fit=crop'); background-size: cover;"><span>Volunteer Day</span></div>
+                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&h=300&fit=crop'); background-size: cover;"><span>Library Time</span></div>
+                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop'); background-size: cover;"><span>Community Outreach</span></div>
+                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=400&h=300&fit=crop'); background-size: cover;"><span>Creative Workshops</span></div>
+                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=400&h=300&fit=crop'); background-size: cover;"><span>After-School Activities</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Volunteer Section -->
+    <section id="volunteer" class="page-section" style="display: none;">
+        <div class="container small-container">
+            <h2>Become a Volunteer</h2>
+            <p>Join our team of change-makers.</p>
+            <form id="volunteer-form" onsubmit="handleVolunteerSubmit(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="vol-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="vol-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Interests</label>
+                    <select id="vol-interest">
+                        <option>Teaching</option>
+                        <option>Event Management</option>
+                        <option>Fundraising</option>
+                    </select>
+                </div>
+                <button type="submit" class="cta-btn">Submit Application</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Donate Section -->
+    <section id="donate" class="page-section" style="display: none;">
+        <div class="container small-container">
+            <h2>Make a Donation</h2>
+            <p>Your support changes lives. All donations are tax-deductible.</p>
+            <div class="donation-options">
+                <button type="button" class="chip">₹500</button>
+                <button type="button" class="chip">₹1,000</button>
+                <button type="button" class="chip">₹2,500</button>
+                <button type="button" class="chip">₹5,000</button>
+            </div>
+            <form id="donation-form" onsubmit="handleDonationSubmit(event)">
+                <div class="form-group">
+                    <label>Donor Name</label>
+                    <input type="text" id="don-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Amount (INR)</label>
+                    <input type="number" id="don-amount" required>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="don-method">
+                        <option>UPI</option>
+                        <option>Credit Card</option>
+                        <option>Bank Transfer</option>
+                    </select>
+                </div>
+                <button type="submit" class="cta-btn">Donate Securely</button>
+                <p class="crypto-note"><small>Instant receipt + email confirmation.</small></p>
+            </form>
+            
+            <div id="receipt-area" class="receipt" style="display:none;">
+                <h3>Donation Receipt</h3>
+                <p>Thank you, <span id="receipt-name"></span>!</p>
+                <p>Amount: ₹<span id="receipt-amount"></span></p>
+                <p>Date: <span id="receipt-date"></span></p>
+                <p>Generated: <span id="receipt-generated"></span></p>
+                <p>Reference ID: <span id="receipt-id"></span></p>
+                <button onclick="window.print()">Print Receipt</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="page-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2>Success Stories</h2>
+                <p class="muted">Real impact from our community members and volunteers.</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop" alt="Priya">
+                        <div>
+                            <h4>Priya Sharma</h4>
+                            <p class="muted">Student, Delhi</p>
+                        </div>
+                    </div>
+                    <p>"Thanks to Hope Foundation's scholarship, I was able to continue my studies. Now I want to become a teacher myself!"</p>
+                    <div class="stars">★★★★★</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop" alt="Rajesh">
+                        <div>
+                            <h4>Rajesh Kumar</h4>
+                            <p class="muted">Volunteer, Mumbai</p>
+                        </div>
+                    </div>
+                    <p>"Being part of this mission has been transformative. Seeing the kids' smiles makes every hour worthwhile."</p>
+                    <div class="stars">★★★★★</div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop" alt="Anjali">
+                        <div>
+                            <h4>Anjali Verma</h4>
+                            <p class="muted">Parent, Bangalore</p>
+                        </div>
+                    </div>
+                    <p>"My daughter now has regular meals and attends school daily. The change is visible in her confidence and performance."</p>
+                    <div class="stars">★★★★★</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="page-section" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2>Contact Us</h2>
+                <p class="muted">We’d love to hear from you. Reach out for partnerships, volunteering, or donations.</p>
+            </div>
+            <div class="contact-grid">
+                <div class="card contact-card">
+                    <h3>Head Office</h3>
+                    <p>Hope Foundation, 112 Community Lane, New Delhi, India</p>
+                    <p><strong>Email:</strong> hello@hopefoundation.org</p>
+                    <p><strong>Phone:</strong> +91 98765 43210</p>
+                    <p><strong>Working Hours:</strong> Mon–Fri, 9:00 AM – 6:00 PM</p>
+                </div>
+                <form class="card contact-form" onsubmit="event.preventDefault(); alert('Thank you! We will get back to you shortly.');">
+                    <h3>Send a Message</h3>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea required rows="4"></textarea>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMIN SECTIONS -->
+
+    <!-- Admin Login -->
+    <section id="admin-login" class="page-section" style="display: none;">
+        <div class="container small-container login-box">
+            <h2>Admin Login</h2>
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="admin-user" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="admin-pass" required>
+                </div>
+                <button type="submit" class="cta-btn">Login</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Admin Dashboard -->
+    <section id="admin-dashboard" class="page-section" style="display: none;">
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <h3>Admin Panel</h3>
+                <ul>
+                    <li onclick="showDashboardTab('dash-overview')">Overview</li>
+                    <li onclick="showDashboardTab('dash-donations')">Donations</li>
+                    <li onclick="showDashboardTab('dash-volunteers')">Volunteers</li>
+                    <li onclick="showDashboardTab('dash-events')">Manage Events</li>
+                    <li onclick="logout()">Logout</li>
+                </ul>
+            </aside>
+            <main class="content">
+                <!-- Dashboard Overview -->
+                <div id="dash-overview" class="dash-tab active">
+                    <h2>Dashboard Overview</h2>
+                    <div class="impact-grid">
+                        <div class="card">
+                            <h3>₹<span id="total-funds">0</span></h3>
+                            <p>Total Funds Raised</p>
+                        </div>
+                        <div class="card">
+                            <h3 id="volunteer-count">0</h3>
+                            <p>Active Volunteers</p>
+                        </div>
+                    </div>
+                    <div class="card highlight allocation-card">
+                        <div class="allocation-header">
+                            <h3>Fund Allocation by Sector</h3>
+                            <p class="muted">Adjust allocation percentages to reflect how funds are utilized.</p>
+                        </div>
+                        <form id="allocation-form" onsubmit="updateAllocation(event)">
+                            <div class="allocation-grid">
+                                <div class="form-group">
+                                    <label>Education (%)</label>
+                                    <input type="number" id="alloc-education" min="0" max="100" step="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nutrition (%)</label>
+                                    <input type="number" id="alloc-nutrition" min="0" max="100" step="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Healthcare (%)</label>
+                                    <input type="number" id="alloc-healthcare" min="0" max="100" step="1" required>
+                                </div>
+                            </div>
+                            <div class="allocation-footer">
+                                <div class="muted" id="alloc-total">Total: 0%</div>
+                                <button type="submit" class="btn btn-primary">Update Allocation</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <h3>Donations Received (Monthly)</h3>
+                            <canvas id="donations-chart" height="180"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Fund Utilization by Sector</h3>
+                            <canvas id="utilization-chart" height="180"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Donations Table -->
+                <div id="dash-donations" class="dash-tab" style="display: none;">
+                    <h2>Recent Donations</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="donations-table-body">
+                            <!-- JS will populate -->
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <!-- Dashboard Events -->
+                <div id="dash-events" class="dash-tab" style="display: none;">
+                    <h2>Manage Events</h2>
+                    <div class="card" style="margin-bottom: 20px; text-align: left;">
+                        <h3>Add New Event</h3>
+                        <form onsubmit="handleAddEvent(event)">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" id="evt-title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" id="evt-date" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <input type="text" id="evt-desc" required>
+                            </div>
+                            <button type="submit" class="cta-btn">Publish Event</button>
+                        </form>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="events-table-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- Dashboard Volunteers Table -->
+                <div id="dash-volunteers" class="dash-tab" style="display: none;">
+                    <h2>Volunteer Applications</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Interest</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="volunteers-table-body">
+                            <!-- JS will populate -->
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <h3>Hope Foundation</h3>
+                <p class="muted">Empowering underprivileged children through education, nutrition, and healthcare.</p>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#" onclick="showSection('about')">About</a></li>
+                    <li><a href="#" onclick="showSection('programs')">Programs</a></li>
+                    <li><a href="#" onclick="showSection('impact')">Impact</a></li>
+                    <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Connect</h4>
+                <div class="socials">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <small>© 2026 Hope Foundation. All rights reserved.</small>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
 </body>
-<script src="script.js" defer></script>
 </html>
