@@ -24,6 +24,8 @@ const initialData = {
     }
 };
 
+const THEME_KEY = 'ooc-theme';
+
 // Initialize LocalStorage from seed file and merge missing data
 async function initData() {
     const existing = localStorage.getItem('ngoData');
@@ -62,6 +64,37 @@ function mergeEvents(existing, seed) {
     seed.forEach(evt => map.set(evt.id, evt));
     existing.forEach(evt => map.set(evt.id, evt));
     return Array.from(map.values());
+}
+
+// --- THEME ---
+function getSavedTheme() {
+    return localStorage.getItem(THEME_KEY);
+}
+
+function prefersDark() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function applyTheme(theme) {
+    const isDark = theme === 'dark';
+    document.body.classList.toggle('dark-theme', isDark);
+
+    const toggle = document.getElementById('theme-toggle');
+    if (toggle) {
+        const icon = toggle.querySelector('i');
+        if (icon) {
+            icon.classList.remove('fa-sun', 'fa-moon');
+            icon.classList.add(isDark ? 'fa-sun' : 'fa-moon');
+        }
+        toggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+    }
+
+    localStorage.setItem(THEME_KEY, theme);
+}
+
+function toggleTheme() {
+    const next = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+    applyTheme(next);
 }
 
 // Helper to get/set data
@@ -117,18 +150,20 @@ function renderPublicEvents() {
     list.innerHTML = '';
 
     if (data.events.length === 0) {
-        list.innerHTML = '<p>No upcoming events.</p>';
+        list.innerHTML = '<tr><td colspan="3" class="muted">No upcoming events.</td></tr>';
         return;
     }
 
-    data.events.forEach(evt => {
-        const card = `
-        <div class="program-card">
-            <h3>${evt.title}</h3>
-            <p><small><i class="fas fa-calendar"></i> ${evt.date}</small></p>
-            <p>${evt.desc}</p>
-        </div>`;
-        list.innerHTML += card;
+    const sortedEvents = [...data.events].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    sortedEvents.forEach(evt => {
+        const row = `
+            <tr>
+                <td>${evt.title}</td>
+                <td>${evt.date}</td>
+                <td>${evt.desc}</td>
+            </tr>`;
+        list.innerHTML += row;
     });
 }
 
@@ -467,6 +502,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const menuBtn = document.querySelector('.mobile-menu-btn');
     const navLinks = document.querySelectorAll('.nav-links a');
+    const savedTheme = getSavedTheme();
+    applyTheme(savedTheme ? savedTheme : (prefersDark() ? 'dark' : 'light'));
+
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
 
     if (menuBtn) {
         menuBtn.addEventListener('click', () => {
