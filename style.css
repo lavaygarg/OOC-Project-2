@@ -84,10 +84,18 @@ button {
     font-weight: 500;
     color: var(--dark);
     transition: color 0.2s ease;
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
 }
 
 .nav-links a:hover {
     color: var(--primary-dark);
+}
+
+.nav-links a.active {
+    color: var(--primary-dark);
+    border-bottom: 2px solid var(--primary);
+    font-weight: 600;
 }
 
 .admin-link {
