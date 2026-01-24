@@ -3,8 +3,21 @@ const express = require('express');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const cors = require('cors');
+const connectDB = require('./config/database');
+
+// Import Routes
+const volunteerRoutes = require('./routes/volunteers');
+const donationRoutes = require('./routes/donations');
+const staffRoutes = require('./routes/staff');
+const disbursementRoutes = require('./routes/disbursements');
+const eventRoutes = require('./routes/events');
+const messageRoutes = require('./routes/messages');
+const institutionRoutes = require('./routes/institutions');
 
 const app = express();
+
+// Connect to MongoDB
+connectDB();
 
 // CORS configuration - Allow all origins for development and production
 const allowedOrigins = [
@@ -143,6 +156,23 @@ app.post('/api/webhook', (req, res) => {
     // Log event - you can persist to database later
     console.log('Razorpay webhook received:', req.body?.event);
     res.status(200).send('OK');
+});
+
+// =====================
+// DATABASE API ROUTES
+// =====================
+app.use('/api/volunteers', volunteerRoutes);
+app.use('/api/donations', donationRoutes);
+app.use('/api/staff', staffRoutes);
+app.use('/api/disbursements', disbursementRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/institutions', institutionRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Server Error:', err);
+    res.status(500).json({ error: 'Internal server error', detail: err.message });
 });
 
 const PORT = process.env.PORT || 3000;
