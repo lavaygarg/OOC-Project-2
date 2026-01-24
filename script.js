@@ -63,9 +63,112 @@ const initialData = {
 };
 
 const THEME_KEY = 'ooc-theme';
-const LANG_KEY = 'ooc-language';
-let translateScriptPromise = null;
-let currentLanguage = 'en';
+const LANG_KEY = 'ooc-lang';
+
+// Translations for EN + HI; keys fall back to stored original text when missing
+const translations = {
+    en: {},
+    hi: {
+        brandName: 'होप फाउंडेशन',
+        navHome: 'होम',
+        navAbout: 'हमारे बारे में',
+        navPrograms: 'कार्यक्रम',
+        navGallery: 'गैलरी',
+        navImpact: 'प्रभाव',
+        navEvents: 'ईवेंट्स',
+        navStories: 'कहानियाँ',
+        navVolunteer: 'स्वयंसेवक',
+        navContact: 'संपर्क',
+        navLogin: 'लॉगिन',
+        navAdminLogin: 'एडमिन लॉगिन',
+        navStaffLogin: 'स्टाफ लॉगिन',
+        navDonate: 'दान करें',
+        heroEyebrow: 'बच्चों के लिए विश्वसनीय एनजीओ',
+        heroTitle: 'वंचित बच्चों को सीखने, बढ़ने और फलने-फूलने में सशक्त बनाना।',
+        heroSubtitle: 'हम शिक्षा, पोषण और स्वास्थ्य कार्यक्रम चलाते हैं जो परिवारों और समुदायों के लिए मापने योग्य प्रभाव बनाते हैं।',
+        heroDonate: 'अभी दान करें',
+        heroVolunteer: 'स्वयंसेवक बनें',
+        badgeVerified: 'सत्यापित एनजीओ',
+        badgeReporting: 'प्रभाव रिपोर्टिंग',
+        badgeReceipts: 'तुरंत रसीदें',
+        statChildren: 'बच्चे शिक्षित',
+        statPrograms: 'सामुदायिक कार्यक्रम',
+        statTransparent: 'पारदर्शी निधि',
+        missionTitle: 'हमारा मिशन',
+        missionBody: 'हर बच्चे को गुणवत्तापूर्ण शिक्षा, पौष्टिक भोजन और सुरक्षित स्वास्थ्य सेवा सम्मान के साथ मिले।',
+        missionMuted: 'हम स्थानीय समुदायों के साथ मिलकर दीर्घकालिक समाधान बनाते हैं और हर कार्यक्रम की पारदर्शी रिपोर्ट प्रकाशित करते हैं।',
+        missionSnapshot: '2025 प्रभाव झलक',
+        missionPoint1: '3,200 लर्निंग किट वितरित',
+        missionPoint2: '1,500 स्वास्थ्य जांच पूरी',
+        missionPoint3: '98% कार्यक्रम पूरा होने की दर',
+        missionCTA: 'प्रभाव रिपोर्ट देखें',
+        aboutTitle: 'होप फाउंडेशन के बारे में',
+        aboutIntro: 'स्कूलों, शेल्टर और स्थानीय नेताओं के साथ मिलकर हर बच्चे को सम्मान के साथ सीखने, स्वस्थ रहने और बड़े सपने देखने में मदद करते हैं।',
+        aboutWhoTitle: 'हम कौन हैं',
+        aboutWhoBody: 'हम शिक्षकों, सामाजिक कार्यकर्ताओं और स्वयंसेवकों की टीम हैं जो समुदायों के साथ मिलकर कार्यक्रम बनाते हैं। हमारे केंद्र सीखने, पोषण ड्राइव और स्वास्थ्य शिविर चलाते हैं।',
+        aboutWhoMuted: 'हर रुपया स्पष्ट परिणामों के खिलाफ ट्रैक किया जाता है—उपस्थिति, सीखने के स्तर, पोषण स्थिति और परिवार की भागीदारी—ताकि समर्थक प्रगति देखें।',
+        aboutGuideTitle: 'हमें क्या मार्गदर्शन करता है',
+        aboutGuide1: 'जहाँ संभव हो समुदाय-नेतृत्वित डिजाइन और महिला-नेतृत्वित संचालन।',
+        aboutGuide2: 'डैशबोर्ड और ऑडिटेड रिपोर्ट के साथ पारदर्शी निधि।',
+        aboutGuide3: 'बाल सुरक्षा, सम्मान और सभी क्षमताओं के लिए समावेशी कक्षाएँ।',
+        aboutGuide4: 'बेसलाइन, फॉलो-अप और पार्टनर समीक्षा से मापा प्रभाव।',
+        aboutDoTitle: 'हम हर सप्ताह क्या करते हैं',
+        aboutDo1: '3–10 आयु के लिए कहानी-आधारित प्रारंभिक शिक्षा कोने।',
+        aboutDo2: 'टीनएजर्स के लिए आफ्टर-स्कूल समर्थन, STEM क्लब, बोर्ड परीक्षा तैयारी।',
+        aboutDo3: 'पौष्टिक भोजन, स्वास्थ्य जांच और मासिक स्वास्थ्य सत्र।',
+        aboutDo4: 'लाइफ-स्किल्स, करियर मेंटरिंग और डिजिटल साक्षरता लैब।',
+        aboutDo5: 'माता-पिता सर्कल जो देखभालकर्ताओं को सह-शिक्षक बनाते हैं।',
+        aboutStat1: 'शहरी और अर्ध-शहरी क्षेत्रों में सक्रिय कार्यक्रम।',
+        aboutStat2: 'फ्रंटलाइन शिक्षक, काउंसलर और सामुदायिक स्वयंसेवक।',
+        aboutStat3: 'लर्निंग सेंटर्स में औसत मासिक उपस्थिति।',
+        impactTitle: 'प्रभाव और रिपोर्ट',
+        impactSubtitle: 'दान का उपयोग कैसे होता है और क्या परिणाम मिलते हैं, इसकी स्पष्ट जानकारी।',
+        impactCard1: 'शिक्षा, स्वास्थ्य और पोषण पर उपयोग की गई कुल निधि।',
+        impactCard2: 'सहयोगी स्कूल और सामुदायिक केंद्र समर्थित।',
+        impactCard3: '12 महीनों में सुधार दिखाने वाले बच्चे।',
+        impactCard4: '2025 में वितरित लर्निंग किट।',
+        impactUtilTitle: 'कार्यक्रम उपयोग',
+        impactUtilBody: 'योजना के लक्ष्य बनाम मासिक आवंटन प्रदर्शन।',
+        impactUtilEdu: 'शिक्षा',
+        impactUtilNut: 'पोषण',
+        impactUtilHealth: 'स्वास्थ्य सेवा',
+        impactHighlightsTitle: '2025 प्रभाव मुख्य बिंदु',
+        impactHL1: 'सहयोगी स्कूलों में 98% उपस्थिति सुधार।',
+        impactHL2: 'ग्रामीण समुदायों में 1,500 स्वास्थ्य जांच पूरी।',
+        impactHL3: 'स्थानीय पहलों में 500+ स्वयंसेवक जुड़े।',
+        impactHighlightsCTA: 'प्रभाव डैशबोर्ड देखें',
+        eventsTitle: 'आगामी ईवेंट और घोषणाएँ',
+        eventsSubtitle: 'हमारे आगामी सामुदायिक ईवेंट और पहलों से जुड़ें।',
+        eventsColName: 'ईवेंट का नाम',
+        eventsColDate: 'तारीख',
+        eventsColDesc: 'विवरण',
+        donateTitle: 'दान करें',
+        donateSubtitle: 'आपका सहयोग जीवन बदलता है। सभी दान पर कर छूट।',
+        donateName: 'दाता का नाम',
+        donateAmount: 'राशि (रुपये)',
+        donateMethod: 'भुगतान विधि',
+        donateCTA: 'सुरक्षित दान करें',
+        donateNote: 'तुरंत रसीद और ईमेल पुष्टिकरण।',
+        program1Title: 'सभी के लिए शिक्षा',
+        program1Desc: 'सड़क बच्चों के लिए किताबें, यूनिफॉर्म और ट्यूशन।',
+        program2Title: 'स्वस्थ भोजन',
+        program2Desc: 'कुपोषण से लड़ने के लिए दैनिक पौष्टिक भोजन।',
+        program3Title: 'कौशल विकास',
+        program3Desc: 'किशोरों के लिए व्यावसायिक प्रशिक्षण और नौकरी तैयारी।',
+        program4Title: 'मेंटorship और ट्यूशन',
+        program4Desc: 'एक-एक करके मार्गदर्शन और आफ्टर-स्कूल सहायता कार्यक्रम।',
+        program5Title: 'सामुदायिक स्वास्थ्य सेवा',
+        program5Desc: 'बच्चों और परिवारों के लिए स्वास्थ्य शिविर और रोकथाम देखभाल।',
+        galleryTitle: 'गैलरी',
+        gallerySubtitle: 'हमारे कार्यक्रमों और भागीदारों की झलक।',
+        volunteerTitle: 'स्वयंसेवक बनें',
+        volunteerSubtitle: 'परिवर्तन लाने वाली हमारी टीम से जुड़ें।',
+        volunteerName: 'पूरा नाम',
+        volunteerEmail: 'ईमेल',
+        volunteerInterest: 'रुचियाँ',
+        volunteerSubmit: 'आवेदन जमा करें'
+    }
+};
 
 // Initialize LocalStorage from seed file and merge missing data
 async function initData() {
@@ -140,89 +243,41 @@ function toggleTheme() {
     applyTheme(next);
 }
 
-// --- LANGUAGE / GOOGLE TRANSLATE ---
-function loadGoogleTranslate() {
-    if (translateScriptPromise) return translateScriptPromise;
-
-    translateScriptPromise = new Promise(resolve => {
-        window.googleTranslateElementInit = function () {
-            if (window.google?.translate) {
-                new google.translate.TranslateElement({
-                    pageLanguage: 'en',
-                    includedLanguages: 'en,hi',
-                    autoDisplay: false
-                }, 'google_translate_element');
+function applyLanguage(lang) {
+    const dict = translations[lang] || {};
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        if (!el.dataset.i18nOriginal) {
+            el.dataset.i18nOriginal = el.innerHTML.trim();
+        }
+        const key = el.getAttribute('data-i18n');
+        const translation = dict[key];
+        if (translation) {
+            const icon = el.querySelector('i');
+            if (icon) {
+                el.innerHTML = `${icon.outerHTML} ${translation}`;
+            } else {
+                el.textContent = translation;
             }
-            resolve();
-        };
-
-        const script = document.createElement('script');
-        script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-        script.async = true;
-        script.onerror = () => resolve(); // fail gracefully if offline
-        document.head.appendChild(script);
-    });
-
-    return translateScriptPromise;
-}
-
-function setLanguage(lang) {
-    const combo = document.querySelector('select.goog-te-combo');
-    if (!combo) return;
-
-    combo.value = lang;
-    combo.dispatchEvent(new Event('change'));
-    localStorage.setItem(LANG_KEY, lang);
-    document.documentElement.setAttribute('lang', lang === 'hi' ? 'hi' : 'en');
-    currentLanguage = lang;
-
-    const toggle = document.getElementById('lang-toggle');
-    if (toggle) toggle.checked = lang === 'hi';
-}
-
-function waitAndApplyLanguage(lang) {
-    const combo = document.querySelector('select.goog-te-combo');
-    if (combo) {
-        setLanguage(lang);
-        return;
-    }
-
-    const observer = new MutationObserver(() => {
-        const found = document.querySelector('select.goog-te-combo');
-        if (found) {
-            setLanguage(lang);
-            observer.disconnect();
-            clearTimeout(timeoutId);
+        } else if (el.dataset.i18nOriginal) {
+            el.innerHTML = el.dataset.i18nOriginal;
         }
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
-    const timeoutId = setTimeout(() => observer.disconnect(), 8000);
-}
-
-async function initLanguageToggle() {
-    const toggle = document.getElementById('lang-toggle');
-    if (!toggle) return;
-
-    const savedLang = localStorage.getItem(LANG_KEY) || 'en';
-    toggle.checked = savedLang === 'hi';
-    document.documentElement.setAttribute('lang', savedLang === 'hi' ? 'hi' : 'en');
-    currentLanguage = savedLang;
-
-    toggle.addEventListener('change', () => {
-        const nextLang = toggle.checked ? 'hi' : 'en';
-        waitAndApplyLanguage(nextLang);
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
     });
-
-    await loadGoogleTranslate();
-    waitAndApplyLanguage(savedLang);
+    localStorage.setItem(LANG_KEY, lang);
 }
 
-function reapplySavedLanguageOnNavigation() {
-    const savedLang = localStorage.getItem(LANG_KEY) || 'en';
-    if (savedLang !== currentLanguage) {
-        waitAndApplyLanguage(savedLang);
-    }
+function initLanguage() {
+    const saved = localStorage.getItem(LANG_KEY) || 'en';
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            applyLanguage(btn.dataset.lang || 'en');
+        });
+    });
+    applyLanguage(saved);
 }
 
 // Helper to get/set data
@@ -266,9 +321,6 @@ function showSection(sectionId) {
 
     // Scroll to top
     window.scrollTo(0, 0);
-
-    // Ensure translation persists when navigating SPA sections
-    reapplySavedLanguageOnNavigation();
 
     // Dynamic Rendering
     if (sectionId === 'admin-dashboard') {
@@ -572,10 +624,27 @@ function handleAdminLogin(e) {
     }
 }
 
+function handleStaffLogin(e) {
+    e.preventDefault();
+    const user = document.getElementById('staff-user').value;
+    const pass = document.getElementById('staff-pass').value;
+
+    // Simple mock auth for staff
+    if (user && pass) {
+        alert('Staff login successful (demo)');
+        showSection('home');
+    } else {
+        alert('Invalid staff credentials');
+    }
+}
+
 function logout() {
     if(confirm('Are you sure you want to log out?')) {
+        // Clear admin login state
         localStorage.removeItem('adminLoggedIn');
-        window.location.href = 'index.html';
+        // Clear hash from URL
+        history.replaceState(null, '', window.location.pathname);
+        showSection('home');
     }
 }
 
@@ -1048,10 +1117,17 @@ function deleteEvent(id) {
 document.addEventListener('DOMContentLoaded', async () => {
     await initData();
     
-    // Check if URL has a hash to navigate to a specific section
-    const hash = window.location.hash.replace('#', '');
-    if (hash && document.getElementById(hash)) {
-        showSection(hash);
+    // Check URL hash for admin-dashboard navigation from login
+    const hash = window.location.hash;
+    if (hash === '#admin-dashboard') {
+        // Verify admin is logged in
+        if (localStorage.getItem('adminLoggedIn') === 'true') {
+            showSection('admin-dashboard');
+        } else {
+            // Not logged in, redirect to login page
+            window.location.href = 'portals/admin.html';
+            return;
+        }
     } else {
         showSection('home');
     }
@@ -1060,8 +1136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const navLinks = document.querySelectorAll('.nav-links a');
     const savedTheme = getSavedTheme();
     applyTheme(savedTheme ? savedTheme : (prefersDark() ? 'dark' : 'light'));
-
-    await initLanguageToggle();
+    initLanguage();
 
     const themeToggle = document.getElementById('theme-toggle');
     if (themeToggle) {
@@ -1093,7 +1168,373 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         });
     }
+    
+    // Initialize admin messaging if on admin dashboard
+    if (localStorage.getItem('adminLoggedIn') === 'true') {
+        initAdminMessaging();
+    }
 });
+
+/* =========================================== */
+/* UNIFIED MESSAGING SYSTEM FOR ADMIN PORTAL  */
+/* =========================================== */
+const UNIFIED_MSG_STORAGE = 'ooc_portal_messages_v1';
+const UNIFIED_DIRECTORY_STORAGE = 'ooc_portal_directory_v1';
+
+const ADMIN_USER = {
+    userId: 'ADMIN',
+    displayName: 'Admin',
+    role: 'admin',
+    department: 'management',
+    email: 'admin@hope.org'
+};
+
+function loadUnifiedMessages() {
+    try {
+        const raw = localStorage.getItem(UNIFIED_MSG_STORAGE);
+        return raw ? JSON.parse(raw) : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveUnifiedMessages(messages) {
+    localStorage.setItem(UNIFIED_MSG_STORAGE, JSON.stringify(messages));
+}
+
+function loadUnifiedDirectory() {
+    try {
+        const raw = localStorage.getItem(UNIFIED_DIRECTORY_STORAGE);
+        if (raw) return JSON.parse(raw);
+    } catch {}
+    
+    // Default directory
+    const defaultDir = [
+        { userId: 'ADMIN', displayName: 'Admin', role: 'admin', department: 'management', email: 'admin@hope.org' },
+        { userId: 'TCH-101', displayName: 'Demo Teacher', role: 'teacher', department: 'education', email: 'teacher@hope.org' },
+        { userId: 'EVT-201', displayName: 'Events Desk', role: 'events', department: 'events', email: 'events@hope.org' },
+        { userId: 'MGT-401', displayName: 'Management', role: 'management', department: 'management', email: 'management@hope.org' },
+        { userId: 'FND-301', displayName: 'Fundraising', role: 'fundraiser', department: 'fundraising', email: 'fundraise@hope.org' }
+    ];
+    localStorage.setItem(UNIFIED_DIRECTORY_STORAGE, JSON.stringify(defaultDir));
+    return defaultDir;
+}
+
+function getAdminInbox() {
+    const messages = loadUnifiedMessages();
+    return messages.filter(m => {
+        if (!m.recipientTokens) return false;
+        return m.recipientTokens.some(t => 
+            t === 'all' || 
+            t === 'admin' ||
+            t === `user:ADMIN` ||
+            t === 'role:admin' ||
+            t === 'role:management'
+        );
+    }).filter(m => m.from?.userId !== 'ADMIN')  // Exclude self-sent
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
+function getAdminSent() {
+    const messages = loadUnifiedMessages();
+    return messages.filter(m => m.from?.userId === 'ADMIN')
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
+function formatAdminMsgDate(isoStr) {
+    const d = new Date(isoStr);
+    const now = new Date();
+    const diff = now - d;
+    if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+    if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+    if (diff < 604800000) return Math.floor(diff / 86400000) + 'd ago';
+    return d.toLocaleDateString();
+}
+
+function escAdminHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+}
+
+function showAdminMsgPanel(panelId) {
+    // Hide all panels
+    document.querySelectorAll('.admin-msg-panel').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.admin-msg-nav-item').forEach(n => n.classList.remove('active'));
+    
+    // Show selected panel
+    const panel = document.getElementById('admin-panel-' + panelId);
+    if (panel) panel.style.display = 'block';
+    
+    // Highlight nav item
+    const navItem = document.querySelector(`.admin-msg-nav-item[onclick="showAdminMsgPanel('${panelId}')"]`);
+    if (navItem) navItem.classList.add('active');
+    
+    // Render content
+    if (panelId === 'inbox') renderAdminInbox();
+    if (panelId === 'sent') renderAdminSent();
+    if (panelId === 'directory') renderAdminDirectory();
+}
+
+function renderAdminInbox() {
+    const inbox = getAdminInbox();
+    const listEl = document.getElementById('admin-inbox-list');
+    const badge = document.getElementById('adminUnreadBadge');
+    
+    const readKey = 'ooc_admin_read_messages';
+    const readIds = JSON.parse(localStorage.getItem(readKey) || '[]');
+    const unreadCount = inbox.filter(m => !readIds.includes(m.id)).length;
+    
+    if (badge) {
+        badge.textContent = unreadCount;
+        badge.style.display = unreadCount > 0 ? 'inline-flex' : 'none';
+    }
+    
+    if (!inbox.length) {
+        listEl.innerHTML = '<div class="admin-msg-empty"><i class="fas fa-inbox" style="font-size:2rem;margin-bottom:0.5rem;color:#94a3b8;"></i><br>No messages in inbox</div>';
+        return;
+    }
+    
+    listEl.innerHTML = inbox.map(m => {
+        const isUnread = !readIds.includes(m.id);
+        const preview = m.body.length > 100 ? m.body.slice(0, 100) + '…' : m.body;
+        const senderName = m.from?.displayName || 'Unknown';
+        const senderRole = m.from?.role ? ` (${m.from.role})` : '';
+        return `
+            <div class="admin-msg-item ${isUnread ? 'unread' : ''}" onclick="openAdminMessage('${m.id}')">
+                <div class="admin-msg-avatar">${escAdminHtml(senderName.charAt(0))}</div>
+                <div class="admin-msg-body">
+                    <div class="admin-msg-top">
+                        <span class="admin-msg-from">${escAdminHtml(senderName)}${senderRole}</span>
+                        <span class="admin-msg-date">${formatAdminMsgDate(m.createdAt)}</span>
+                    </div>
+                    <div class="admin-msg-subject">${escAdminHtml(m.subject)}</div>
+                    <div class="admin-msg-preview">${escAdminHtml(preview)}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderAdminSent() {
+    const sent = getAdminSent();
+    const listEl = document.getElementById('admin-sent-list');
+    
+    if (!sent.length) {
+        listEl.innerHTML = '<div class="admin-msg-empty"><i class="fas fa-paper-plane" style="font-size:2rem;margin-bottom:0.5rem;color:#94a3b8;"></i><br>No sent messages</div>';
+        return;
+    }
+    
+    listEl.innerHTML = sent.map(m => {
+        const preview = m.body.length > 100 ? m.body.slice(0, 100) + '…' : m.body;
+        return `
+            <div class="admin-msg-item" onclick="openAdminMessage('${m.id}', 'sent')">
+                <div class="admin-msg-avatar" style="background:#3498db;">→</div>
+                <div class="admin-msg-body">
+                    <div class="admin-msg-top">
+                        <span class="admin-msg-from">To: ${escAdminHtml(formatAdminRecipients(m.recipientTokens))}</span>
+                        <span class="admin-msg-date">${formatAdminMsgDate(m.createdAt)}</span>
+                    </div>
+                    <div class="admin-msg-subject">${escAdminHtml(m.subject)}</div>
+                    <div class="admin-msg-preview">${escAdminHtml(preview)}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function formatAdminRecipients(tokens) {
+    if (!tokens || !tokens.length) return '—';
+    const labels = {
+        'all': 'Everyone',
+        'admin': 'Admin',
+        'role:user': 'All Users',
+        'role:staff': 'All Staff',
+        'role:teacher': 'All Teachers',
+        'role:events': 'Events Team',
+        'role:management': 'Management',
+        'role:fundraiser': 'Fundraising Team'
+    };
+    return tokens.map(t => labels[t] || t).join(', ');
+}
+
+function renderAdminDirectory() {
+    const directory = loadUnifiedDirectory();
+    const listEl = document.getElementById('admin-directory-list');
+    
+    // Group by role
+    const grouped = {};
+    directory.forEach(u => {
+        const role = u.role || 'other';
+        if (!grouped[role]) grouped[role] = [];
+        grouped[role].push(u);
+    });
+    
+    const roleLabels = {
+        admin: 'Administrators',
+        teacher: 'Teachers',
+        events: 'Events Team',
+        management: 'Management',
+        fundraiser: 'Fundraising',
+        staff: 'Staff',
+        user: 'Users',
+        other: 'Other'
+    };
+    
+    let html = '';
+    for (const [role, users] of Object.entries(grouped)) {
+        if (role === 'admin') continue; // Don't show admin to themselves
+        html += `<div class="admin-dir-section"><h4>${roleLabels[role] || role}</h4>`;
+        users.forEach(u => {
+            html += `
+                <div class="admin-dir-item">
+                    <div class="admin-dir-avatar">${escAdminHtml(u.displayName?.charAt(0) || '?')}</div>
+                    <div class="admin-dir-info">
+                        <div class="admin-dir-name">${escAdminHtml(u.displayName)}</div>
+                        <div class="admin-dir-meta">${escAdminHtml(u.email || u.userId)}</div>
+                    </div>
+                    <button class="btn btn-sm btn-secondary" onclick="composeToAdmin('user:${u.userId}', '${escAdminHtml(u.displayName)}')"><i class="fas fa-envelope"></i></button>
+                </div>
+            `;
+        });
+        html += '</div>';
+    }
+    
+    listEl.innerHTML = html || '<div class="admin-msg-empty">No directory entries</div>';
+}
+
+function composeToAdmin(recipientToken, name) {
+    document.getElementById('adminMsgTo').value = recipientToken;
+    document.getElementById('adminMsgSubject').value = '';
+    document.getElementById('adminMsgBody').value = '';
+    showAdminMsgPanel('compose');
+}
+
+function openAdminMessage(msgId, context = 'inbox') {
+    const messages = loadUnifiedMessages();
+    const msg = messages.find(m => m.id === msgId);
+    if (!msg) return;
+    
+    // Mark as read if inbox
+    if (context === 'inbox') {
+        const readKey = 'ooc_admin_read_messages';
+        const readIds = JSON.parse(localStorage.getItem(readKey) || '[]');
+        if (!readIds.includes(msgId)) {
+            readIds.push(msgId);
+            localStorage.setItem(readKey, JSON.stringify(readIds));
+        }
+    }
+    
+    const detailEl = document.getElementById('admin-msg-detail-content');
+    const senderName = msg.from?.displayName || 'Unknown';
+    const senderRole = msg.from?.role ? ` (${msg.from.role})` : '';
+    
+    detailEl.innerHTML = `
+        <div style="border-bottom:1px solid #e2e8f0;padding-bottom:1rem;margin-bottom:1rem;">
+            <h3 style="margin:0 0 0.5rem;">${escAdminHtml(msg.subject)}</h3>
+            <div style="color:#64748b;font-size:0.9rem;">
+                <strong>From:</strong> ${escAdminHtml(senderName)}${senderRole}<br>
+                <strong>Date:</strong> ${new Date(msg.createdAt).toLocaleString()}<br>
+                <strong>To:</strong> ${escAdminHtml(formatAdminRecipients(msg.recipientTokens))}
+            </div>
+        </div>
+        <div style="white-space:pre-wrap;line-height:1.7;">${escAdminHtml(msg.body)}</div>
+        ${context === 'inbox' && msg.from?.userId ? `
+            <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="replyToAdminMessage('${msg.from.userId}', '${escAdminHtml(msg.subject)}')">
+                <i class="fas fa-reply"></i> Reply
+            </button>
+        ` : ''}
+    `;
+    
+    showAdminMsgPanel('detail');
+    renderAdminInbox(); // Update unread count
+}
+
+function replyToAdminMessage(toUserId, subject) {
+    document.getElementById('adminMsgTo').innerHTML = `
+        <option value="">Select recipient...</option>
+        <option value="user:${toUserId}" selected>Reply to sender</option>
+        <option value="all">Everyone (Broadcast)</option>
+        <option value="role:user">All Users</option>
+        <option value="role:staff">All Staff</option>
+        <option value="role:teacher">All Teachers</option>
+        <option value="role:events">Events Team</option>
+        <option value="role:management">Management</option>
+        <option value="role:fundraiser">Fundraising Team</option>
+    `;
+    document.getElementById('adminMsgTo').value = 'user:' + toUserId;
+    document.getElementById('adminMsgSubject').value = subject.startsWith('Re:') ? subject : 'Re: ' + subject;
+    document.getElementById('adminMsgBody').value = '';
+    showAdminMsgPanel('compose');
+}
+
+function handleAdminSendMessage(event) {
+    event.preventDefault();
+    
+    const to = document.getElementById('adminMsgTo').value;
+    const subject = document.getElementById('adminMsgSubject').value.trim();
+    const body = document.getElementById('adminMsgBody').value.trim();
+    
+    if (!to || !subject || !body) {
+        alert('Please fill all fields');
+        return;
+    }
+    
+    const messages = loadUnifiedMessages();
+    const newMsg = {
+        id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        from: ADMIN_USER,
+        recipientTokens: [to],
+        subject,
+        body,
+        createdAt: new Date().toISOString()
+    };
+    
+    messages.push(newMsg);
+    saveUnifiedMessages(messages);
+    
+    // Also update directory with the recipient if it's a specific user
+    if (to.startsWith('user:')) {
+        const userId = to.replace('user:', '');
+        const directory = loadUnifiedDirectory();
+        if (!directory.find(d => d.userId === userId)) {
+            directory.push({
+                userId,
+                displayName: userId,
+                role: 'user',
+                email: ''
+            });
+            localStorage.setItem(UNIFIED_DIRECTORY_STORAGE, JSON.stringify(directory));
+        }
+    }
+    
+    // Reset form
+    document.getElementById('adminComposeForm').reset();
+    
+    // Reset recipient dropdown
+    document.getElementById('adminMsgTo').innerHTML = `
+        <option value="">Select recipient...</option>
+        <option value="all">Everyone (Broadcast)</option>
+        <option value="role:user">All Users</option>
+        <option value="role:staff">All Staff</option>
+        <option value="role:teacher">All Teachers</option>
+        <option value="role:events">Events Team</option>
+        <option value="role:management">Management</option>
+        <option value="role:fundraiser">Fundraising Team</option>
+    `;
+    
+    alert('Message sent successfully!');
+    showAdminMsgPanel('sent');
+}
+
+function initAdminMessaging() {
+    // Load inbox on dashboard load
+    setTimeout(() => {
+        if (document.getElementById('admin-inbox-list')) {
+            renderAdminInbox();
+        }
+    }, 100);
+}
 
 // --- FEEDBACK & TESTIMONIALS ---
 const defaultTestimonials = [

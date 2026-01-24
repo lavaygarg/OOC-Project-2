@@ -260,20 +260,12 @@ button {
 
 .goog-te-banner-frame.skiptranslate,
 .goog-te-banner-frame,
-.goog-te-gadget-icon,
-iframe.goog-te-banner-frame {
+.goog-te-gadget-icon {
     display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
 }
 
 body {
     top: 0 !important;
-    position: static !important;
-}
-
-.skiptranslate {
-    display: none !important;
 }
 
 .goog-logo-link,
@@ -1454,6 +1446,238 @@ body {
 @media (max-width: 768px) {
     .dashboard-container { flex-direction: column; }
     .sidebar { width: 100%; }
+}
+
+/* ================================= */
+/* ADMIN MESSAGING SYSTEM STYLES    */
+/* ================================= */
+.admin-messages-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1.5rem;
+    min-height: 500px;
+}
+
+.admin-msg-sidebar {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+}
+
+.admin-msg-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-msg-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #475569;
+    transition: all 0.2s;
+}
+
+.admin-msg-nav-item:hover {
+    background: #e2e8f0;
+}
+
+.admin-msg-nav-item.active {
+    background: var(--primary);
+    color: #fff;
+}
+
+.admin-msg-badge {
+    margin-left: auto;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    min-width: 22px;
+    text-align: center;
+}
+
+.admin-msg-content {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.admin-msg-panel {
+    min-height: 400px;
+}
+
+.admin-msg-panel-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.admin-msg-panel-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-msg-list {
+    max-height: 450px;
+    overflow-y: auto;
+}
+
+.admin-msg-empty {
+    text-align: center;
+    padding: 3rem;
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+.admin-msg-item {
+    display: flex;
+    gap: 12px;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.admin-msg-item:hover {
+    background: #f8fafc;
+}
+
+.admin-msg-item.unread {
+    background: #f0fdf4;
+    border-left: 3px solid var(--primary);
+}
+
+.admin-msg-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.admin-msg-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-msg-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.admin-msg-from {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 0.9rem;
+}
+
+.admin-msg-date {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.admin-msg-subject {
+    font-weight: 500;
+    color: #334155;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.admin-msg-preview {
+    color: #64748b;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Directory Styles */
+.admin-dir-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+}
+
+.admin-dir-section h4 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-dir-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+}
+
+.admin-dir-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #3b82f6;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.admin-dir-info {
+    flex: 1;
+}
+
+.admin-dir-name {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 0.9rem;
+}
+
+.admin-dir-meta {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+@media (max-width: 768px) {
+    .admin-messages-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-msg-sidebar {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+    
+    .admin-msg-nav {
+        flex-direction: row;
+    }
 }
 
 /* Feedback Widget */
