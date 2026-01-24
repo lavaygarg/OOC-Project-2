@@ -1059,6 +1059,261 @@
                 display: none;
             }
         }
+
+        /* Comprehensive Mobile Responsive Styles */
+        @media (max-width: 900px) {
+            .sidebar {
+                position: fixed;
+                left: -260px;
+                transition: left 0.3s ease;
+                z-index: 1000;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sponsor-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .impact-chart {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main-content {
+                padding: 0.75rem;
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .top-bar h1 {
+                font-size: 1.25rem;
+            }
+            
+            .top-bar-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 1rem;
+            }
+            
+            .stat-info h3 {
+                font-size: 1.25rem;
+            }
+            
+            .stat-info p {
+                font-size: 0.8rem;
+            }
+            
+            .card {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+            
+            .card-title {
+                font-size: 1rem;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 0.6rem 0.5rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .btn-sm {
+                padding: 0.35rem 0.6rem;
+                font-size: 0.75rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+            
+            .impact-chart {
+                gap: 1rem;
+            }
+            
+            .impact-circle {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .impact-circle span {
+                font-size: 1.2rem;
+            }
+            
+            .badges-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .badge-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            .badge-item h5 {
+                font-size: 0.8rem;
+            }
+            
+            .event-card img {
+                height: 120px;
+            }
+            
+            .event-card-body {
+                padding: 0.75rem;
+            }
+            
+            .sponsor-card img {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .messages-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .msg-list-item {
+                padding: 0.75rem;
+            }
+            
+            .msg-subject {
+                font-size: 0.9rem;
+            }
+            
+            .msg-preview {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .badges-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+            
+            .badge-item {
+                padding: 0.75rem;
+            }
+            
+            .badge-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+            
+            .impact-item {
+                min-width: 100px;
+            }
+            
+            .notification-btn {
+                padding: 0.5rem;
+            }
+            
+            .user-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Mobile Sidebar Toggle */
+        .mobile-sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(46,204,113,0.4);
+            cursor: pointer;
+            z-index: 999;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 900px) {
+            .mobile-sidebar-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -1101,6 +1356,14 @@
             <li style="margin-top: 1rem;"><a href="index.html" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
         </ul>
     </aside>
+    
+    <!-- Mobile Sidebar Toggle Button -->
+    <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" aria-label="Toggle sidebar menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
     
     <!-- Main Content -->
     <div class="main-content">
@@ -2394,6 +2657,51 @@
         document.addEventListener('DOMContentLoaded', () => {
             registerUserInDirectory();
             renderUserInbox();
+            
+            // Mobile sidebar toggle functionality
+            const sidebarToggle = document.getElementById('mobileSidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('open');
+                    sidebarOverlay.classList.toggle('active');
+                    // Change icon
+                    const icon = sidebarToggle.querySelector('i');
+                    if (sidebar.classList.contains('open')) {
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-times');
+                    } else {
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+            }
+            
+            // Close sidebar when clicking overlay
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('open');
+                    sidebarOverlay.classList.remove('active');
+                    const icon = sidebarToggle.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                });
+            }
+            
+            // Close sidebar when clicking nav links on mobile
+            document.querySelectorAll('.sidebar-nav a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 900) {
+                        sidebar.classList.remove('open');
+                        sidebarOverlay.classList.remove('active');
+                        const icon = sidebarToggle.querySelector('i');
+                        icon.classList.remove('fa-times');
+                        icon.classList.add('fa-bars');
+                    }
+                });
+            });
         });
     </script>
 </body>

@@ -951,3 +951,382 @@ body.staff-portal.is-logged-out .login-card .split-actions {
     padding: 16px 18px;
   }
 }
+
+/* ===== COMPREHENSIVE MOBILE RESPONSIVE STYLES ===== */
+
+/* Tablet and below */
+@media (max-width: 920px) {
+  .staff-portal .portal-shell {
+    width: 96%;
+    padding: 16px 0;
+  }
+
+  .staff-portal .portal-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .staff-portal .topbar-left {
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .staff-portal .portal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-portal .dash-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .staff-portal .dash-header {
+    padding: 18px 20px;
+  }
+
+  .staff-portal .dash-content {
+    padding: 18px 20px;
+  }
+
+  .staff-portal .dash-title {
+    font-size: 1.3rem;
+  }
+
+  .staff-portal .welcome-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px;
+  }
+
+  .staff-portal .welcome-icon {
+    margin-bottom: 8px;
+  }
+
+  .staff-portal .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .staff-portal .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .staff-portal .simple-table {
+    min-width: 500px;
+  }
+
+  .staff-portal .quick-actions-row {
+    justify-content: center;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 600px) {
+  .staff-portal .portal-shell {
+    width: 100%;
+    padding: 12px 0;
+  }
+
+  .staff-portal .portal-topbar {
+    border-radius: 0;
+    margin: 0 0 16px 0;
+  }
+
+  .staff-portal .topbar-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .staff-portal .back-link {
+    font-size: 0.85rem;
+  }
+
+  .staff-portal .portal-badge {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+
+  .staff-portal .dashboard-main {
+    border-radius: 16px;
+    margin: 0 8px;
+  }
+
+  .staff-portal .dash-header {
+    padding: 16px;
+  }
+
+  .staff-portal .dash-content {
+    padding: 16px;
+  }
+
+  .staff-portal .dash-title {
+    font-size: 1.15rem;
+  }
+
+  .staff-portal .dash-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .staff-portal .dash-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .staff-portal .dash-card {
+    padding: 12px;
+  }
+
+  .staff-portal .dash-card-icon {
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
+
+  .staff-portal .dash-card-label {
+    font-size: 0.7rem;
+  }
+
+  .staff-portal .dash-card-value {
+    font-size: 1.3rem;
+  }
+
+  .staff-portal .welcome-banner {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .staff-portal .welcome-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+  }
+
+  .staff-portal .welcome-name {
+    font-size: 1.1rem;
+  }
+
+  .staff-portal .welcome-meta {
+    font-size: 0.85rem;
+  }
+
+  .staff-portal .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-portal .kpi {
+    padding: 10px;
+  }
+
+  .staff-portal .kpi-label {
+    font-size: 0.75rem;
+  }
+
+  .staff-portal .kpi-value {
+    font-size: 1rem;
+  }
+
+  .staff-portal .section-title {
+    font-size: 0.9rem;
+  }
+
+  .staff-portal .dash-section-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .staff-portal .dash-section-title {
+    font-size: 0.9rem;
+  }
+
+  .staff-portal .simple-table th,
+  .staff-portal .simple-table td {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+
+  .staff-portal .activity-list li {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  .staff-portal .quick-actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .staff-portal .action-btn {
+    justify-content: center;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .staff-portal .btn {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .staff-portal .split-actions {
+    flex-direction: column;
+  }
+
+  .staff-portal .split-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .staff-portal .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px;
+    gap: 6px;
+  }
+
+  .staff-portal .tab {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .staff-portal .panel {
+    padding: 14px;
+  }
+
+  .staff-portal .msg-item {
+    padding: 10px;
+  }
+
+  .staff-portal .msg-from {
+    font-size: 0.9rem;
+  }
+
+  .staff-portal .msg-date {
+    font-size: 0.75rem;
+  }
+
+  .staff-portal .msg-subject {
+    font-size: 0.85rem;
+  }
+
+  .staff-portal .msg-preview {
+    font-size: 0.8rem;
+  }
+
+  .staff-portal .pill {
+    padding: 5px 8px;
+    font-size: 0.75rem;
+  }
+
+  .staff-portal .field-row.cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-portal label {
+    font-size: 0.85rem;
+  }
+
+  .staff-portal input[type="text"],
+  .staff-portal input[type="email"],
+  .staff-portal input[type="password"],
+  .staff-portal select,
+  .staff-portal textarea {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .staff-portal .card-head {
+    padding: 14px 14px 0;
+  }
+
+  .staff-portal .card-body {
+    padding: 14px;
+  }
+
+  .staff-portal .card-title {
+    font-size: 1.05rem;
+  }
+
+  .staff-portal .card-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .staff-portal .portal-card {
+    border-radius: 14px;
+  }
+
+  /* Login card specific mobile styles */
+  body.staff-portal.is-logged-out .login-card {
+    max-width: 100%;
+    margin: 0 12px;
+    border-radius: 16px;
+  }
+
+  body.staff-portal.is-logged-out .login-card .card-head {
+    padding: 20px 20px 0;
+  }
+
+  body.staff-portal.is-logged-out .login-card .card-body {
+    padding: 20px;
+  }
+
+  body.staff-portal.is-logged-out .login-card .card-title {
+    font-size: 1.3rem;
+  }
+
+  body.staff-portal.is-logged-out .portal-main {
+    padding-top: 20px;
+  }
+}
+
+/* Very small devices */
+@media (max-width: 380px) {
+  .staff-portal .dash-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-portal .dash-card-value {
+    font-size: 1.2rem;
+  }
+
+  .staff-portal .welcome-name {
+    font-size: 1rem;
+  }
+
+  .staff-portal .dash-title {
+    font-size: 1rem;
+  }
+
+  .msg-fab {
+    bottom: 16px;
+    right: 16px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .msg-fab i {
+    font-size: 1.3rem;
+  }
+
+  .msg-modal {
+    width: 98%;
+    max-height: 92vh;
+  }
+
+  .msg-modal-header {
+    padding: 12px 14px;
+  }
+
+  .msg-modal-title {
+    font-size: 1rem;
+  }
+
+  .msg-modal .tabs {
+    padding: 8px 12px;
+  }
+
+  .msg-modal .panel {
+    padding: 12px 14px;
+  }
+}

@@ -21,6 +21,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
         body {
             background-color: white;
@@ -72,6 +73,64 @@
         .portal-card h3 {
             margin: 0;
             color: #14213d;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .bgimg {
+                padding: 15px;
+            }
+            .portal-container {
+                padding: 1.5rem;
+            }
+            .portal-container h1 {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            .portal-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .portal-card {
+                padding: 1.5rem;
+            }
+            .portal-card i {
+                font-size: 2.5rem;
+            }
+            .portal-card h3 {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bgimg {
+                padding: 10px;
+            }
+            .portal-container {
+                padding: 1.25rem;
+                border-radius: 0.75rem;
+            }
+            .portal-container h1 {
+                font-size: 1.25rem;
+                margin-bottom: 1.25rem;
+            }
+            .portal-grid {
+                gap: 0.75rem;
+            }
+            .portal-card {
+                padding: 1.25rem;
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 1rem;
+            }
+            .portal-card i {
+                font-size: 2rem;
+                margin-bottom: 0;
+            }
+            .btn-secondary {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
