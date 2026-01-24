@@ -3,65 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Login - Hope Foundation</title>
+    <title>Staff Portal - Hope Foundation</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="./staff-portal.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            background-color: #e63946; /* Different color for staff */
-            background-image: linear-gradient(135deg, #e63946 0%, #14213d 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Inter', sans-serif;
-        }
-        .login-container {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-        .back-link {
-            display: inline-block;
-            margin-bottom: 1rem;
-            color: #666;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        .back-link:hover {
-            color: #14213d;
-        }
-    </style>
 </head>
 <body>
-    <div class="login-container">
-        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Portals</a>
-        <h2 style="text-align: center; color: #14213d; margin-bottom: 1.5rem;">Staff Login</h2>
-        <form onsubmit="handleStaffLogin(event)">
-            <div class="form-group">
-                <label for="staff-id">Staff ID</label>
-                <input type="text" id="staff-id" class="form-control" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 0.5rem; margin-bottom: 1rem;" required>
+    <div class="portal-shell">
+        <div class="portal-topbar">
+            <div class="topbar-left">
+                <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Portals</a>
+                <span class="portal-badge"><i class="fas fa-users"></i> Staff Portal</span>
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" class="form-control" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 0.5rem; margin-bottom: 1.5rem;" required>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
-        </form>
+            <div id="topbarRight" class="muted-inline">Not logged in</div>
+        </div>
+
+        <div class="portal-grid">
+            <section class="portal-card" aria-label="Login" id="loginCard">
+                <div class="card-head">
+                    <div class="card-title">Login</div>
+                    <div class="card-subtitle">Sign in to access your dashboard and messages.</div>
+                </div>
+                <div class="card-body">
+                    <form id="loginForm">
+                        <div>
+                            <label for="userId">ID</label>
+                            <input id="userId" type="text" placeholder="Enter your ID" required>
+                        </div>
+
+                        <div style="margin-top: 12px;">
+                            <label for="password">Password</label>
+                            <input id="password" type="password" placeholder="Enter your password" required>
+                        </div>
+
+                        <div style="margin-top: 12px;">
+                            <label for="role">Role</label>
+                            <select id="role" required>
+                                <option value="staff">Staff</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="events">Events</option>
+                                <option value="management">Management</option>
+                                <option value="fundraiser">Fundraiser</option>
+                            </select>
+                        </div>
+
+                        <div class="split-actions">
+                            <button class="btn btn-primary" type="submit"><i class="fas fa-right-to-bracket"></i> Login</button>
+                            <button class="btn btn-ghost" type="button" id="demoTeacherBtn"><i class="fas fa-wand-magic-sparkles"></i> Demo Teacher</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section class="portal-card" aria-label="Home" id="roleHomeCard" hidden>
+                <div class="card-head">
+                    <div class="card-title" id="homeTitle">Home</div>
+                    <div class="card-subtitle" id="homeSubtitle">Role dashboard</div>
+                </div>
+                <div class="card-body" id="roleHomeBody">
+                    <div class="muted-inline">Login to view your dashboard.</div>
+                </div>
+            </section>
+
+            <section class="portal-card" aria-label="Messaging" id="messageCard">
+                <div class="tabs" role="tablist" aria-label="Messaging Tabs">
+                    <button class="tab active" type="button" data-tab="inbox">Inbox <span id="unreadBadge" class="tab-badge" style="display:none">0</span></button>
+                    <button class="tab" type="button" data-tab="compose">Compose</button>
+                    <button class="tab" type="button" data-tab="sent">Sent</button>
+                    <button class="tab" type="button" data-tab="directory">Directory</button>
+                </div>
+
+                <div class="panel" id="panel-inbox">
+                    <div class="muted-inline">Login to view your inbox.</div>
+                </div>
+
+                <div class="panel" id="panel-compose" hidden>
+                    <div class="muted-inline">Login to send messages.</div>
+                </div>
+
+                <div class="panel" id="panel-sent" hidden>
+                    <div class="muted-inline">Login to view sent messages.</div>
+                </div>
+
+                <div class="panel" id="panel-directory" hidden>
+                    <div class="muted-inline">Login to view directory.</div>
+                </div>
+            </section>
+        </div>
     </div>
 
-    <script>
-        function handleStaffLogin(e) {
-            e.preventDefault();
-            // Mock login
-            alert('Staff login successful (Simulation)');
-            // Redirect to home or staff dashboard
-            window.location.href = '../index.html';
-        }
-    </script>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="./staff-portal.js"></script>
 </body>
 </html>
