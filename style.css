@@ -732,6 +732,82 @@ button {
     border-color: var(--primary);
 }
 
+.status-banner {
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.status-banner.info { background: #e0f2fe; color: #075985; }
+.status-banner.success { background: #dcfce7; color: #166534; }
+.status-banner.error { background: #fee2e2; color: #b91c1c; }
+
+.method-pills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pill-option {
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+}
+
+.pill-option input { display: none; }
+
+.pill-option.active {
+    border-color: var(--primary);
+    color: var(--primary-dark);
+    box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.12);
+}
+
+.pay-box {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+    background: #f9fafb;
+}
+
+.upi-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.upi-id {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.upi-qr {
+    margin: 12px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.form-inline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+
 .receipt {
     border: 2px dashed #1f2937;
     padding: 20px;

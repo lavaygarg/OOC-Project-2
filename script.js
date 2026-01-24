@@ -326,7 +326,16 @@ function handleDonationSubmit(e) {
     e.preventDefault();
     const name = document.getElementById('don-name').value;
     const amount = document.getElementById('don-amount').value;
-    const method = document.getElementById('don-method').value;
+    const method = document.querySelector('input[name="pay-method"]:checked')?.value || 'UPI';
+    if (method === 'Card') {
+        const cardNum = document.getElementById('don-card-number').value.trim();
+        const cardExp = document.getElementById('don-card-exp').value.trim();
+        const cardCvv = document.getElementById('don-card-cvv').value.trim();
+        if (!cardNum || !cardExp || !cardCvv) {
+            alert('Please fill card details.');
+            return;
+        }
+    }
     const now = new Date();
     const date = now.toISOString().split('T')[0];
     const id = 'D' + Math.floor(Math.random() * 10000);
@@ -350,6 +359,25 @@ function handleDonationSubmit(e) {
     e.target.style.display = 'none';
     
     alert('Thank you for your generous donation!');
+}
+
+function togglePaymentMethod() {
+    const method = document.querySelector('input[name="pay-method"]:checked')?.value || 'UPI';
+    const upiBox = document.getElementById('upi-box');
+    const cardBox = document.getElementById('card-box');
+    document.querySelectorAll('.pill-option').forEach(label => label.classList.remove('active'));
+    const activeLabel = document.querySelector(`.pill-option input[value="${method}"]`)?.parentElement;
+    if (activeLabel) activeLabel.classList.add('active');
+    if (upiBox) upiBox.style.display = method === 'UPI' ? 'block' : 'none';
+    if (cardBox) cardBox.style.display = method === 'Card' ? 'block' : 'none';
+}
+
+function copyUpiId() {
+    const upiId = document.getElementById('upi-id-text')?.textContent?.trim();
+    if (!upiId) return;
+    navigator.clipboard.writeText(upiId).then(() => {
+        alert('UPI ID copied');
+    });
 }
 
 // --- ADMIN DASHBOARD ---
@@ -740,7 +768,88 @@ function handleContactSubmit(e) {
         message
     };
     data.messages = data.messages || [];
+
+    createRazorpayOrder({ name, amount, method });
+}
+
+async function createRazorpayOrder({ name, amount, method }) {
+    try {
+        showPaymentStatus('Processing payment...', 'info');
+        const res = await fetch('/api/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount: Math.round(Number(amount) * 100), receipt: 'don_' + Date.now(), notes: { donor: name, method } })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Order failed');
+
+        const options = {
+            key: data.keyId,
+            amount: data.order.amount,
+            currency: data.order.currency,
+            name: 'Hope Foundation',
+            description: 'Donation',
+            order_id: data.order.id,
+            prefill: { name },
+            theme: { color: '#2ecc71' },
+            handler: async function (response) {
+                const verifyRes = await fetch('/api/verify-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(response)
+                });
+                const verify = await verifyRes.json();
+                if (verify.verified) {
+                    finalizeDonation({ name, amount, method, gatewayId: response.razorpay_payment_id, status: 'Success' });
+                    showPaymentStatus('Payment successful. Receipt generated.', 'success');
+                } else {
+                    showPaymentStatus('Payment verification failed.', 'error');
+                }
+            },
+            modal: {
+                ondismiss: function() {
+                    showPaymentStatus('Payment cancelled.', 'error');
+                }
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+    } catch (err) {
+        console.error(err);
+        showPaymentStatus(err.message || 'Payment failed', 'error');
+    }
     data.messages.push(newMsg);
+
+function finalizeDonation({ name, amount, method, gatewayId, status }) {
+    const now = new Date();
+    const date = now.toISOString().split('T')[0];
+    const id = gatewayId || 'D' + Math.floor(Math.random() * 10000);
+
+    const data = getData();
+    const newDonation = { id, name, amount: parseInt(amount), method, date, status: status || 'Success' };
+    data.donations.push(newDonation);
+    saveData(data);
+
+    document.getElementById('receipt-name').innerText = name;
+    document.getElementById('receipt-amount').innerText = amount;
+    document.getElementById('receipt-date').innerText = date;
+    document.getElementById('receipt-generated').innerText = now.toLocaleString();
+    document.getElementById('receipt-id').innerText = id;
+    document.getElementById('receipt-area').style.display = 'block';
+
+    const form = document.getElementById('donation-form');
+    if (form) form.style.display = 'none';
+    renderDashboard();
+}
+
+function showPaymentStatus(message, type) {
+    const banner = document.getElementById('payment-status');
+    if (!banner) return;
+    banner.textContent = message;
+    banner.className = `status-banner ${type}`;
+    banner.style.display = 'block';
+}
     saveData(data);
 
     e.target.reset();
@@ -783,6 +892,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.body.classList.remove('nav-open');
         });
     });
+
+    togglePaymentMethod();
 
     const chips = document.querySelectorAll('.chip');
     const amountInput = document.getElementById('don-amount');

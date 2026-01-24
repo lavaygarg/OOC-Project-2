@@ -393,6 +393,7 @@
         <div class="container small-container">
             <h2>Make a Donation</h2>
             <p>Your support changes lives. All donations are tax-deductible.</p>
+            <div id="payment-status" class="status-banner" style="display:none;"></div>
             <div class="donation-options">
                 <button type="button" class="chip">₹500</button>
                 <button type="button" class="chip">₹1,000</button>
@@ -410,12 +411,48 @@
                 </div>
                 <div class="form-group">
                     <label>Payment Method</label>
-                    <select id="don-method">
-                        <option>UPI</option>
-                        <option>Credit Card</option>
-                        <option>Bank Transfer</option>
-                    </select>
+                    <div class="method-pills">
+                        <label class="pill-option active"><input type="radio" name="pay-method" value="UPI" checked onchange="togglePaymentMethod()"> UPI</label>
+                        <label class="pill-option"><input type="radio" name="pay-method" value="Card" onchange="togglePaymentMethod()"> Card</label>
+                    </div>
                 </div>
+
+                <div id="upi-box" class="pay-box">
+                    <div class="upi-row">
+                        <div>
+                            <p class="muted">UPI ID</p>
+                            <div class="upi-id" id="upi-id-text">hopefoundation@upi</div>
+                        </div>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="copyUpiId()">Copy</button>
+                    </div>
+                    <div class="upi-qr">
+                        <img src="images/QR.jpeg" alt="UPI QR" loading="lazy">
+                    </div>
+                    <p class="muted small">Scan to pay via UPI or use the ID above. After paying, submit to record your donation.</p>
+                </div>
+
+                <div id="card-box" class="pay-box" style="display:none;">
+                    <div class="form-group">
+                        <label>Cardholder Name</label>
+                        <input type="text" id="don-card-name" autocomplete="cc-name">
+                    </div>
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" id="don-card-number" maxlength="19" placeholder="1234 5678 9012 3456" autocomplete="cc-number">
+                    </div>
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <label>Expiry (MM/YY)</label>
+                            <input type="text" id="don-card-exp" maxlength="5" placeholder="08/28" autocomplete="cc-exp">
+                        </div>
+                        <div class="form-group">
+                            <label>CVV</label>
+                            <input type="password" id="don-card-cvv" maxlength="4" placeholder="123" autocomplete="cc-csc">
+                        </div>
+                    </div>
+                    <p class="muted small">This is a mock card form for demo; details are not charged or stored.</p>
+                </div>
+
                 <button type="submit" class="cta-btn">Donate Securely</button>
                 <p class="crypto-note"><small>Instant receipt + email confirmation.</small></p>
             </form>
@@ -773,6 +810,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
