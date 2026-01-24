@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Login - Hope Foundation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #e63946; /* Different color for staff */
+            background-image: linear-gradient(135deg, #e63946 0%, #14213d 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .login-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover {
+            color: #14213d;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Portals</a>
+        <h2 style="text-align: center; color: #14213d; margin-bottom: 1.5rem;">Staff Login</h2>
+        <form onsubmit="handleStaffLogin(event)">
+            <div class="form-group">
+                <label for="staff-id">Staff ID</label>
+                <input type="text" id="staff-id" class="form-control" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 0.5rem; margin-bottom: 1rem;" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 0.5rem; margin-bottom: 1.5rem;" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+        </form>
+    </div>
+
+    <script>
+        function handleStaffLogin(e) {
+            e.preventDefault();
+            // Mock login
+            alert('Staff login successful (Simulation)');
+            // Redirect to home or staff dashboard
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>
