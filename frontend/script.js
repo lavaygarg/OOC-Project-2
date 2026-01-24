@@ -480,13 +480,74 @@ function initLanguage() {
     applyLanguage(saved);
 }
 
-// Helper to get/set data
+// Helper to get/set data (legacy localStorage for offline fallback)
 function getData() {
     return JSON.parse(localStorage.getItem('ngoData'));
 }
 
 function saveData(data) {
     localStorage.setItem('ngoData', JSON.stringify(data));
+}
+
+// --- DATABASE API FUNCTIONS ---
+// These functions communicate with the MongoDB backend
+
+async function apiGet(endpoint) {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        return await res.json();
+    } catch (error) {
+        console.error(`API GET /${endpoint} failed:`, error);
+        return null;
+    }
+}
+
+async function apiPost(endpoint, data) {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        return await res.json();
+    } catch (error) {
+        console.error(`API POST /${endpoint} failed:`, error);
+        return null;
+    }
+}
+
+async function apiPut(endpoint, data) {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        return await res.json();
+    } catch (error) {
+        console.error(`API PUT /${endpoint} failed:`, error);
+        return null;
+    }
+}
+
+async function apiDelete(endpoint) {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        return await res.json();
+    } catch (error) {
+        console.error(`API DELETE /${endpoint} failed:`, error);
+        return null;
+    }
 }
 
 function getTotalFunds(data) {
@@ -763,27 +824,52 @@ function closeImpactModal() {
 // --- FORMS HANDLING ---
 
 // 1. Volunteer Form
-function handleVolunteerSubmit(e) {
+async function handleVolunteerSubmit(e) {
     e.preventDefault();
     const name = document.getElementById('vol-name').value;
     const email = document.getElementById('vol-email').value;
+    const phone = document.getElementById('vol-phone')?.value || '';
     const interest = document.getElementById('vol-interest').value;
 
-    const data = getData();
-    const newVol = {
-        id: 'V' + (Date.now() % 10000), // Simple ID
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    }
+
+    // Save to database API
+    const result = await apiPost('volunteers', {
         name,
         email,
+        phone,
         interest,
         status: 'Pending'
-    };
-    
-    data.volunteers.push(newVol);
-    saveData(data);
+    });
 
-    alert('Application Submitted Successfully!');
-    e.target.reset();
-    showSection('home');
+    if (result && !result.error) {
+        // Also save to localStorage for offline display
+        const data = getData();
+        if (data && data.volunteers) {
+            data.volunteers.push({
+                id: result.volunteer?._id || 'V' + Date.now(),
+                name,
+                email,
+                interest,
+                status: 'Pending'
+            });
+            saveData(data);
+        }
+        alert('Application Submitted Successfully! We will contact you soon.');
+        e.target.reset();
+        showSection('home');
+    } else {
+        alert(result?.error || 'Failed to submit application. Please try again.');
+    }
+
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Application';
+    }
 }
 
 // 2. Donation Form
@@ -918,10 +1004,28 @@ async function createRazorpayOrder(payload, retryCount = 0) {
     }
 }
 
-function recordDonationSuccess({ name, amount, method, paymentId, orderId }) {
+async function recordDonationSuccess({ name, amount, method, paymentId, orderId }) {
     const now = new Date();
     const date = now.toISOString().split('T')[0];
     const timestamp = now.toISOString();
+    
+    // Save to database API
+    const result = await apiPost('donations', {
+        donorName: name,
+        amount: Number(amount),
+        method,
+        paymentId: paymentId || '',
+        orderId: orderId || '',
+        status: 'Completed'
+    });
+
+    if (result && !result.error) {
+        console.log('Donation saved to database:', result);
+    } else {
+        console.error('Failed to save donation to database:', result?.error);
+    }
+
+    // Also save to localStorage for immediate display
     const data = getData();
     const newDonation = {
         id: paymentId || orderId || 'D' + Date.now(),
@@ -975,31 +1079,68 @@ function copyUpiId() {
 }
 
 // --- ADMIN DASHBOARD ---
-function handleAdminLogin(e) {
+async function handleAdminLogin(e) {
     e.preventDefault();
-    const user = document.getElementById('admin-user').value;
+    const email = document.getElementById('admin-user').value;
     const pass = document.getElementById('admin-pass').value;
 
-    // Simple Mock Auth
-    if (user === 'admin' && pass === 'admin123') {
-        alert('Login Successful');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+    }
+
+    // Try database login first
+    const result = await apiPost('staff/login', { email, password: pass });
+
+    if (result && result.token) {
+        // Successful database login
+        localStorage.setItem('staffToken', result.token);
+        localStorage.setItem('staffUser', JSON.stringify(result.staff));
+        localStorage.setItem('adminLoggedIn', 'true');
+        alert('Login Successful!');
+        showSection('admin-dashboard');
+    } else if (email === 'admin' && pass === 'admin123') {
+        // Fallback to mock auth for backward compatibility
+        localStorage.setItem('adminLoggedIn', 'true');
+        alert('Login Successful (demo mode)');
         showSection('admin-dashboard');
     } else {
-        alert('Invalid Credentials! (Try: admin / admin123)');
+        alert(result?.error || 'Invalid Credentials! Try: admin@hopefoundation.org / Admin@123');
+    }
+
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Login';
     }
 }
 
-function handleStaffLogin(e) {
+async function handleStaffLogin(e) {
     e.preventDefault();
-    const user = document.getElementById('staff-user').value;
+    const email = document.getElementById('staff-user').value;
     const pass = document.getElementById('staff-pass').value;
 
-    // Simple mock auth for staff
-    if (user && pass) {
-        alert('Staff login successful (demo)');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+    }
+
+    // Try database login
+    const result = await apiPost('staff/login', { email, password: pass });
+
+    if (result && result.token) {
+        localStorage.setItem('staffToken', result.token);
+        localStorage.setItem('staffUser', JSON.stringify(result.staff));
+        alert('Staff login successful!');
         showSection('home');
     } else {
-        alert('Invalid staff credentials');
+        alert('Invalid staff credentials. Try: staff@hopefoundation.org / Staff@123');
+    }
+
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Login';
     }
 }
 
@@ -1662,12 +1803,31 @@ function renderMessagesAdmin(data) {
     });
 }
 
-function handleContactSubmit(e) {
+async function handleContactSubmit(e) {
     e.preventDefault();
     const name = e.target.querySelector('input[name="contact-name"]').value;
     const email = e.target.querySelector('input[name="contact-email"]').value;
     const message = e.target.querySelector('textarea[name="contact-message"]').value;
 
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    }
+
+    // Save to database API
+    const result = await apiPost('messages', {
+        name,
+        email,
+        message,
+        status: 'Unread'
+    });
+
+    if (result && !result.error) {
+        console.log('Message saved to database:', result);
+    }
+
+    // Also save to localStorage
     const data = getData();
     const newMsg = {
         id: 'M' + (Date.now() % 100000),
@@ -1678,6 +1838,11 @@ function handleContactSubmit(e) {
     data.messages = data.messages || [];
     data.messages.push(newMsg);
     saveData(data);
+
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Message';
+    }
 
     e.target.reset();
     alert('Thank you! We will get back to you shortly.');
