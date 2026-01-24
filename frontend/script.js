@@ -1,6 +1,6 @@
 // --- API CONFIGURATION ---
-// Replace with your Render.com backend URL after deployment
-const API_BASE_URL = 'https://your-backend-app.onrender.com';
+// Backend hosted on Render.com
+const API_BASE_URL = 'https://ooc-project.onrender.com';
 
 // --- MOCK DATABASE ---
 const initialData = {
