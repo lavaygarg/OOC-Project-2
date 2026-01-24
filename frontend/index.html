@@ -582,20 +582,23 @@
     <!-- ADMIN SECTIONS -->
 
     <!-- Admin Login -->
-    <section id="admin-login/" class="page-section" style="display: none;">
-        <div class="container small-container login-box">
-            <h2 data-i18n="adminLoginTitle">Admin Login</h2>
-            <form onsubmit="handleAdminLogin(event)">
-                <div class="form-group">
-                    <label data-i18n="adminUsername">Username</label>
-                    <input type="text" id="admin-user" required>
-                </div>
-                <div class="form-group">
-                    <label data-i18n="adminPassword">Password</label>
-                    <input type="password" id="admin-pass" required>
-                </div>
-                <button type="submit" class="cta-btn" data-i18n="loginBtn">Login</button>
-            </form>
+    <section id="admin-login/" class="page-section" style="display: none; background: #f5f5f5; min-height: 100vh;">
+        <div style="display: flex; align-items: center; justify-content: center; min-height: 80vh; padding: 20px;">
+            <div class="login-container" style="background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px;">
+                <a href="#" onclick="showSection('home'); return false;" class="back-link" style="display: inline-block; margin-bottom: 1rem; color: #666; text-decoration: none; font-size: 0.9rem;"><i class="fas fa-arrow-left"></i> <span data-i18n="backToHome">Back to Home</span></a>
+                <h2 style="text-align: center; color: #14213d; margin-bottom: 1.5rem;" data-i18n="adminLoginTitle">Admin Login</h2>
+                <form onsubmit="handleAdminLogin(event)">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #14213d;" data-i18n="adminUsername">Username</label>
+                        <input type="text" id="admin-user" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 0.5rem; font-size: 0.95rem;" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #14213d;" data-i18n="adminPassword">Password</label>
+                        <input type="password" id="admin-pass" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 0.5rem; font-size: 0.95rem;" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem 1.5rem; background: #fca311; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer;" data-i18n="loginBtn">Login</button>
+                </form>
+            </div>
         </div>
     </section>
 

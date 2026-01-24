@@ -262,6 +262,7 @@ const translations = {
         adminPassword: 'पासवर्ड',
         loginBtn: 'लॉगिन',
         closeBtn: 'बंद करें',
+        backToHome: 'होम पर वापस जाएं',
         
         // Programs Section
         programsTitle: 'हमारे कार्यक्रम',
