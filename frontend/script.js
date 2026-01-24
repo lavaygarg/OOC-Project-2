@@ -1019,58 +1019,13 @@ function handleContactSubmit(e) {
         message
     };
     data.messages = data.messages || [];
-
-    createRazorpayOrder({ name, amount, method });
-}
-
-async function createRazorpayOrder({ name, amount, method }) {
-    try {
-        showPaymentStatus('Processing payment...', 'info');
-        const res = await fetch(`${API_BASE_URL}/api/create-order`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: Math.round(Number(amount) * 100), receipt: 'don_' + Date.now(), notes: { donor: name, method } })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Order failed');
-
-        const options = {
-            key: data.keyId,
-            amount: data.order.amount,
-            currency: data.order.currency,
-            name: 'Hope Foundation',
-            description: 'Donation',
-            order_id: data.order.id,
-            prefill: { name },
-            theme: { color: '#2ecc71' },
-            handler: async function (response) {
-                const verifyRes = await fetch(`${API_BASE_URL}/api/verify-payment`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(response)
-                });
-                const verify = await verifyRes.json();
-                if (verify.verified) {
-                    finalizeDonation({ name, amount, method, gatewayId: response.razorpay_payment_id, status: 'Success' });
-                    showPaymentStatus('Payment successful. Receipt generated.', 'success');
-                } else {
-                    showPaymentStatus('Payment verification failed.', 'error');
-                }
-            },
-            modal: {
-                ondismiss: function() {
-                    showPaymentStatus('Payment cancelled.', 'error');
-                }
-            }
-        };
-
-        const rzp = new Razorpay(options);
-        rzp.open();
-    } catch (err) {
-        console.error(err);
-        showPaymentStatus(err.message || 'Payment failed', 'error');
-    }
     data.messages.push(newMsg);
+    saveData(data);
+
+    e.target.reset();
+    alert('Thank you! We will get back to you shortly.');
+    renderDashboard();
+}
 
 function finalizeDonation({ name, amount, method, gatewayId, status }) {
     const now = new Date();
@@ -1100,12 +1055,6 @@ function showPaymentStatus(message, type) {
     banner.textContent = message;
     banner.className = `status-banner ${type}`;
     banner.style.display = 'block';
-}
-    saveData(data);
-
-    e.target.reset();
-    alert('Thank you! We will get back to you shortly.');
-    renderDashboard();
 }
 
 function deleteEvent(id) {
@@ -1148,10 +1097,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (menuBtn) {
-        menuBtn.addEventListener('click', () => {
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             document.body.classList.toggle('nav-open');
         });
     }
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (document.body.classList.contains('nav-open')) {
+            const navActions = document.querySelector('.nav-actions');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            if (navActions && !navActions.contains(e.target) && !menuBtn.contains(e.target)) {
+                document.body.classList.remove('nav-open');
+            }
+        }
+    });
 
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -1630,6 +1591,13 @@ function setRating(rating) {
             star.classList.remove('active');
         }
     });
+}
+
+function toggleFeedback() {
+    const form = document.getElementById('feedback-form');
+    if (form) {
+        form.classList.toggle('active');
+    }
 }
 
 function submitFeedback(e) {

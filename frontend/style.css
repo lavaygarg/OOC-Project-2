@@ -16,11 +16,24 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
 body {
     font-family: 'Inter', 'Segoe UI', sans-serif;
     color: var(--text-color);
     background-color: var(--light);
     line-height: 1.7;
+    overflow-x: hidden;
+}
+
+/* Better image handling */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
 .dark-theme {
@@ -1409,6 +1422,9 @@ body {
         display: none;
         flex-direction: column;
         gap: 12px;
+        width: 90%;
+        max-width: 320px;
+        z-index: 1001;
     }
 
     .dark-theme .nav-actions {
@@ -1424,16 +1440,111 @@ body {
         display: flex;
     }
 
+    /* Mobile menu overlay */
+    .nav-open::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    /* Change hamburger to X when open */
+    .nav-open .mobile-menu-btn i::before {
+        content: "\f00d";
+    }
+
     .mobile-menu-btn { display: block; }
-    .hero { padding: 90px 6%; }
+    .hero { 
+        padding: 30px 5% 30px;
+        background: linear-gradient(135deg, #0f172a 0%, #1b4332 50%, #2ecc71 100%);
+    }
     .hero-inner {
         grid-template-columns: 1fr;
         min-height: auto;
+        gap: 16px;
     }
+
+    /* Hide hero overlay image on mobile, show content properly */
+    .hero-overlay {
+        display: none;
+    }
+
+    .hero-content {
+        max-width: 100%;
+        text-align: center;
+        order: 2;
+    }
+
     .hero-image img {
         height: auto;
+        max-height: 280px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    /* Show eyebrow and heading properly on mobile */
+    .eyebrow {
+        color: #2ecc71;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 6px 14px;
+        border-radius: 20px;
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .hero h1 {
+        font-size: 1.5rem;
+        line-height: 1.35;
+        color: white;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.95);
+        line-height: 1.6;
+    }
+
+    .split {
+        grid-template-columns: 1fr;
+    }
+
+    .impact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .programs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reports-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .section-header {
+        text-align: center;
+    }
+
+    .section-header h2 {
+        font-size: 1.6rem;
     }
 }
+
 .hero-overlay .hero-image {
     height: 100%;
     display: flex;
@@ -1446,6 +1557,355 @@ body {
 @media (max-width: 768px) {
     .dashboard-container { flex-direction: column; }
     .sidebar { width: 100%; }
+
+    .container {
+        width: 95%;
+        padding: 0 10px;
+    }
+
+    .hero {
+        padding: 25px 5% 25px;
+        min-height: auto;
+        border-radius: 0 0 24px 24px;
+    }
+
+    .hero-inner {
+        min-height: auto;
+        gap: 14px;
+    }
+
+    .hero-content {
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: 1.4rem;
+        line-height: 1.35;
+        margin: 10px 0;
+    }
+
+    .hero p {
+        font-size: 0.85rem;
+        margin-bottom: 18px;
+        line-height: 1.6;
+    }
+
+    .hero-actions {
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .hero-badges {
+        justify-content: center;
+        gap: 8px;
+        margin-top: 18px;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        background: rgba(255, 161, 54, 0.9);
+    }
+
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .impact-kpis {
+        grid-template-columns: 1fr;
+    }
+
+    .impact-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .image-card {
+        height: 150px;
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .allocation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .institution-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .small-container {
+        margin: 20px auto;
+        padding: 24px 20px;
+    }
+
+    .form-inline {
+        grid-template-columns: 1fr;
+    }
+
+    .donation-options {
+        justify-content: center;
+    }
+
+    .method-pills {
+        justify-content: center;
+    }
+
+    .upi-row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .modal {
+        width: 95%;
+        padding: 16px;
+    }
+
+    .modal-header {
+        flex-wrap: wrap;
+    }
+
+    .data-table {
+        font-size: 0.85rem;
+    }
+
+    .data-table th, .data-table td {
+        padding: 10px 8px;
+    }
+
+    .page-section {
+        padding: 30px 0 60px;
+    }
+
+    .mission-section {
+        padding: 40px 0;
+    }
+
+    .stats-container {
+        margin-top: -20px;
+    }
+
+    .about-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 480px) {
+    .nav-inner {
+        padding: 0.8rem 4%;
+    }
+
+    .logo {
+        font-size: 1.1rem;
+        gap: 8px;
+    }
+
+    .logo img {
+        height: 36px;
+        width: 36px;
+    }
+
+    .hero {
+        padding: 20px 4% 20px;
+    }
+
+    .hero-inner {
+        gap: 10px;
+    }
+
+    .eyebrow {
+        font-size: 0.65rem;
+        padding: 5px 12px;
+        margin-bottom: 8px;
+    }
+
+    .hero h1 {
+        font-size: 1.25rem;
+        margin: 8px 0;
+    }
+
+    .hero p {
+        font-size: 0.8rem;
+        margin-bottom: 14px;
+        line-height: 1.5;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.65rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .hero-badges {
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        margin-top: 14px;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        padding: 5px 10px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .card h3 {
+        font-size: 1.1rem;
+    }
+
+    .card i {
+        font-size: 2rem;
+    }
+
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .image-card {
+        height: 180px;
+    }
+
+    .program-card .card-image {
+        height: 180px;
+    }
+
+    .testimonial-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .testimonial-header img {
+        margin: 0 auto;
+    }
+
+    .contact-card {
+        padding: 20px;
+    }
+
+    .form-group input, 
+    .form-group select, 
+    .form-group textarea {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .footer-grid {
+        gap: 24px;
+    }
+
+    .footer-cta {
+        padding: 14px;
+    }
+
+    .socials {
+        justify-content: center;
+    }
+
+    .site-footer {
+        padding: 40px 0 20px;
+    }
+
+    .nav-cta.btn-primary {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .language-toggle {
+        padding: 4px 8px;
+    }
+
+    .language-toggle .lang-label {
+        font-size: 0.7rem;
+    }
+
+    .lang-switch {
+        width: 38px;
+        height: 20px;
+    }
+
+    .lang-slider:before {
+        height: 14px;
+        width: 14px;
+    }
+
+    .lang-switch input:checked + .lang-slider:before {
+        transform: translateX(18px);
+    }
+
+    .icon-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .impact-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .chip {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+
+    .pill-option {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+
+    .receipt {
+        padding: 16px;
+    }
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 900px) and (orientation: landscape) {
+    .hero {
+        min-height: auto;
+        padding: 40px 5%;
+    }
+
+    .hero-inner {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .hero h1 {
+        font-size: 1.6rem;
+    }
+
+    .nav-actions {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
 }
 
 /* ================================= */
