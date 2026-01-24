@@ -1020,7 +1020,6 @@ function showDashboardTab(tabId) {
     });
     // Show selected
     document.getElementById(tabId).style.display = 'block';
-}
     
     // Initialize tasks and shifts when those tabs are shown
     if (tabId === 'dash-tasks') {
