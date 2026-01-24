@@ -650,7 +650,7 @@ function handleDonationSubmit(e) {
     const donateBtn = e.target.querySelector('button[type="submit"]');
     if (donateBtn) {
         donateBtn.disabled = true;
-        donateBtn.textContent = 'Processing...';
+        donateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting to payment...';
     }
 
     // Get selected payment method from form (UPI or Card)
@@ -658,6 +658,9 @@ function handleDonationSubmit(e) {
     
     createRazorpayOrder({ amount, donorName: name })
         .then(order => {
+            if (donateBtn) {
+                donateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening payment...';
+            }
             const options = {
                 key: order.keyId,
                 amount: order.amount,
@@ -691,8 +694,14 @@ function handleDonationSubmit(e) {
             const rzp = new Razorpay(options);
             rzp.open();
         })
-        .catch(() => {
-            alert('Unable to start payment. Please try again.');
+        .catch((err) => {
+            console.error('Payment initialization error:', err);
+            // Check if it's a network/backend issue
+            if (err.message && err.message.includes('Failed to fetch')) {
+                alert('Unable to connect to payment server. The server might be waking up - please try again in a few seconds.');
+            } else {
+                alert('Unable to start payment. Please try again in a moment.');
+            }
             resetDonateButton(donateBtn);
         });
 }
@@ -708,22 +717,49 @@ function togglePaymentMethod() {
     if (cardBox) cardBox.style.display = method === 'Card' ? 'block' : 'none';
 }
 
-async function createRazorpayOrder(payload) {
+async function createRazorpayOrder(payload, retryCount = 0) {
     const url = `${API_BASE_URL}/api/razorpay/create-order`;
-    const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-    if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`order failed (${res.status}): ${text?.slice(0,120)}`);
-    }
+    const maxRetries = 2;
+    
     try {
+        // First, wake up the backend if it's sleeping (Render free tier)
+        if (retryCount === 0) {
+            try {
+                await fetch(`${API_BASE_URL}/api/health`, { 
+                    method: 'GET',
+                    mode: 'cors'
+                });
+            } catch (e) {
+                // Backend might be waking up, wait a moment
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+        }
+        
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            mode: 'cors'
+        });
+        
+        if (!res.ok) {
+            const text = await res.text();
+            console.error('Order creation failed:', res.status, text);
+            throw new Error(`Order failed (${res.status}): ${text?.slice(0,120)}`);
+        }
+        
         return await res.json();
     } catch (err) {
-        const text = await res.text().catch(() => '');
-        throw new Error(`invalid JSON from server: ${text?.slice(0,120)}`);
+        console.error('Razorpay order error (attempt ' + (retryCount + 1) + '):', err);
+        
+        // Retry if we haven't exceeded max retries
+        if (retryCount < maxRetries) {
+            console.log('Retrying in 2 seconds...');
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            return createRazorpayOrder(payload, retryCount + 1);
+        }
+        
+        throw err;
     }
 }
 
@@ -822,14 +858,6 @@ function logout() {
     }
 }
 
-function showDashboardTab(tabId) {
-    // Hide all dashboard tabs
-    document.querySelectorAll('.dash-tab').forEach(tab => {
-        tab.style.display = 'none';
-    });
-    // Show selected
-    document.getElementById(tabId).style.display = 'block';
-    
 function showDashboardTab(tabId) {
     // Hide all dashboard tabs
     document.querySelectorAll('.dash-tab').forEach(tab => {

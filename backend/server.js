@@ -6,23 +6,39 @@ const cors = require('cors');
 
 const app = express();
 
-// CORS configuration for Netlify frontend
+// CORS configuration - Allow all origins for development and production
 const allowedOrigins = [
     'http://localhost:5500',
     'http://127.0.0.1:5500',
     'http://localhost:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080',
     process.env.FRONTEND_URL // Add your Netlify URL in Render env variables
 ].filter(Boolean);
 
 app.use(cors({
     origin: function(origin, callback) {
-        // Allow requests with no origin (mobile apps, curl, etc.)
+        // Allow requests with no origin (mobile apps, curl, file://, etc.)
         if (!origin) return callback(null, true);
         
-        if (allowedOrigins.includes(origin) || origin.includes('netlify.app')) {
+        // Allow localhost with any port
+        if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+            return callback(null, true);
+        }
+        
+        // Allow netlify.app and vercel.app domains
+        if (origin.includes('netlify.app') || origin.includes('vercel.app')) {
+            return callback(null, true);
+        }
+        
+        // Allow specific origins from the list
+        if (allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            callback(new Error('Not allowed by CORS'));
+            // For development, allow all origins
+            callback(null, true);
         }
     },
     credentials: true
