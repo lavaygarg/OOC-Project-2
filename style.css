@@ -763,6 +763,13 @@ body {
     box-shadow: var(--shadow);
 }
 
+/* Make staff login form sit on a transparent background */
+#staff-login .small-container {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+}
+
 .form-group {
     margin-bottom: 16px;
     text-align: left;
