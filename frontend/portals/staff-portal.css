@@ -11,7 +11,8 @@
 }
 
 body.staff-portal {
-  background: var(--sp-bg) !important;
+  background: url('https://img.freepik.com/free-photo/paper-clips-keyboard-laptop-spiral-notepad-sticky-notes-white-desk-with-space-writing-text_23-2148041896.jpg?semt=ais_hybrid&w=740&q=80') no-repeat center center fixed !important;
+  background-size: cover !important;
   color: var(--sp-text);
   min-height: 100vh;
 }
@@ -31,9 +32,8 @@ body.staff-portal.is-logged-out .login-card {
 }
 
 body.staff-portal.is-logged-out {
-  background: radial-gradient(1200px 500px at 10% -10%, rgba(46, 204, 113, 0.12), transparent 60%),
-              radial-gradient(1000px 500px at 110% 10%, rgba(59, 130, 246, 0.08), transparent 55%),
-              #f8fafc !important;
+  background: url('https://img.freepik.com/free-photo/paper-clips-keyboard-laptop-spiral-notepad-sticky-notes-white-desk-with-space-writing-text_23-2148041896.jpg?semt=ais_hybrid&w=740&q=80') no-repeat center center fixed !important;
+  background-size: cover !important;
 }
 
 body.staff-portal.is-logged-out .portal-shell {
