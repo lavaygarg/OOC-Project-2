@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/razorpay/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
     { "source": "/api/razorpay/(.*)", "destination": "/api/razorpay/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
