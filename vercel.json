@@ -1,11 +1,15 @@
 {
-  "builds": [
-    { "src": "api/razorpay/*.js", "use": "@vercel/node" },
-    { "src": "index.html", "use": "@vercel/static" }
-  ],
+  "version": 2,
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": ".",
   "functions": {
     "api/razorpay/*.js": {
       "runtime": "nodejs18.x"
     }
-  }
+  },
+  "routes": [
+    { "src": "/api/razorpay/(.*)", "dest": "/api/razorpay/$1.js" },
+    { "src": "^(?!/api/).*$", "dest": "/index.html" }
+  ]
 }
