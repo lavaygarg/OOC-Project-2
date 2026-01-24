@@ -1,0 +1,11 @@
+{
+  "builds": [
+    { "src": "api/razorpay/*.js", "use": "@vercel/node" },
+    { "src": "index.html", "use": "@vercel/static" }
+  ],
+  "functions": {
+    "api/razorpay/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
+}
