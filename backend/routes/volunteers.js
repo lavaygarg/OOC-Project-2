@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Volunteer = require('../models/Volunteer');
+const { volunteerLimiter } = require('../middleware/rateLimiter');
+const { validateVolunteer } = require('../middleware/validation');
+const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
-// GET all volunteers
+// GET all volunteers (staff/admin only)
 router.get('/', async (req, res) => {
     try {
         const { status, interest } = req.query;
@@ -31,8 +34,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// POST create volunteer (public registration)
-router.post('/', async (req, res) => {
+// POST create volunteer (public registration) - Rate limited and validated
+router.post('/', volunteerLimiter, validateVolunteer, async (req, res) => {
     try {
         const { name, email, phone, interest, message } = req.body;
         

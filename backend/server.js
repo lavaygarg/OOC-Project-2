@@ -3,6 +3,9 @@ const express = require('express');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const cors = require('cors');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const hpp = require('hpp');
 const connectDB = require('./config/database');
 
 // Import Routes
@@ -14,10 +17,32 @@ const eventRoutes = require('./routes/events');
 const messageRoutes = require('./routes/messages');
 const institutionRoutes = require('./routes/institutions');
 
+// Import Middleware
+const { apiLimiter } = require('./middleware/rateLimiter');
+
 const app = express();
 
 // Connect to MongoDB
 connectDB();
+
+// =====================
+// SECURITY MIDDLEWARE
+// =====================
+
+// Set security HTTP headers
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginEmbedderPolicy: false,
+}));
+
+// Rate limiting - Apply to all API routes
+app.use('/api/', apiLimiter);
+
+// Data sanitization against NoSQL injection
+app.use(mongoSanitize());
+
+// Prevent HTTP Parameter Pollution
+app.use(hpp());
 
 // CORS configuration - Allow all origins for development and production
 const allowedOrigins = [
@@ -56,7 +81,10 @@ app.use(cors({
     },
     credentials: true
 }));
-app.use(express.json());
+
+// Body parser with size limits
+app.use(express.json({ limit: '10kb' })); // Limit body size to prevent large payload attacks
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 const keyId = process.env.RAZORPAY_KEY_ID;
 const keySecret = process.env.RAZORPAY_KEY_SECRET;

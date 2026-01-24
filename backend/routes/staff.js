@@ -2,11 +2,14 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const Staff = require('../models/Staff');
+const { loginLimiter, registerLimiter } = require('../middleware/rateLimiter');
+const { validateLogin, validateStaffRegistration } = require('../middleware/validation');
+const { verifyToken, isAdmin, generateToken, generateRefreshToken, refreshAccessToken } = require('../middleware/auth');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'ooc-secret-key-2026';
 
 // GET all staff (admin only)
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, isAdmin, async (req, res) => {
     try {
         const { role, status } = req.query;
         const filter = {};
@@ -21,8 +24,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-// POST login
-router.post('/login', async (req, res) => {
+// POST login - Rate limited to prevent brute force
+router.post('/login', loginLimiter, validateLogin, async (req, res) => {
     try {
         const { email, password } = req.body;
         

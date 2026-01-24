@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Donation = require('../models/Donation');
+const { donationLimiter } = require('../middleware/rateLimiter');
+const { validateDonation } = require('../middleware/validation');
 
 // GET all donations
 router.get('/', async (req, res) => {
@@ -60,8 +62,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// POST create donation (after successful payment)
-router.post('/', async (req, res) => {
+// POST create donation (after successful payment) - Rate limited and validated
+router.post('/', donationLimiter, validateDonation, async (req, res) => {
     try {
         const { donorName, donorEmail, donorPhone, amount, method, paymentId, orderId, notes } = req.body;
         

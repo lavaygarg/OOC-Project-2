@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
+const { contactLimiter } = require('../middleware/rateLimiter');
+const { validateMessage } = require('../middleware/validation');
 
 // GET all messages
 router.get('/', async (req, res) => {
@@ -46,8 +48,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// POST create message (public contact form)
-router.post('/', async (req, res) => {
+// POST create message (public contact form) - Rate limited and validated
+router.post('/', contactLimiter, validateMessage, async (req, res) => {
     try {
         const { name, email, phone, subject, message } = req.body;
         
