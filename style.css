@@ -290,15 +290,15 @@ button {
 .hero-content {
     position: relative;
     z-index: 2;
-    max-width: 620px;
+    max-width: 520px;
 }
 
 .hero-inner {
     position: relative;
     z-index: 2;
     display: grid;
-    grid-template-columns: minmax(280px, 1fr) minmax(260px, 520px);
-    gap: 32px;
+    grid-template-columns: minmax(300px, 1fr) minmax(260px, 480px);
+    gap: 40px;
     align-items: stretch;
     min-height: 520px;
 }
