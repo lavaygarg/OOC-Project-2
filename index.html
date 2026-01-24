@@ -223,7 +223,7 @@
                         <li>1,500 health check-ups completed in rural communities.</li>
                         <li>500+ volunteers engaged in local initiatives.</li>
                     </ul>
-                    <button class="btn btn-outline">View Impact Dashboard</button>
+                    <button class="btn btn-outline" onclick="focusImpactDashboard()">View Impact Dashboard</button>
                 </div>
             </div>
 
@@ -231,21 +231,46 @@
                 <div class="report-card">
                     <h4>Annual Impact Report 2025</h4>
                     <p>Program highlights, audited utilization, and outcomes.</p>
-                    <button class="btn btn-outline">Download PDF</button>
+                    <button class="btn btn-outline" onclick="downloadImpactReport()">Download PDF</button>
                 </div>
                 <div class="report-card">
                     <h4>Financial Transparency Summary</h4>
                     <p>Breakdown of fund allocation and operational costs.</p>
-                    <button class="btn btn-outline">View Summary</button>
+                    <button class="btn btn-outline" onclick="openSummaryModal()">View Summary</button>
                 </div>
                 <div class="report-card">
                     <h4>Child Development Case Studies</h4>
                     <p>Stories that show measurable impact and growth.</p>
-                    <button class="btn btn-outline">Read Stories</button>
+                    <button class="btn btn-outline" onclick="showSection('testimonials')">Read Stories</button>
                 </div>
+            </div>
+
+            <div class="card transparency-card">
+                <div class="transparency-header">
+                    <div>
+                        <h3>Where Your Donation Goes</h3>
+                        <p class="muted">Live distribution across partner institutions.</p>
+                    </div>
+                    <div id="institution-total" class="muted small">Total allocated: 0%</div>
+                </div>
+                <div class="institution-grid" id="institution-grid"></div>
             </div>
         </div>
     </section>
+
+    <!-- Impact Modal -->
+    <div id="impact-modal" class="modal-overlay" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">Summary</h3>
+                <button aria-label="Close" class="modal-close" onclick="closeImpactModal()">×</button>
+            </div>
+            <div id="modal-body" class="modal-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeImpactModal()">Close</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Events Section -->
     <section id="events" class="page-section" style="display: none;">
@@ -321,14 +346,14 @@
                 <p class="muted">A glimpse of our programs and community partners.</p>
             </div>
             <div class="gallery-grid">
-                <div class="image-card" style="background-image: url('images/photho_3.jpeg'); background-size: cover;"><span>Learning Center</span></div>
+                <div class="image-card" style="background-image: url('images/photo_1.jpeg'); background-size: cover;"><span>Creative Workshops</span></div>
+                <div class="image-card" style="background-image: url('images/photo_3.jpeg'); background-size: cover;"><span>Learning Center</span></div>
                 <div class="image-card" style="background-image: url('images/photo_2.png'); background-size: cover;"><span>Nutrition Drive</span></div>
                 <div class="image-card" style="background-image: url('images/photo_4.jpeg'); background-size: cover;"><span>Health Camp</span></div>
-                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1559632595-6ca98bfc8e11?w=400&h=300&fit=crop'); background-size: cover;"><span>Volunteer Day</span></div>
-                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&h=300&fit=crop'); background-size: cover;"><span>Library Time</span></div>
-                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop'); background-size: cover;"><span>Community Outreach</span></div>
-                <div class="image-card" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=400&h=300&fit=crop'); background-size: cover;"><span>Creative Workshops</span></div>
-                <div class="image-card" style="background-image: url('https://www.flickr.com/photos/ams_iiita/55055707538/in/album-72177720331605466'); background-size: cover;"><span>After-School Activities</span></div>
+                <div class="image-card" style="background-image: url('images/photo_5.jpeg'); background-size: cover;"><span>Volunteer Day</span></div>
+                <div class="image-card" style="background-image: url('images/photo_6.jpeg'); background-size: cover;"><span>Library Time</span></div>
+                <div class="image-card" style="background-image: url('images/photo_7.jpeg'); background-size: cover;"><span>Community Outreach</span></div>
+                <div class="image-card" style="background-image: url('https://www.maasavitringo.org/wp-content/uploads/2024/05/Cmp-1.jpg'); background-size: cover;"><span>After-School Activities</span></div>
             </div>
         </div>
     </section>
@@ -464,19 +489,19 @@
                     <p><strong>Phone:</strong> +91 98765 43210</p>
                     <p><strong>Working Hours:</strong> Mon–Fri, 9:00 AM – 6:00 PM</p>
                 </div>
-                <form class="card contact-form" onsubmit="event.preventDefault(); alert('Thank you! We will get back to you shortly.');">
+                <form class="card contact-form" onsubmit="handleContactSubmit(event)">
                     <h3>Send a Message</h3>
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" required>
+                        <input type="text" name="contact-name" required>
                     </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" required>
+                        <input type="email" name="contact-email" required>
                     </div>
                     <div class="form-group">
                         <label>Message</label>
-                        <textarea required rows="4"></textarea>
+                        <textarea name="contact-message" required rows="4"></textarea>
                     </div>
                     <button class="btn btn-primary" type="submit">Send Message</button>
                 </form>
@@ -514,6 +539,8 @@
                     <li onclick="showDashboardTab('dash-donations')">Donations</li>
                     <li onclick="showDashboardTab('dash-volunteers')">Volunteers</li>
                     <li onclick="showDashboardTab('dash-events')">Manage Events</li>
+                    <li onclick="showDashboardTab('dash-institutions')">Institutions</li>
+                    <li onclick="showDashboardTab('dash-messages')">Messages</li>
                     <li onclick="logout()">Logout</li>
                 </ul>
             </aside>
@@ -638,6 +665,60 @@
                             <!-- JS will populate -->
                         </tbody>
                     </table>
+                </div>
+
+                <div id="dash-messages" class="dash-tab" style="display: none;">
+                    <h2>Contact Messages</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>From</th>
+                                <th>Message</th>
+                                <th>ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="messages-table-body"></tbody>
+                    </table>
+                </div>
+
+                <div id="dash-institutions" class="dash-tab" style="display: none;">
+                    <h2>Institutions & Distribution</h2>
+                    <form id="institutions-form" onsubmit="updateInstitutionsAllocation(event)">
+                        <div id="institutions-table"></div>
+                        <div class="allocation-footer">
+                            <div class="muted" id="inst-total-label">Total: 0%</div>
+                            <button type="submit" class="btn btn-primary">Save Distribution</button>
+                        </div>
+                    </form>
+                    <div class="card" style="margin-top: 20px; text-align: left;">
+                        <h3>Add Institution</h3>
+                        <form onsubmit="handleAddInstitution(event)" class="inst-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <input type="text" id="inst-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>City</label>
+                                    <input type="text" id="inst-city" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Sector</label>
+                                    <input type="text" id="inst-sector" placeholder="Education, Nutrition, Healthcare, etc." required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Allocation (%)</label>
+                                    <input type="number" id="inst-allocation" min="0" max="100" step="1" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Impact Note</label>
+                                <input type="text" id="inst-impact" placeholder="How funds are utilized" required>
+                            </div>
+                            <button type="submit" class="cta-btn">Add Institution</button>
+                            <p class="muted small">Tip: Set allocation to 0% when adding, then adjust totals above to 100%.</p>
+                        </form>
+                    </div>
                 </div>
             </main>
         </div>

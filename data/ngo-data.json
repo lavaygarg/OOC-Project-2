@@ -20,5 +20,43 @@
     "Education": 0.5,
     "Nutrition": 0.3,
     "Healthcare": 0.2
-  }
+  },
+  "messages": [
+    { "id": "M001", "name": "Neha Kapoor", "email": "neha@example.com", "message": "Interested in partnering for a nutrition drive." },
+    { "id": "M002", "name": "Arjun Singh", "email": "arjun@example.com", "message": "Would like to sponsor learning kits this quarter." }
+  ],
+  "institutions": [
+    {
+      "id": "I001",
+      "name": "Sunrise Public School",
+      "city": "Delhi",
+      "sector": "Education",
+      "allocation": 35,
+      "impact": "Scholarships and learning kits for 120 children."
+    },
+    {
+      "id": "I002",
+      "name": "Seva Nutrition Center",
+      "city": "Mumbai",
+      "sector": "Nutrition",
+      "allocation": 25,
+      "impact": "Daily nutritious meals for 300 children."
+    },
+    {
+      "id": "I003",
+      "name": "Asha Health Clinic",
+      "city": "Bangalore",
+      "sector": "Healthcare",
+      "allocation": 20,
+      "impact": "Monthly health camps and immunizations."
+    },
+    {
+      "id": "I004",
+      "name": "Nirmal Shelter Home",
+      "city": "Kolkata",
+      "sector": "Shelter",
+      "allocation": 20,
+      "impact": "Temporary shelter and essentials for families."
+    }
+  ]
 }

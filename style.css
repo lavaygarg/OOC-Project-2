@@ -820,6 +820,137 @@ button {
     gap: 10px;
 }
 
+/* Transparency & Institutions */
+.transparency-card {
+    margin-top: 28px;
+}
+
+.transparency-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.institution-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.institution-card {
+    background: var(--white);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+}
+
+.inst-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.inst-amount {
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+.inst-bar {
+    height: 8px;
+    background: rgba(46, 204, 113, 0.12);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.inst-bar span {
+    display: block;
+    height: 100%;
+    background: var(--primary);
+}
+
+.pill {
+    padding: 4px 10px;
+    background: rgba(46, 204, 113, 0.14);
+    color: var(--primary-dark);
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.small {
+    font-size: 0.9rem;
+}
+
+.inst-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 1200;
+}
+
+.modal {
+    background: var(--white);
+    border-radius: 14px;
+    width: min(560px, 100%);
+    box-shadow: var(--shadow);
+    padding: 20px;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.modal-body {
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--dark);
+}
+
+.flash-highlight {
+    animation: flash 1.2s ease;
+}
+
+@keyframes flash {
+    0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.45); }
+    70% { box-shadow: 0 0 0 12px rgba(46, 204, 113, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+}
+
 /* Footer */
 .site-footer {
     background: #0f172a;

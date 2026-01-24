@@ -21,7 +21,45 @@ const initialData = {
         Education: 0.5,
         Nutrition: 0.3,
         Healthcare: 0.2
-    }
+    },
+    messages: [
+        { id: 'M001', name: 'Neha Kapoor', email: 'neha@example.com', message: 'Interested in partnering for a nutrition drive.' },
+        { id: 'M002', name: 'Arjun Singh', email: 'arjun@example.com', message: 'Would like to sponsor learning kits this quarter.' }
+    ],
+    institutions: [
+        {
+            id: 'I001',
+            name: 'Sunrise Public School',
+            city: 'Delhi',
+            sector: 'Education',
+            allocation: 35,
+            impact: 'Scholarships and learning kits for 120 children.'
+        },
+        {
+            id: 'I002',
+            name: 'Seva Nutrition Center',
+            city: 'Mumbai',
+            sector: 'Nutrition',
+            allocation: 25,
+            impact: 'Daily nutritious meals for 300 children.'
+        },
+        {
+            id: 'I003',
+            name: 'Asha Health Clinic',
+            city: 'Bangalore',
+            sector: 'Healthcare',
+            allocation: 20,
+            impact: 'Monthly health camps and immunizations.'
+        },
+        {
+            id: 'I004',
+            name: 'Nirmal Shelter Home',
+            city: 'Kolkata',
+            sector: 'Shelter',
+            allocation: 20,
+            impact: 'Temporary shelter and essentials for families.'
+        }
+    ]
 };
 
 const THEME_KEY = 'ooc-theme';
@@ -54,7 +92,9 @@ function mergeSeedData(current, seed) {
         donations: current.donations?.length ? current.donations : seed.donations,
         volunteers: current.volunteers?.length ? current.volunteers : seed.volunteers,
         events: mergeEvents(current.events || [], seed.events || []),
-        utilizationRatios: current.utilizationRatios || seed.utilizationRatios || initialData.utilizationRatios
+        utilizationRatios: current.utilizationRatios || seed.utilizationRatios || initialData.utilizationRatios,
+        messages: current.messages?.length ? current.messages : seed.messages || initialData.messages,
+        institutions: current.institutions?.length ? current.institutions : seed.institutions || initialData.institutions
     };
     return merged;
 }
@@ -106,6 +146,10 @@ function saveData(data) {
     localStorage.setItem('ngoData', JSON.stringify(data));
 }
 
+function getTotalFunds(data) {
+    return data.donations.reduce((sum, d) => sum + d.amount, 0);
+}
+
 // --- NAVIGATION ---
 function showSection(sectionId) {
     // Hide all sections
@@ -140,6 +184,8 @@ function showSection(sectionId) {
         renderDashboard();
     } else if (sectionId === 'events') {
         renderPublicEvents();
+    } else if (sectionId === 'impact') {
+        renderPublicInstitutions();
     }
 }
 
@@ -165,6 +211,88 @@ function renderPublicEvents() {
             </tr>`;
         list.innerHTML += row;
     });
+}
+
+function renderPublicInstitutions() {
+    const data = getData();
+    const grid = document.getElementById('institution-grid');
+    const totalLabel = document.getElementById('institution-total');
+    if (!grid || !totalLabel) return;
+
+    grid.innerHTML = '';
+    const totalFunds = getTotalFunds(data);
+
+    data.institutions.forEach(inst => {
+        const allocatedAmount = Math.round((inst.allocation / 100) * totalFunds);
+        const card = document.createElement('div');
+        card.className = 'institution-card';
+        card.innerHTML = `
+            <div class="inst-header">
+                <div>
+                    <h4>${inst.name}</h4>
+                    <p class="muted">${inst.city} • ${inst.sector}</p>
+                </div>
+                <span class="pill">${inst.allocation}%</span>
+            </div>
+            <p>${inst.impact}</p>
+            <div class="inst-bar"><span style="width:${inst.allocation}%;"></span></div>
+            <div class="inst-amount">Est. ₹${allocatedAmount.toLocaleString()} allocated</div>
+        `;
+        grid.appendChild(card);
+    });
+
+    totalLabel.textContent = `Total allocated: ${data.institutions.reduce((t, i) => t + Number(i.allocation || 0), 0)}% of donations`;
+}
+
+function focusImpactDashboard() {
+    showSection('impact');
+    const card = document.querySelector('.transparency-card');
+    if (card) {
+        card.classList.add('flash-highlight');
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => card.classList.remove('flash-highlight'), 1200);
+    }
+}
+
+function downloadImpactReport() {
+    const data = getData();
+    const totalFunds = getTotalFunds(data).toLocaleString();
+    const allocations = data.institutions.map(inst => `${inst.name} (${inst.sector}) - ${inst.allocation}%`).join('\n');
+    const summary = `Hope Foundation - Impact Report\n\nTotal Funds: ₹${totalFunds}\nInstitutions Allocation:\n${allocations}\n\nTop KPIs:\n- Attendance improvement: 98%\n- Health check-ups: 1,500\n- Volunteers engaged: 500+\n`;
+
+    const blob = new Blob([summary], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'impact-report.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function openSummaryModal() {
+    const data = getData();
+    const totalFunds = getTotalFunds(data);
+    const allocLines = data.institutions
+        .map(inst => `<li><strong>${inst.name}</strong> (${inst.sector}) — ${inst.allocation}% (est. ₹${Math.round((inst.allocation / 100) * totalFunds).toLocaleString()})</li>`)
+        .join('');
+    const body = document.getElementById('modal-body');
+    const title = document.getElementById('modal-title');
+    const modal = document.getElementById('impact-modal');
+    if (!body || !title || !modal) return;
+
+    title.textContent = 'Financial Transparency Summary';
+    body.innerHTML = `
+        <p><strong>Total Funds (recorded):</strong> ₹${totalFunds.toLocaleString()}</p>
+        <p><strong>Distribution:</strong></p>
+        <ul>${allocLines}</ul>
+        <p class="muted small">Data is derived from recorded donations and current allocation settings.</p>
+    `;
+    modal.style.display = 'flex';
+}
+
+function closeImpactModal() {
+    const modal = document.getElementById('impact-modal');
+    if (modal) modal.style.display = 'none';
 }
 
 // --- FORMS HANDLING ---
@@ -312,6 +440,8 @@ function renderDashboard() {
 
     hydrateAllocationForm(data);
     renderCharts(data);
+    renderInstitutionsAdmin(data);
+    renderMessagesAdmin(data);
 }
 
 let donationsChartInstance = null;
@@ -380,6 +510,48 @@ function renderCharts(data) {
     });
 }
 
+function renderInstitutionsAdmin(data) {
+    const tableWrap = document.getElementById('institutions-table');
+    const totalLabel = document.getElementById('inst-total-label');
+    if (!tableWrap || !totalLabel) return;
+
+    const totalFunds = getTotalFunds(data);
+    const rows = data.institutions.map(inst => {
+        const estAmount = Math.round((inst.allocation / 100) * totalFunds);
+        return `
+            <tr>
+                <td>${inst.name}<div class="muted small">${inst.city} • ${inst.sector}</div></td>
+                <td><input type="number" min="0" max="100" step="1" class="inst-input" data-id="${inst.id}" value="${inst.allocation}"></td>
+                <td>₹${estAmount.toLocaleString()}</td>
+            </tr>
+        `;
+    }).join('');
+
+    tableWrap.innerHTML = `
+        <table class="data-table">
+            <thead>
+                <tr><th>Institution</th><th>Allocation (%)</th><th>Est. Amount</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+        </table>
+    `;
+
+    updateInstitutionTotalLabel();
+
+    tableWrap.querySelectorAll('.inst-input').forEach(input => {
+        input.addEventListener('input', updateInstitutionTotalLabel);
+    });
+}
+
+function updateInstitutionTotalLabel() {
+    const inputs = document.querySelectorAll('.inst-input');
+    const totalLabel = document.getElementById('inst-total-label');
+    if (!inputs.length || !totalLabel) return;
+    const total = Array.from(inputs).reduce((sum, el) => sum + Number(el.value || 0), 0);
+    totalLabel.textContent = `Total: ${total}%`;
+    totalLabel.style.color = total === 100 ? '#16a34a' : '#dc2626';
+}
+
 function hydrateAllocationForm(data) {
     const educationInput = document.getElementById('alloc-education');
     const nutritionInput = document.getElementById('alloc-nutrition');
@@ -441,6 +613,55 @@ function updateAllocation(e) {
     alert('Allocation updated.');
 }
 
+function updateInstitutionsAllocation(e) {
+    e.preventDefault();
+    const inputs = document.querySelectorAll('.inst-input');
+    if (!inputs.length) return;
+
+    const allocations = Array.from(inputs).map(input => ({ id: input.dataset.id, allocation: Number(input.value || 0) }));
+    const total = allocations.reduce((sum, item) => sum + item.allocation, 0);
+    if (total !== 100) {
+        alert('Institution allocation must total 100%.');
+        return;
+    }
+
+    const data = getData();
+    allocations.forEach(item => {
+        const inst = data.institutions.find(i => i.id === item.id);
+        if (inst) inst.allocation = item.allocation;
+    });
+    saveData(data);
+    renderDashboard();
+    renderPublicInstitutions();
+    alert('Institution distribution updated.');
+}
+
+function handleAddInstitution(e) {
+    e.preventDefault();
+    const name = document.getElementById('inst-name').value;
+    const city = document.getElementById('inst-city').value;
+    const sector = document.getElementById('inst-sector').value;
+    const allocation = Number(document.getElementById('inst-allocation').value || 0);
+    const impact = document.getElementById('inst-impact').value;
+
+    const data = getData();
+    const newInst = {
+        id: 'I' + (Date.now() % 10000),
+        name,
+        city,
+        sector,
+        allocation,
+        impact
+    };
+
+    data.institutions.push(newInst);
+    saveData(data);
+    e.target.reset();
+    renderDashboard();
+    renderPublicInstitutions();
+    alert('Institution added. Adjust percentages to total 100%.');
+}
+
 function getMonthlyTotals(donations) {
     const months = {};
     donations.forEach(donation => {
@@ -484,6 +705,47 @@ function handleAddEvent(e) {
     e.target.reset();
     renderDashboard();
     renderPublicEvents();
+}
+
+function renderMessagesAdmin(data) {
+    const table = document.getElementById('messages-table-body');
+    if (!table) return;
+    table.innerHTML = '';
+    if (!data.messages || !data.messages.length) {
+        table.innerHTML = '<tr><td colspan="3" class="muted">No messages yet.</td></tr>';
+        return;
+    }
+    data.messages.forEach(msg => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${msg.name}<div class="muted small">${msg.email}</div></td>
+            <td>${msg.message}</td>
+            <td>${msg.id}</td>
+        `;
+        table.appendChild(row);
+    });
+}
+
+function handleContactSubmit(e) {
+    e.preventDefault();
+    const name = e.target.querySelector('input[name="contact-name"]').value;
+    const email = e.target.querySelector('input[name="contact-email"]').value;
+    const message = e.target.querySelector('textarea[name="contact-message"]').value;
+
+    const data = getData();
+    const newMsg = {
+        id: 'M' + (Date.now() % 100000),
+        name,
+        email,
+        message
+    };
+    data.messages = data.messages || [];
+    data.messages.push(newMsg);
+    saveData(data);
+
+    e.target.reset();
+    alert('Thank you! We will get back to you shortly.');
+    renderDashboard();
 }
 
 function deleteEvent(id) {
