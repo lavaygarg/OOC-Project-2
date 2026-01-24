@@ -483,22 +483,193 @@
     <!-- Testimonials Section -->
     <section id="testimonials" class="page-section" style="display: none;">
         <div class="container">
-            <div class="section-header">
-                <h2 data-i18n="storiesTitle">Success Stories</h2>
-                <p class="muted" data-i18n="storiesSubtitle">Real impact from our community members and volunteers.</p>
+            <!-- Main Section Header -->
+            <div class="section-header" style="margin-bottom: 2rem;">
+                <h2 data-i18n="storiesTitle">Stories & Testimonials</h2>
+                <p class="muted">Celebrating our community's journey, achievements, and the impact we create together.</p>
             </div>
-            <div class="testimonials-grid" id="testimonials-grid">
-                <!-- Testimonials will be rendered dynamically -->
+
+            <!-- Stories Navigation Tabs -->
+            <div class="stories-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 2.5rem; border-bottom: 2px solid #eee; padding-bottom: 0;">
+                <button class="stories-tab active" data-tab="success-stories" onclick="switchStoriesTab('success-stories')">
+                    <i class="fas fa-star"></i> Success Stories
+                </button>
+                <button class="stories-tab" data-tab="accomplishments" onclick="switchStoriesTab('accomplishments')">
+                    <i class="fas fa-trophy"></i> Student Accomplishments
+                </button>
+                <button class="stories-tab" data-tab="testimonials-feedback" onclick="switchStoriesTab('testimonials-feedback')">
+                    <i class="fas fa-comments"></i> Community Feedback
+                </button>
             </div>
-            
-            <!-- Feedback Form in Stories Section -->
-            <div class="feedback-section">
-                <div class="section-header" style="margin-top: 3rem;">
-                    <h3 data-i18n="shareStoryTitle">Share Your Story</h3>
-                    <p class="muted" data-i18n="shareStorySubtitle">We'd love to hear about your experience with Hope Foundation.</p>
+
+            <!-- Tab 1: Success Stories -->
+            <div id="success-stories-content" class="stories-tab-content active">
+                <div class="subsection-header">
+                    <div class="subsection-icon" style="background: linear-gradient(135deg, #fca311, #e63946);">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div>
+                        <h3>Success Stories</h3>
+                        <p class="muted">Real impact from our community members, volunteers, and beneficiaries.</p>
+                    </div>
                 </div>
-                <div class="feedback-form-inline card">
-                    <form onsubmit="submitFeedback(event)">
+                <div class="testimonials-grid" id="testimonials-grid">
+                    <!-- Testimonials will be rendered dynamically -->
+                </div>
+            </div>
+
+            <!-- Tab 2: Student Accomplishments -->
+            <div id="accomplishments-content" class="stories-tab-content" style="display: none;">
+                <div class="subsection-header">
+                    <div class="subsection-icon" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div>
+                        <h3>Student Accomplishments</h3>
+                        <p class="muted">Celebrating the remarkable achievements of our students who have reached new heights.</p>
+                    </div>
+                </div>
+                <div class="accomplishments-grid">
+                    
+                    <!-- Student 1 - IIITA -->
+                    <div class="card accomplishment-card">
+                        <div class="accomplishment-header">
+                            <div class="student-avatar" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">RK</div>
+                            <div class="student-info">
+                                <h4>Rahul Kumar</h4>
+                                <span class="batch-tag">Batch 2024</span>
+                            </div>
+                        </div>
+                        <div class="achievement-badge" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); color: #2e7d32;">
+                            <i class="fas fa-university"></i>
+                            <strong>Admitted to IIIT Allahabad (IIITA)</strong>
+                        </div>
+                        <p class="accomplishment-desc">Secured AIR 4,521 in JEE Advanced and got admission in B.Tech Computer Science at IIIT Allahabad. Started his journey with Hope Foundation in 8th grade.</p>
+                    </div>
+
+                    <!-- Student 2 - NIT -->
+                    <div class="card accomplishment-card">
+                        <div class="accomplishment-header">
+                            <div class="student-avatar" style="background: linear-gradient(135deg, #3498db, #2980b9);">PS</div>
+                            <div class="student-info">
+                                <h4>Priya Sharma</h4>
+                                <span class="batch-tag">Batch 2024</span>
+                            </div>
+                        </div>
+                        <div class="achievement-badge" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); color: #1565c0;">
+                            <i class="fas fa-graduation-cap"></i>
+                            <strong>NIT Delhi - Electronics Engineering</strong>
+                        </div>
+                        <p class="accomplishment-desc">First in her family to attend a premier engineering institute. Scored 98.5 percentile in JEE Mains while also helping younger students at our center.</p>
+                    </div>
+
+                    <!-- Student 3 - Medical -->
+                    <div class="card accomplishment-card">
+                        <div class="accomplishment-header">
+                            <div class="student-avatar" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">AV</div>
+                            <div class="student-info">
+                                <h4>Ananya Verma</h4>
+                                <span class="batch-tag">Batch 2023</span>
+                            </div>
+                        </div>
+                        <div class="achievement-badge" style="background: linear-gradient(135deg, #ffebee, #ffcdd2); color: #c62828;">
+                            <i class="fas fa-stethoscope"></i>
+                            <strong>MBBS at AIIMS Delhi</strong>
+                        </div>
+                        <p class="accomplishment-desc">Cleared NEET with AIR 892 and is now pursuing her dream of becoming a doctor. Aims to return and provide healthcare in rural areas.</p>
+                    </div>
+
+                    <!-- Student 4 - Scholarship -->
+                    <div class="card accomplishment-card">
+                        <div class="accomplishment-header">
+                            <div class="student-avatar" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">MK</div>
+                            <div class="student-info">
+                                <h4>Mohammed Khan</h4>
+                                <span class="batch-tag">Batch 2024</span>
+                            </div>
+                        </div>
+                        <div class="achievement-badge" style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); color: #7b1fa2;">
+                            <i class="fas fa-award"></i>
+                            <strong>INSPIRE Scholarship Awardee</strong>
+                        </div>
+                        <p class="accomplishment-desc">Won the prestigious INSPIRE scholarship by DST, Govt. of India. Currently pursuing B.Sc Physics at Delhi University with full scholarship.</p>
+                    </div>
+
+                    <!-- Student 5 - Olympiad -->
+                    <div class="card accomplishment-card">
+                        <div class="accomplishment-header">
+                            <div class="student-avatar" style="background: linear-gradient(135deg, #f39c12, #e67e22);">SK</div>
+                            <div class="student-info">
+                                <h4>Sneha Kumari</h4>
+                                <span class="batch-tag">Batch 2025 (Current)</span>
+                            </div>
+                        </div>
+                        <div class="achievement-badge" style="background: linear-gradient(135deg, #fff8e1, #ffecb3); color: #f57c00;">
+                            <i class="fas fa-medal"></i>
+                            <strong>National Science Olympiad - Gold</strong>
+                        </div>
+                        <p class="accomplishment-desc">Won Gold medal in National Science Olympiad 2025. Selected for International Science Olympiad training camp. Currently in Class 11.</p>
+                    </div>
+
+                    <!-- Student 6 - Orphan who cracked NEET -->
+                    <div class="card accomplishment-card featured">
+                        <div class="featured-ribbon"><i class="fas fa-heart"></i> Inspiring Journey</div>
+                        <div class="accomplishment-header">
+                            <div class="student-avatar" style="background: linear-gradient(135deg, #16a085, #1abc9c);">VY</div>
+                            <div class="student-info">
+                                <h4>Vikash Yadav</h4>
+                                <span class="batch-tag">Batch 2024</span>
+                            </div>
+                        </div>
+                        <div class="achievement-badge" style="background: linear-gradient(135deg, #e0f2f1, #b2dfdb); color: #00796b;">
+                            <i class="fas fa-heartbeat"></i>
+                            <strong>Orphan to NEET Qualifier - MBBS</strong>
+                        </div>
+                        <p class="accomplishment-desc">Lost both parents at age 12 and worked part-time at a local grocery store to support himself. With determination and Hope Foundation's guidance, he cracked NEET 2024 with AIR 3,847 and is now pursuing MBBS at Maulana Azad Medical College, Delhi.</p>
+                    </div>
+
+                    <!-- Student 7 - Financially burdened to IPS Officer -->
+                    <div class="card accomplishment-card featured">
+                        <div class="featured-ribbon"><i class="fas fa-shield-alt"></i> Pride of Foundation</div>
+                        <div class="accomplishment-header">
+                            <div class="student-avatar" style="background: linear-gradient(135deg, #34495e, #2c3e50);">DS</div>
+                            <div class="student-info">
+                                <h4>Deepak Singh</h4>
+                                <span class="batch-tag">Batch 2018</span>
+                            </div>
+                        </div>
+                        <div class="achievement-badge" style="background: linear-gradient(135deg, #eceff1, #cfd8dc); color: #37474f;">
+                            <i class="fas fa-shield-alt"></i>
+                            <strong>IPS Officer - UPSC 2023</strong>
+                        </div>
+                        <p class="accomplishment-desc">Son of a daily-wage laborer, Deepak's family could barely afford two meals a day. Hope Foundation provided him free education and mentorship. He cleared UPSC CSE 2023 with AIR 67 and is now serving as an IPS officer, inspiring thousands in his village.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Tab 3: Community Feedback -->
+            <div id="testimonials-feedback-content" class="stories-tab-content" style="display: none;">
+                <div class="subsection-header">
+                    <div class="subsection-icon" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div>
+                        <h3>Community Feedback</h3>
+                        <p class="muted">Words of appreciation and encouragement from our community members.</p>
+                    </div>
+                </div>
+                
+                <div class="feedback-section">
+                    <div class="feedback-form-inline card">
+                        <div class="feedback-form-header">
+                            <i class="fas fa-pen-fancy"></i>
+                            <div>
+                                <h4>Share Your Experience</h4>
+                                <p class="muted">We'd love to hear about your journey with Hope Foundation.</p>
+                            </div>
+                        </div>
+                        <form onsubmit="submitFeedback(event)">
                         <div class="feedback-form-grid">
                             <div class="form-group">
                                 <label for="feedback-name" data-i18n="feedbackName">Your Name</label>
@@ -538,9 +709,10 @@
                             <textarea id="feedback-message" rows="4" placeholder="Share your experience with Hope Foundation..." required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i> <span data-i18n="feedbackSubmit">Submit Your Story</span>
+                            <i class="fas fa-paper-plane"></i> <span data-i18n="feedbackSubmit">Submit Your Feedback</span>
                         </button>
                     </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -614,6 +786,8 @@
                     <li onclick="showDashboardTab('dash-volunteers')">Volunteers</li>
                     <li onclick="showDashboardTab('dash-events')">Manage Events</li>
                     <li onclick="showDashboardTab('dash-institutions')">Institutions</li>
+                    <li onclick="showDashboardTab('dash-tasks')"><i class="fas fa-tasks"></i> Task Assignment</li>
+                    <li onclick="showDashboardTab('dash-shifts')"><i class="fas fa-calendar-alt"></i> Shift Management</li>
                     <li onclick="showDashboardTab('dash-messages')">Messages</li>
                     <li onclick="logout()">Logout</li>
                 </ul>
@@ -998,6 +1172,147 @@
                                     <button class="btn btn-secondary" onclick="showAdminMsgPanel('inbox')"><i class="fas fa-arrow-left"></i> Back</button>
                                 </div>
                                 <div id="admin-msg-detail-content" style="padding:1rem;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Assignment Tab -->
+                <div id="dash-tasks" class="dash-tab" style="display: none;">
+                    <h2><i class="fas fa-tasks"></i> Task Assignment</h2>
+                    <p class="muted" style="margin-bottom: 1.5rem;">Assign tasks to staff members and users. They will receive notifications in their messages.</p>
+                    
+                    <div class="task-management-grid">
+                        <!-- Assign New Task Form -->
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <h3><i class="fas fa-plus-circle" style="color: #2ecc71;"></i> Assign New Task</h3>
+                            <form id="assignTaskForm" onsubmit="handleAssignTask(event)">
+                                <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                    <div class="form-group">
+                                        <label>Assign To</label>
+                                        <select id="task-assignee" class="form-control" required>
+                                            <option value="">Select recipient...</option>
+                                            <optgroup label="Broadcast">
+                                                <option value="role:staff">All Staff</option>
+                                                <option value="role:teacher">All Teachers</option>
+                                                <option value="role:events">Events Team</option>
+                                                <option value="role:management">Management</option>
+                                                <option value="role:fundraiser">Fundraising Team</option>
+                                                <option value="role:user">All Users</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Task Priority</label>
+                                        <select id="task-priority" class="form-control" required>
+                                            <option value="low">Low</option>
+                                            <option value="medium" selected>Medium</option>
+                                            <option value="high">High</option>
+                                            <option value="urgent">Urgent</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Due Date</label>
+                                        <input type="date" id="task-due-date" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Task Title</label>
+                                    <input type="text" id="task-title" class="form-control" placeholder="Enter task title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Task Description</label>
+                                    <textarea id="task-description" class="form-control" rows="3" placeholder="Describe the task in detail..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Assign Task</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Active Tasks List -->
+                        <div class="card">
+                            <h3><i class="fas fa-list-check" style="color: #3498db;"></i> Active Tasks</h3>
+                            <div id="active-tasks-list" class="tasks-list">
+                                <div class="muted-inline" style="padding: 1rem; text-align: center;">No tasks assigned yet.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shift Management Tab -->
+                <div id="dash-shifts" class="dash-tab" style="display: none;">
+                    <h2><i class="fas fa-calendar-alt"></i> Shift Management</h2>
+                    <p class="muted" style="margin-bottom: 1.5rem;">Schedule and manage shifts for staff members. Assigned shifts will be sent to their messages automatically.</p>
+                    
+                    <div class="shift-management-container">
+                        <!-- Create Shift Form -->
+                        <div class="card" style="margin-bottom: 1.5rem;">
+                            <h3><i class="fas fa-clock" style="color: #9b59b6;"></i> Schedule New Shift</h3>
+                            <form id="scheduleShiftForm" onsubmit="handleScheduleShift(event)">
+                                <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+                                    <div class="form-group">
+                                        <label>Assign To</label>
+                                        <select id="shift-assignee" class="form-control" required>
+                                            <option value="">Select staff...</option>
+                                            <optgroup label="Roles">
+                                                <option value="role:staff">All Staff</option>
+                                                <option value="role:teacher">All Teachers</option>
+                                                <option value="role:events">Events Team</option>
+                                                <option value="role:management">Management</option>
+                                                <option value="role:fundraiser">Fundraising Team</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Shift Date</label>
+                                        <input type="date" id="shift-date" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Start Time</label>
+                                        <input type="time" id="shift-start-time" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>End Time</label>
+                                        <input type="time" id="shift-end-time" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label>Shift Type</label>
+                                        <select id="shift-type" class="form-control" required>
+                                            <option value="regular">Regular</option>
+                                            <option value="morning">Morning Shift</option>
+                                            <option value="afternoon">Afternoon Shift</option>
+                                            <option value="evening">Evening Shift</option>
+                                            <option value="weekend">Weekend Shift</option>
+                                            <option value="event">Event Duty</option>
+                                            <option value="emergency">Emergency/On-Call</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Location</label>
+                                        <input type="text" id="shift-location" class="form-control" placeholder="e.g., Main Office, Field Work" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Additional Notes</label>
+                                    <textarea id="shift-notes" class="form-control" rows="2" placeholder="Any special instructions or notes..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-calendar-plus"></i> Schedule Shift</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Weekly Shift Overview -->
+                        <div class="card">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h3><i class="fas fa-calendar-week" style="color: #e67e22;"></i> Scheduled Shifts</h3>
+                                <div class="shift-week-nav">
+                                    <button class="btn btn-secondary btn-sm" onclick="changeShiftWeek(-1)"><i class="fas fa-chevron-left"></i></button>
+                                    <span id="shift-week-label" style="margin: 0 1rem; font-weight: 600;">This Week</span>
+                                    <button class="btn btn-secondary btn-sm" onclick="changeShiftWeek(1)"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div id="shifts-schedule-grid" class="shifts-grid">
+                                <div class="muted-inline" style="padding: 1rem; text-align: center;">No shifts scheduled yet.</div>
                             </div>
                         </div>
                     </div>
