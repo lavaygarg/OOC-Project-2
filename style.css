@@ -109,6 +109,67 @@ button {
     gap: 18px;
 }
 
+.language-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    background: var(--white);
+    box-shadow: var(--shadow);
+}
+
+.language-toggle .lang-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.lang-switch {
+    position: relative;
+    width: 44px;
+    height: 22px;
+    display: inline-block;
+}
+
+.lang-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.lang-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.12);
+    border-radius: 999px;
+    transition: all 0.2s ease;
+}
+
+.lang-slider:before {
+    position: absolute;
+    content: '';
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--white);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.lang-switch input:checked + .lang-slider {
+    background-color: rgba(46, 204, 113, 0.35);
+}
+
+.lang-switch input:checked + .lang-slider:before {
+    transform: translateX(22px);
+    background-color: var(--primary);
+}
+
 .icon-btn {
     width: 40px;
     height: 40px;
@@ -177,6 +238,41 @@ button {
 
 .nav-cta.btn-primary:hover {
     transform: translateY(-1px);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+#google_translate_element {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+}
+
+.goog-te-banner-frame.skiptranslate,
+.goog-te-banner-frame,
+.goog-te-gadget-icon {
+    display: none !important;
+}
+
+body {
+    top: 0 !important;
+}
+
+.goog-logo-link,
+.goog-te-gadget,
+.goog-te-gadget span,
+.goog-te-banner-frame + div {
+    display: none !important;
 }
 
 .mobile-menu-btn {

@@ -63,6 +63,9 @@ const initialData = {
 };
 
 const THEME_KEY = 'ooc-theme';
+const LANG_KEY = 'ooc-language';
+let translateScriptPromise = null;
+let currentLanguage = 'en';
 
 // Initialize LocalStorage from seed file and merge missing data
 async function initData() {
@@ -137,6 +140,91 @@ function toggleTheme() {
     applyTheme(next);
 }
 
+// --- LANGUAGE / GOOGLE TRANSLATE ---
+function loadGoogleTranslate() {
+    if (translateScriptPromise) return translateScriptPromise;
+
+    translateScriptPromise = new Promise(resolve => {
+        window.googleTranslateElementInit = function () {
+            if (window.google?.translate) {
+                new google.translate.TranslateElement({
+                    pageLanguage: 'en',
+                    includedLanguages: 'en,hi',
+                    autoDisplay: false
+                }, 'google_translate_element');
+            }
+            resolve();
+        };
+
+        const script = document.createElement('script');
+        script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        script.async = true;
+        script.onerror = () => resolve(); // fail gracefully if offline
+        document.head.appendChild(script);
+    });
+
+    return translateScriptPromise;
+}
+
+function setLanguage(lang) {
+    const combo = document.querySelector('select.goog-te-combo');
+    if (!combo) return;
+
+    combo.value = lang;
+    combo.dispatchEvent(new Event('change'));
+    localStorage.setItem(LANG_KEY, lang);
+    document.documentElement.setAttribute('lang', lang === 'hi' ? 'hi' : 'en');
+    currentLanguage = lang;
+
+    const toggle = document.getElementById('lang-toggle');
+    if (toggle) toggle.checked = lang === 'hi';
+}
+
+function waitAndApplyLanguage(lang) {
+    const combo = document.querySelector('select.goog-te-combo');
+    if (combo) {
+        setLanguage(lang);
+        return;
+    }
+
+    const observer = new MutationObserver(() => {
+        const found = document.querySelector('select.goog-te-combo');
+        if (found) {
+            setLanguage(lang);
+            observer.disconnect();
+            clearTimeout(timeoutId);
+        }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+    const timeoutId = setTimeout(() => observer.disconnect(), 8000);
+}
+
+async function initLanguageToggle() {
+    const toggle = document.getElementById('lang-toggle');
+    if (!toggle) return;
+
+    const savedLang = localStorage.getItem(LANG_KEY) || 'en';
+    toggle.checked = savedLang === 'hi';
+    document.documentElement.setAttribute('lang', savedLang === 'hi' ? 'hi' : 'en');
+    currentLanguage = savedLang;
+
+    toggle.addEventListener('change', () => {
+        const nextLang = toggle.checked ? 'hi' : 'en';
+        waitAndApplyLanguage(nextLang);
+    });
+
+    await loadGoogleTranslate();
+    waitAndApplyLanguage(savedLang);
+}
+
+function reapplySavedLanguageOnNavigation() {
+    const savedLang = localStorage.getItem(LANG_KEY) || 'en';
+    if (savedLang !== currentLanguage) {
+        waitAndApplyLanguage(savedLang);
+    }
+}
+
 // Helper to get/set data
 function getData() {
     return JSON.parse(localStorage.getItem('ngoData'));
@@ -178,6 +266,9 @@ function showSection(sectionId) {
 
     // Scroll to top
     window.scrollTo(0, 0);
+
+    // Ensure translation persists when navigating SPA sections
+    reapplySavedLanguageOnNavigation();
 
     // Dynamic Rendering
     if (sectionId === 'admin-dashboard') {
@@ -959,6 +1050,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const navLinks = document.querySelectorAll('.nav-links a');
     const savedTheme = getSavedTheme();
     applyTheme(savedTheme ? savedTheme : (prefersDark() ? 'dark' : 'light'));
+
+    await initLanguageToggle();
 
     const themeToggle = document.getElementById('theme-toggle');
     if (themeToggle) {

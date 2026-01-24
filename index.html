@@ -23,6 +23,14 @@
                 <span>Hope Foundation</span>
             </a>
             <div class="nav-actions">
+                <div class="language-toggle" aria-label="Translate between English and Hindi">
+                    <span class="lang-label">EN</span>
+                    <label class="lang-switch">
+                        <input type="checkbox" id="lang-toggle" aria-label="Toggle Hindi translation">
+                        <span class="lang-slider"></span>
+                    </label>
+                    <span class="lang-label">HI</span>
+                </div>
                 <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle theme">
                     <i class="fas fa-moon"></i>
                 </button>
@@ -45,6 +53,9 @@
             </button>
         </div>
     </nav>
+
+    <!-- Hidden Google Translate target -->
+    <div id="google_translate_element" class="sr-only" aria-hidden="true"></div>
 
     <!-- PUBLIC VIEW SECTIONS -->
 
