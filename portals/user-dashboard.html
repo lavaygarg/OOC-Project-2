@@ -807,6 +807,258 @@
         .logout-link:hover {
             background: rgba(231,76,60,0.1) !important;
         }
+        
+        /* Messages Layout */
+        .messages-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 1.5rem;
+            min-height: 600px;
+        }
+        
+        .msg-sidebar {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            padding: 1rem;
+        }
+        
+        .msg-sidebar-header {
+            margin-bottom: 1rem;
+        }
+        
+        .msg-sidebar-header .btn {
+            width: 100%;
+        }
+        
+        .msg-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .msg-nav-item:hover {
+            background: var(--light);
+            color: var(--dark);
+        }
+        
+        .msg-nav-item.active {
+            background: rgba(46,204,113,0.15);
+            color: var(--primary);
+        }
+        
+        .msg-badge {
+            margin-left: auto;
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: none;
+        }
+        
+        .msg-badge.has-unread {
+            display: inline;
+        }
+        
+        .msg-content-area {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        .msg-panel-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .msg-panel-header h3 {
+            font-size: 1.1rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .msg-panel-header h3 i {
+            color: var(--primary);
+        }
+        
+        .msg-panel {
+            padding: 1.5rem;
+        }
+        
+        .msg-panel-header + .msg-list,
+        .msg-panel-header + .directory-list,
+        .msg-panel-header + form {
+            padding: 1.5rem;
+        }
+        
+        .msg-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .msg-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .msg-item:hover {
+            background: var(--light);
+            border-color: var(--primary);
+        }
+        
+        .msg-item.unread {
+            background: rgba(46,204,113,0.05);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .msg-item-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .msg-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .msg-item-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+        }
+        
+        .msg-item-from {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .msg-item-date {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .msg-item-subject {
+            font-weight: 500;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .msg-item-preview {
+            font-size: 0.85rem;
+            color: var(--gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .msg-empty {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray);
+        }
+        
+        .directory-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .directory-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+        }
+        
+        .directory-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .directory-info {
+            flex: 1;
+        }
+        
+        .directory-info h5 {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .directory-info p {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .msg-detail-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .msg-detail-subject {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .msg-detail-meta {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .msg-detail-body {
+            line-height: 1.7;
+            color: var(--dark);
+            white-space: pre-wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .messages-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .msg-sidebar {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1460,55 +1712,125 @@
         
         <!-- Messages Section -->
         <section id="messages" class="dashboard-section">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Messages & Notifications</h3>
+            <div class="messages-layout">
+                <!-- Messages Sidebar -->
+                <div class="msg-sidebar">
+                    <div class="msg-sidebar-header">
+                        <button class="btn btn-primary" onclick="showMsgPanel('compose')"><i class="fas fa-plus"></i> Compose</button>
+                    </div>
+                    <div class="msg-nav">
+                        <div class="msg-nav-item active" onclick="showMsgPanel('inbox')">
+                            <i class="fas fa-inbox"></i> Inbox
+                            <span class="msg-badge" id="userUnreadBadge">0</span>
+                        </div>
+                        <div class="msg-nav-item" onclick="showMsgPanel('sent')">
+                            <i class="fas fa-paper-plane"></i> Sent
+                        </div>
+                        <div class="msg-nav-item" onclick="showMsgPanel('directory')">
+                            <i class="fas fa-address-book"></i> Directory
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="message-list">
-                    <div class="message-item unread">
-                        <div class="message-avatar">H</div>
-                        <div class="message-content" style="flex: 1;">
-                            <h5>Hope Foundation</h5>
-                            <p>Thank you for your recent donation! Your contribution will help...</p>
+                <!-- Message Content Area -->
+                <div class="msg-content-area">
+                    <!-- Inbox Panel -->
+                    <div class="msg-panel" id="user-panel-inbox">
+                        <div class="msg-panel-header">
+                            <h3><i class="fas fa-inbox"></i> Inbox</h3>
                         </div>
-                        <span class="message-time">2 hours ago</span>
+                        <div class="msg-list" id="user-inbox-list">
+                            <div class="msg-empty">Loading messages...</div>
+                        </div>
                     </div>
                     
-                    <div class="message-item unread">
-                        <div class="message-avatar" style="background: #3498db;">E</div>
-                        <div class="message-content" style="flex: 1;">
-                            <h5>Event Reminder</h5>
-                            <p>Don't forget! Food Drive is happening on Feb 20, 2026...</p>
+                    <!-- Compose Panel -->
+                    <div class="msg-panel" id="user-panel-compose" style="display:none;">
+                        <div class="msg-panel-header">
+                            <h3><i class="fas fa-pen"></i> Compose Message</h3>
                         </div>
-                        <span class="message-time">1 day ago</span>
+                        <form id="userComposeForm" onsubmit="handleUserSendMessage(event)">
+                            <div class="form-group">
+                                <label>To</label>
+                                <select id="userMsgTo" class="form-control" required>
+                                    <option value="">Select recipient...</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="role:staff">All Staff</option>
+                                    <option value="role:teacher">Teachers</option>
+                                    <option value="role:management">Management</option>
+                                    <option value="role:events">Events Team</option>
+                                    <option value="role:fundraiser">Fundraising Team</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" id="userMsgSubject" class="form-control" placeholder="Enter subject" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Message</label>
+                                <textarea id="userMsgBody" class="form-control" rows="6" placeholder="Write your message..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Message</button>
+                        </form>
                     </div>
                     
-                    <div class="message-item unread">
-                        <div class="message-avatar" style="background: #9b59b6;">P</div>
-                        <div class="message-content" style="flex: 1;">
-                            <h5>Priya's Progress Update</h5>
-                            <p>Great news! Priya scored 92% in her mid-term exams...</p>
+                    <!-- Sent Panel -->
+                    <div class="msg-panel" id="user-panel-sent" style="display:none;">
+                        <div class="msg-panel-header">
+                            <h3><i class="fas fa-paper-plane"></i> Sent Messages</h3>
                         </div>
-                        <span class="message-time">2 days ago</span>
+                        <div class="msg-list" id="user-sent-list">
+                            <div class="msg-empty">Loading sent messages...</div>
+                        </div>
                     </div>
                     
-                    <div class="message-item">
-                        <div class="message-avatar" style="background: #f39c12;">B</div>
-                        <div class="message-content" style="flex: 1;">
-                            <h5>Badge Unlocked!</h5>
-                            <p>Congratulations! You've earned the "Super Donor" badge...</p>
+                    <!-- Directory Panel -->
+                    <div class="msg-panel" id="user-panel-directory" style="display:none;">
+                        <div class="msg-panel-header">
+                            <h3><i class="fas fa-address-book"></i> Contact Directory</h3>
                         </div>
-                        <span class="message-time">1 week ago</span>
+                        <div class="directory-list" id="user-directory-list">
+                            <div class="directory-item">
+                                <div class="directory-avatar">A</div>
+                                <div class="directory-info">
+                                    <h5>Admin</h5>
+                                    <p>General Inquiries • admin@hope.org</p>
+                                </div>
+                                <button class="btn btn-sm btn-secondary" onclick="composeToUser('admin')"><i class="fas fa-envelope"></i></button>
+                            </div>
+                            <div class="directory-item">
+                                <div class="directory-avatar" style="background:#3498db;">M</div>
+                                <div class="directory-info">
+                                    <h5>Management</h5>
+                                    <p>Administration • management@hope.org</p>
+                                </div>
+                                <button class="btn btn-sm btn-secondary" onclick="composeToUser('role:management')"><i class="fas fa-envelope"></i></button>
+                            </div>
+                            <div class="directory-item">
+                                <div class="directory-avatar" style="background:#9b59b6;">E</div>
+                                <div class="directory-info">
+                                    <h5>Events Team</h5>
+                                    <p>Event Coordination • events@hope.org</p>
+                                </div>
+                                <button class="btn btn-sm btn-secondary" onclick="composeToUser('role:events')"><i class="fas fa-envelope"></i></button>
+                            </div>
+                            <div class="directory-item">
+                                <div class="directory-avatar" style="background:#f39c12;">F</div>
+                                <div class="directory-info">
+                                    <h5>Fundraising Team</h5>
+                                    <p>Donations & Campaigns • fundraise@hope.org</p>
+                                </div>
+                                <button class="btn btn-sm btn-secondary" onclick="composeToUser('role:fundraiser')"><i class="fas fa-envelope"></i></button>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="message-item">
-                        <div class="message-avatar">H</div>
-                        <div class="message-content" style="flex: 1;">
-                            <h5>Monthly Impact Report</h5>
-                            <p>Here's how your donations made a difference in December...</p>
+                    <!-- Message Detail View -->
+                    <div class="msg-panel" id="user-panel-detail" style="display:none;">
+                        <div class="msg-panel-header">
+                            <button class="btn btn-sm btn-secondary" onclick="showMsgPanel('inbox')"><i class="fas fa-arrow-left"></i> Back</button>
                         </div>
-                        <span class="message-time">2 weeks ago</span>
+                        <div id="user-msg-detail-content"></div>
                     </div>
                 </div>
             </div>
@@ -1813,6 +2135,266 @@
             document.execCommand('copy');
             alert('Referral code copied!');
         }
+        
+        /* ========================= */
+        /* Messaging System for User */
+        /* ========================= */
+        const USER_MSG_STORAGE = 'ooc_portal_messages_v1';
+        const USER_CURRENT = {
+            userId: 'USER-' + (localStorage.getItem('userEmail') || 'guest').replace(/[^a-zA-Z0-9]/g, '').toUpperCase(),
+            displayName: localStorage.getItem('userName') || 'User',
+            role: 'user',
+            email: localStorage.getItem('userEmail') || ''
+        };
+        
+        function loadUserMessages() {
+            try {
+                const raw = localStorage.getItem(USER_MSG_STORAGE);
+                return raw ? JSON.parse(raw) : [];
+            } catch {
+                return [];
+            }
+        }
+        
+        function saveUserMessages(messages) {
+            localStorage.setItem(USER_MSG_STORAGE, JSON.stringify(messages));
+        }
+        
+        function getUserInbox() {
+            const messages = loadUserMessages();
+            return messages.filter(m => {
+                if (!m.recipientTokens) return false;
+                return m.recipientTokens.some(t => 
+                    t === 'all' || 
+                    t === `user:${USER_CURRENT.userId}` ||
+                    t === 'role:user'
+                );
+            }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+        
+        function getUserSent() {
+            const messages = loadUserMessages();
+            return messages.filter(m => m.from?.userId === USER_CURRENT.userId)
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+        
+        function formatMsgDate(isoStr) {
+            const d = new Date(isoStr);
+            const now = new Date();
+            const diff = now - d;
+            if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+            if (diff < 604800000) return Math.floor(diff / 86400000) + 'd ago';
+            return d.toLocaleDateString();
+        }
+        
+        function escHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+        
+        function showMsgPanel(panelId) {
+            document.querySelectorAll('.msg-panel').forEach(p => p.style.display = 'none');
+            document.querySelectorAll('.msg-nav-item').forEach(n => n.classList.remove('active'));
+            
+            const panel = document.getElementById('user-panel-' + panelId);
+            if (panel) panel.style.display = 'block';
+            
+            const navItem = document.querySelector(`.msg-nav-item[onclick="showMsgPanel('${panelId}')"]`);
+            if (navItem) navItem.classList.add('active');
+            
+            if (panelId === 'inbox') renderUserInbox();
+            if (panelId === 'sent') renderUserSent();
+        }
+        
+        function renderUserInbox() {
+            const inbox = getUserInbox();
+            const listEl = document.getElementById('user-inbox-list');
+            const badge = document.getElementById('userUnreadBadge');
+            
+            const readKey = 'ooc_user_read_' + USER_CURRENT.userId;
+            const readIds = JSON.parse(localStorage.getItem(readKey) || '[]');
+            const unreadCount = inbox.filter(m => !readIds.includes(m.id)).length;
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.classList.add('has-unread');
+            } else {
+                badge.classList.remove('has-unread');
+            }
+            
+            if (!inbox.length) {
+                listEl.innerHTML = '<div class="msg-empty"><i class="fas fa-inbox" style="font-size:2rem;margin-bottom:0.5rem;"></i><br>No messages yet</div>';
+                return;
+            }
+            
+            listEl.innerHTML = inbox.map(m => {
+                const isUnread = !readIds.includes(m.id);
+                const preview = m.body.length > 80 ? m.body.slice(0, 80) + '…' : m.body;
+                return `
+                    <div class="msg-item ${isUnread ? 'unread' : ''}" onclick="openUserMessage('${m.id}')">
+                        <div class="msg-item-avatar">${escHtml(m.from?.displayName?.charAt(0) || '?')}</div>
+                        <div class="msg-item-content">
+                            <div class="msg-item-top">
+                                <span class="msg-item-from">${escHtml(m.from?.displayName || 'Unknown')}</span>
+                                <span class="msg-item-date">${formatMsgDate(m.createdAt)}</span>
+                            </div>
+                            <div class="msg-item-subject">${escHtml(m.subject)}</div>
+                            <div class="msg-item-preview">${escHtml(preview)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderUserSent() {
+            const sent = getUserSent();
+            const listEl = document.getElementById('user-sent-list');
+            
+            if (!sent.length) {
+                listEl.innerHTML = '<div class="msg-empty"><i class="fas fa-paper-plane" style="font-size:2rem;margin-bottom:0.5rem;"></i><br>No sent messages</div>';
+                return;
+            }
+            
+            listEl.innerHTML = sent.map(m => {
+                const preview = m.body.length > 80 ? m.body.slice(0, 80) + '…' : m.body;
+                return `
+                    <div class="msg-item" onclick="openUserMessage('${m.id}', 'sent')">
+                        <div class="msg-item-avatar" style="background:#3498db;">→</div>
+                        <div class="msg-item-content">
+                            <div class="msg-item-top">
+                                <span class="msg-item-from">To: ${escHtml(formatRecipients(m.recipientTokens))}</span>
+                                <span class="msg-item-date">${formatMsgDate(m.createdAt)}</span>
+                            </div>
+                            <div class="msg-item-subject">${escHtml(m.subject)}</div>
+                            <div class="msg-item-preview">${escHtml(preview)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function formatRecipients(tokens) {
+            if (!tokens || !tokens.length) return '—';
+            const labels = {
+                'admin': 'Admin',
+                'role:staff': 'All Staff',
+                'role:teacher': 'Teachers',
+                'role:management': 'Management',
+                'role:events': 'Events Team',
+                'role:fundraiser': 'Fundraising Team',
+                'role:user': 'All Users',
+                'all': 'Everyone'
+            };
+            return tokens.map(t => labels[t] || t).join(', ');
+        }
+        
+        function openUserMessage(msgId, context = 'inbox') {
+            const messages = loadUserMessages();
+            const msg = messages.find(m => m.id === msgId);
+            if (!msg) return;
+            
+            // Mark as read
+            if (context === 'inbox') {
+                const readKey = 'ooc_user_read_' + USER_CURRENT.userId;
+                const readIds = JSON.parse(localStorage.getItem(readKey) || '[]');
+                if (!readIds.includes(msgId)) {
+                    readIds.push(msgId);
+                    localStorage.setItem(readKey, JSON.stringify(readIds));
+                }
+            }
+            
+            const detailEl = document.getElementById('user-msg-detail-content');
+            detailEl.innerHTML = `
+                <div class="msg-detail-header">
+                    <div class="msg-detail-subject">${escHtml(msg.subject)}</div>
+                    <div class="msg-detail-meta">
+                        <strong>From:</strong> ${escHtml(msg.from?.displayName || 'Unknown')}<br>
+                        <strong>Date:</strong> ${new Date(msg.createdAt).toLocaleString()}<br>
+                        <strong>To:</strong> ${escHtml(formatRecipients(msg.recipientTokens))}
+                    </div>
+                </div>
+                <div class="msg-detail-body">${escHtml(msg.body)}</div>
+                ${context === 'inbox' ? `<button class="btn btn-primary" style="margin-top:1.5rem;" onclick="replyToMessage('${msg.from?.userId || 'admin'}', '${escHtml(msg.subject)}')"><i class="fas fa-reply"></i> Reply</button>` : ''}
+            `;
+            
+            showMsgPanel('detail');
+            // Update badge
+            renderUserInbox();
+        }
+        
+        function replyToMessage(toId, subject) {
+            document.getElementById('userMsgTo').value = toId.startsWith('role:') ? toId : 'admin';
+            document.getElementById('userMsgSubject').value = subject.startsWith('Re:') ? subject : 'Re: ' + subject;
+            showMsgPanel('compose');
+        }
+        
+        function composeToUser(recipientToken) {
+            document.getElementById('userMsgTo').value = recipientToken;
+            document.getElementById('userMsgSubject').value = '';
+            document.getElementById('userMsgBody').value = '';
+            showMsgPanel('compose');
+        }
+        
+        function handleUserSendMessage(e) {
+            e.preventDefault();
+            
+            const to = document.getElementById('userMsgTo').value;
+            const subject = document.getElementById('userMsgSubject').value.trim();
+            const body = document.getElementById('userMsgBody').value.trim();
+            
+            if (!to || !subject || !body) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            const messages = loadUserMessages();
+            const newMsg = {
+                id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+                from: USER_CURRENT,
+                recipientTokens: [to],
+                subject,
+                body,
+                createdAt: new Date().toISOString()
+            };
+            
+            messages.push(newMsg);
+            saveUserMessages(messages);
+            
+            // Clear form
+            document.getElementById('userComposeForm').reset();
+            
+            alert('Message sent!');
+            showMsgPanel('sent');
+        }
+        
+        // Register user in unified directory
+        function registerUserInDirectory() {
+            const DIRECTORY_KEY = 'ooc_portal_directory_v1';
+            try {
+                let directory = JSON.parse(localStorage.getItem(DIRECTORY_KEY) || '[]');
+                const existing = directory.find(d => d.userId === USER_CURRENT.userId);
+                if (!existing) {
+                    directory.push({
+                        userId: USER_CURRENT.userId,
+                        displayName: USER_CURRENT.displayName,
+                        role: 'user',
+                        department: 'donors',
+                        email: USER_CURRENT.email
+                    });
+                    localStorage.setItem(DIRECTORY_KEY, JSON.stringify(directory));
+                }
+            } catch (e) {
+                console.error('Error registering user:', e);
+            }
+        }
+        
+        // Initialize messaging on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            registerUserInDirectory();
+            renderUserInbox();
+        });
     </script>
 </body>
 </html>

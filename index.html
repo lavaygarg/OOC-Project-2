@@ -719,17 +719,117 @@
                 </div>
 
                 <div id="dash-messages" class="dash-tab" style="display: none;">
-                    <h2>Contact Messages</h2>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>From</th>
-                                <th>Message</th>
-                                <th>ID</th>
-                            </tr>
-                        </thead>
-                        <tbody id="messages-table-body"></tbody>
-                    </table>
+                    <h2>Messages</h2>
+                    <div class="admin-messages-layout">
+                        <!-- Messages Sidebar -->
+                        <div class="admin-msg-sidebar">
+                            <button class="btn btn-primary" onclick="showAdminMsgPanel('compose')" style="width:100%;margin-bottom:1rem;"><i class="fas fa-plus"></i> Compose</button>
+                            <div class="admin-msg-nav">
+                                <div class="admin-msg-nav-item active" onclick="showAdminMsgPanel('inbox')">
+                                    <i class="fas fa-inbox"></i> Inbox
+                                    <span class="admin-msg-badge" id="adminUnreadBadge">0</span>
+                                </div>
+                                <div class="admin-msg-nav-item" onclick="showAdminMsgPanel('sent')">
+                                    <i class="fas fa-paper-plane"></i> Sent
+                                </div>
+                                <div class="admin-msg-nav-item" onclick="showAdminMsgPanel('contact')">
+                                    <i class="fas fa-address-card"></i> Contact Forms
+                                </div>
+                                <div class="admin-msg-nav-item" onclick="showAdminMsgPanel('directory')">
+                                    <i class="fas fa-address-book"></i> Directory
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Message Content Area -->
+                        <div class="admin-msg-content">
+                            <!-- Inbox Panel -->
+                            <div class="admin-msg-panel" id="admin-panel-inbox">
+                                <div class="admin-msg-panel-header">
+                                    <h3><i class="fas fa-inbox"></i> Inbox</h3>
+                                </div>
+                                <div class="admin-msg-list" id="admin-inbox-list">
+                                    <div class="admin-msg-empty">Loading messages...</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Compose Panel -->
+                            <div class="admin-msg-panel" id="admin-panel-compose" style="display:none;">
+                                <div class="admin-msg-panel-header">
+                                    <h3><i class="fas fa-pen"></i> Compose Message</h3>
+                                </div>
+                                <form id="adminComposeForm" onsubmit="handleAdminSendMessage(event)" style="padding:1rem;">
+                                    <div class="form-group">
+                                        <label>To</label>
+                                        <select id="adminMsgTo" class="form-control" required>
+                                            <option value="">Select recipient...</option>
+                                            <option value="all">Everyone (Broadcast)</option>
+                                            <option value="role:user">All Users</option>
+                                            <option value="role:staff">All Staff</option>
+                                            <option value="role:teacher">All Teachers</option>
+                                            <option value="role:events">Events Team</option>
+                                            <option value="role:management">Management</option>
+                                            <option value="role:fundraiser">Fundraising Team</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Subject</label>
+                                        <input type="text" id="adminMsgSubject" class="form-control" placeholder="Enter subject" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Message</label>
+                                        <textarea id="adminMsgBody" class="form-control" rows="6" placeholder="Write your message..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Message</button>
+                                </form>
+                            </div>
+                            
+                            <!-- Sent Panel -->
+                            <div class="admin-msg-panel" id="admin-panel-sent" style="display:none;">
+                                <div class="admin-msg-panel-header">
+                                    <h3><i class="fas fa-paper-plane"></i> Sent Messages</h3>
+                                </div>
+                                <div class="admin-msg-list" id="admin-sent-list">
+                                    <div class="admin-msg-empty">Loading sent messages...</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Contact Forms Panel -->
+                            <div class="admin-msg-panel" id="admin-panel-contact" style="display:none;">
+                                <div class="admin-msg-panel-header">
+                                    <h3><i class="fas fa-address-card"></i> Contact Form Submissions</h3>
+                                </div>
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>From</th>
+                                            <th>Message</th>
+                                            <th>ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="messages-table-body"></tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Directory Panel -->
+                            <div class="admin-msg-panel" id="admin-panel-directory" style="display:none;">
+                                <div class="admin-msg-panel-header">
+                                    <h3><i class="fas fa-address-book"></i> Staff Directory</h3>
+                                </div>
+                                <div class="admin-directory-list" id="admin-directory-list">
+                                    <!-- Will be populated by JS -->
+                                </div>
+                            </div>
+                            
+                            <!-- Message Detail View -->
+                            <div class="admin-msg-panel" id="admin-panel-detail" style="display:none;">
+                                <div class="admin-msg-panel-header">
+                                    <button class="btn btn-secondary" onclick="showAdminMsgPanel('inbox')"><i class="fas fa-arrow-left"></i> Back</button>
+                                </div>
+                                <div id="admin-msg-detail-content" style="padding:1rem;"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="dash-institutions" class="dash-tab" style="display: none;">

@@ -20,6 +20,7 @@
 
   const ROLE_LABELS = {
     admin: 'Admin',
+    user: 'User',
     staff: 'Staff',
     teacher: 'Teacher',
     events: 'Events',
@@ -135,13 +136,21 @@
   function showLoggedInLayout(isLoggedIn) {
     const loginCard = document.getElementById('loginCard');
     const roleHomeCard = document.getElementById('roleHomeCard');
-    const messageCard = document.getElementById('messageCard');
+    const msgFab = document.getElementById('msgFab');
+    const msgModalOverlay = document.getElementById('msgModalOverlay');
     if (!loginCard || !roleHomeCard) return;
     loginCard.hidden = isLoggedIn;
     roleHomeCard.hidden = !isLoggedIn;
 
-    if (messageCard) {
-      messageCard.hidden = !isLoggedIn;
+    // Show/hide FAB when logged in
+    if (msgFab) {
+      msgFab.hidden = !isLoggedIn;
+    }
+    
+    // Close modal when logging out
+    if (!isLoggedIn && msgModalOverlay) {
+      msgModalOverlay.classList.remove('open');
+      msgModalOverlay.hidden = true;
     }
 
     document.body.classList.toggle('is-logged-out', !isLoggedIn);
@@ -166,220 +175,334 @@
     if (!titleEl || !subtitleEl || !bodyEl) return;
 
     const roleLabel = ROLE_LABELS[user.role] ?? user.role;
-    titleEl.textContent = `${roleLabel} Home`;
-    subtitleEl.textContent = 'Your role dashboard (messages are on the right).';
+    titleEl.textContent = `Welcome, ${escapeHtml(user.displayName)}`;
+    subtitleEl.textContent = `${roleLabel} Dashboard`;
 
-    const commonHeader = `
-      <div class="kpi-grid">
-        <div class="kpi">
-          <div class="kpi-label">Logged in as</div>
-          <div class="kpi-value">${escapeHtml(user.displayName)}</div>
-          <div class="kpi-sub">${escapeHtml(user.userId)}</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">Role</div>
-          <div class="kpi-value">${escapeHtml(roleLabel)}</div>
-          <div class="kpi-sub">Department: ${escapeHtml(DEPT_LABELS[user.department] ?? user.department)}</div>
+    const roleIcons = {
+      teacher: 'fa-chalkboard-teacher',
+      events: 'fa-calendar-alt',
+      management: 'fa-building',
+      fundraiser: 'fa-hand-holding-heart',
+      staff: 'fa-user-tie'
+    };
+    const roleIcon = roleIcons[user.role] ?? 'fa-user';
+
+    const welcomeHeader = `
+      <div class="welcome-banner">
+        <div class="welcome-icon"><i class="fas ${roleIcon}"></i></div>
+        <div class="welcome-info">
+          <div class="welcome-name">${escapeHtml(user.displayName)}</div>
+          <div class="welcome-meta">${escapeHtml(roleLabel)} • ${escapeHtml(DEPT_LABELS[user.department] ?? user.department)} • ID: ${escapeHtml(user.userId)}</div>
         </div>
       </div>
-      <div class="hr"></div>
     `;
 
     if (user.role === 'teacher') {
       const timetable = loadUserData(user, 'teacher_timetable_v1', [
         { day: 'Mon', slot: '09:00 - 10:00', subject: 'Math', className: 'Class 8A' },
-        { day: 'Tue', slot: '11:00 - 12:00', subject: 'Science', className: 'Class 9B' }
+        { day: 'Tue', slot: '11:00 - 12:00', subject: 'Science', className: 'Class 9B' },
+        { day: 'Wed', slot: '10:00 - 11:00', subject: 'English', className: 'Class 7C' }
       ]);
       const grades = loadUserData(user, 'teacher_grades_v1', [
-        { student: 'Aarav', subject: 'Math', score: '88' },
-        { student: 'Sara', subject: 'Science', score: '92' }
+        { student: 'Aarav Sharma', subject: 'Math', score: '88' },
+        { student: 'Sara Khan', subject: 'Science', score: '92' },
+        { student: 'Rohan Patel', subject: 'English', score: '85' }
       ]);
 
       bodyEl.innerHTML = `
-        ${commonHeader}
+        ${welcomeHeader}
 
-        <div class="section-title">Timetable</div>
-        <div class="table-wrap">
-          <table class="simple-table">
-            <thead>
-              <tr><th>Day</th><th>Time</th><th>Subject</th><th>Class</th></tr>
-            </thead>
-            <tbody>
-              ${timetable.map(r => `<tr><td>${escapeHtml(r.day)}</td><td>${escapeHtml(r.slot)}</td><td>${escapeHtml(r.subject)}</td><td>${escapeHtml(r.className)}</td></tr>`).join('')}
-            </tbody>
-          </table>
-        </div>
-        <div class="split-actions">
-          <button class="btn btn-ghost" type="button" id="addTimetableBtn"><i class="fas fa-plus"></i> Add slot</button>
-          <button class="btn btn-ghost" type="button" id="clearTimetableBtn"><i class="fas fa-trash"></i> Clear</button>
+        <div class="dash-grid">
+          <div class="dash-card accent-blue">
+            <div class="dash-card-icon"><i class="fas fa-clock"></i></div>
+            <div class="dash-card-label">Classes Today</div>
+            <div class="dash-card-value">${timetable.length}</div>
+          </div>
+          <div class="dash-card accent-green">
+            <div class="dash-card-icon"><i class="fas fa-user-graduate"></i></div>
+            <div class="dash-card-label">Students Graded</div>
+            <div class="dash-card-value">${grades.length}</div>
+          </div>
+          <div class="dash-card accent-purple">
+            <div class="dash-card-icon"><i class="fas fa-envelope"></i></div>
+            <div class="dash-card-label">Messages</div>
+            <div class="dash-card-value">${inboxForUser(user).length}</div>
+          </div>
         </div>
 
-        <div class="hr"></div>
-
-        <div class="section-title">Student performance (demo)</div>
-        <div class="table-wrap">
-          <table class="simple-table">
-            <thead>
-              <tr><th>Student</th><th>Subject</th><th>Score</th></tr>
-            </thead>
-            <tbody>
-              ${grades.map(g => `<tr><td>${escapeHtml(g.student)}</td><td>${escapeHtml(g.subject)}</td><td>${escapeHtml(g.score)}</td></tr>`).join('')}
-            </tbody>
-          </table>
+        <div class="dash-section">
+          <div class="dash-section-head">
+            <span class="dash-section-title"><i class="fas fa-calendar-week"></i> My Timetable</span>
+            <div class="dash-section-actions">
+              <button class="btn-icon" type="button" id="addTimetableBtn" title="Add"><i class="fas fa-plus"></i></button>
+              <button class="btn-icon" type="button" id="clearTimetableBtn" title="Clear"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="simple-table">
+              <thead><tr><th>Day</th><th>Time</th><th>Subject</th><th>Class</th></tr></thead>
+              <tbody>
+                ${timetable.length ? timetable.map(r => `<tr><td>${escapeHtml(r.day)}</td><td>${escapeHtml(r.slot)}</td><td>${escapeHtml(r.subject)}</td><td>${escapeHtml(r.className)}</td></tr>`).join('') : '<tr><td colspan="4" class="empty-row">No classes scheduled</td></tr>'}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="split-actions">
-          <button class="btn btn-ghost" type="button" id="addGradeBtn"><i class="fas fa-plus"></i> Add grade</button>
-          <button class="btn btn-ghost" type="button" id="clearGradesBtn"><i class="fas fa-trash"></i> Clear</button>
+
+        <div class="dash-section">
+          <div class="dash-section-head">
+            <span class="dash-section-title"><i class="fas fa-chart-line"></i> Student Performance</span>
+            <div class="dash-section-actions">
+              <button class="btn-icon" type="button" id="addGradeBtn" title="Add"><i class="fas fa-plus"></i></button>
+              <button class="btn-icon" type="button" id="clearGradesBtn" title="Clear"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="simple-table">
+              <thead><tr><th>Student</th><th>Subject</th><th>Score</th></tr></thead>
+              <tbody>
+                ${grades.length ? grades.map(g => `<tr><td>${escapeHtml(g.student)}</td><td>${escapeHtml(g.subject)}</td><td><span class="score-badge">${escapeHtml(g.score)}</span></td></tr>`).join('') : '<tr><td colspan="3" class="empty-row">No grades recorded</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="quick-actions-row">
+          <button class="action-btn" type="button" id="teacherMsgAdmin"><i class="fas fa-envelope"></i> Message Admin</button>
+          <button class="action-btn" type="button" id="teacherMsgEvents"><i class="fas fa-calendar"></i> Message Events</button>
         </div>
       `;
 
       document.getElementById('addTimetableBtn').addEventListener('click', () => {
-        const day = prompt('Day (Mon/Tue/...):', 'Mon');
-        if (!day) return;
-        const slot = prompt('Time slot:', '09:00 - 10:00');
-        if (!slot) return;
-        const subject = prompt('Subject:', 'Math');
-        if (!subject) return;
-        const className = prompt('Class:', 'Class 8A');
-        if (!className) return;
-
+        const day = prompt('Day:', 'Mon'); if (!day) return;
+        const slot = prompt('Time:', '09:00 - 10:00'); if (!slot) return;
+        const subject = prompt('Subject:', 'Math'); if (!subject) return;
+        const className = prompt('Class:', 'Class 8A'); if (!className) return;
         timetable.push({ day, slot, subject, className });
         saveUserData(user, 'teacher_timetable_v1', timetable);
         renderRoleHome(user);
       });
-
       document.getElementById('clearTimetableBtn').addEventListener('click', () => {
         if (!confirm('Clear timetable?')) return;
         saveUserData(user, 'teacher_timetable_v1', []);
         renderRoleHome(user);
       });
-
       document.getElementById('addGradeBtn').addEventListener('click', () => {
-        const student = prompt('Student name:', 'Aarav');
-        if (!student) return;
-        const subject = prompt('Subject:', 'Math');
-        if (!subject) return;
-        const score = prompt('Score:', '90');
-        if (!score) return;
-
+        const student = prompt('Student:', 'Name'); if (!student) return;
+        const subject = prompt('Subject:', 'Math'); if (!subject) return;
+        const score = prompt('Score:', '90'); if (!score) return;
         grades.push({ student, subject, score });
         saveUserData(user, 'teacher_grades_v1', grades);
         renderRoleHome(user);
       });
-
       document.getElementById('clearGradesBtn').addEventListener('click', () => {
-        if (!confirm('Clear grade list?')) return;
+        if (!confirm('Clear grades?')) return;
         saveUserData(user, 'teacher_grades_v1', []);
         renderRoleHome(user);
       });
-
+      document.getElementById('teacherMsgAdmin').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Message from Teacher' }); });
+      document.getElementById('teacherMsgEvents').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Event coordination' }); });
       return;
     }
 
     if (user.role === 'fundraiser') {
+      const campaigns = loadUserData(user, 'fundraiser_campaigns_v1', [
+        { name: 'Winter Aid Drive', target: '₹50,000', raised: '₹32,000', status: 'Active' },
+        { name: 'Education Fund', target: '₹1,00,000', raised: '₹78,500', status: 'Active' },
+        { name: 'Medical Support', target: '₹25,000', raised: '₹25,000', status: 'Completed' }
+      ]);
+
       bodyEl.innerHTML = `
-        ${commonHeader}
-        <div class="section-title">Fundraising operations</div>
-        <div class="muted-inline">Campaign tracking, donor updates, and coordination with management.</div>
-        <div class="hr"></div>
-        <div class="kpi-grid">
-          <div class="kpi"><div class="kpi-label">Active campaigns</div><div class="kpi-value">3</div><div class="kpi-sub">(demo)</div></div>
-          <div class="kpi"><div class="kpi-label">Leads to follow up</div><div class="kpi-value">12</div><div class="kpi-sub">(demo)</div></div>
+        ${welcomeHeader}
+
+        <div class="dash-grid">
+          <div class="dash-card accent-green">
+            <div class="dash-card-icon"><i class="fas fa-bullseye"></i></div>
+            <div class="dash-card-label">Active Campaigns</div>
+            <div class="dash-card-value">${campaigns.filter(c => c.status === 'Active').length}</div>
+          </div>
+          <div class="dash-card accent-blue">
+            <div class="dash-card-icon"><i class="fas fa-hand-holding-usd"></i></div>
+            <div class="dash-card-label">Total Raised</div>
+            <div class="dash-card-value">₹1.35L</div>
+          </div>
+          <div class="dash-card accent-orange">
+            <div class="dash-card-icon"><i class="fas fa-users"></i></div>
+            <div class="dash-card-label">Donors This Month</div>
+            <div class="dash-card-value">48</div>
+          </div>
         </div>
-        <div class="hr"></div>
-        <div class="section-title">Quick actions</div>
-        <div class="split-actions">
-          <button class="btn btn-ghost" type="button" id="frPingAdmin"><i class="fas fa-bullhorn"></i> Message Admin</button>
-          <button class="btn btn-ghost" type="button" id="frPingEvents"><i class="fas fa-calendar"></i> Message Events</button>
+
+        <div class="dash-section">
+          <div class="dash-section-head">
+            <span class="dash-section-title"><i class="fas fa-chart-pie"></i> Campaign Overview</span>
+          </div>
+          <div class="table-wrap">
+            <table class="simple-table">
+              <thead><tr><th>Campaign</th><th>Target</th><th>Raised</th><th>Status</th></tr></thead>
+              <tbody>
+                ${campaigns.map(c => `<tr><td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.target)}</td><td>${escapeHtml(c.raised)}</td><td><span class="status-badge ${c.status === 'Active' ? 'status-active' : 'status-done'}">${escapeHtml(c.status)}</span></td></tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="quick-actions-row">
+          <button class="action-btn" type="button" id="frMsgAdmin"><i class="fas fa-bullhorn"></i> Report to Admin</button>
+          <button class="action-btn" type="button" id="frMsgMgmt"><i class="fas fa-building"></i> Update Management</button>
+          <button class="action-btn" type="button" id="frMsgEvents"><i class="fas fa-calendar"></i> Coordinate Event</button>
         </div>
       `;
 
-      document.getElementById('frPingAdmin').addEventListener('click', () => {
-        setTabs('compose');
-        renderCompose(user, { subject: 'Fundraising update' });
-      });
-      document.getElementById('frPingEvents').addEventListener('click', () => {
-        setTabs('compose');
-        renderCompose(user, { subject: 'Coordination needed for event' });
-      });
+      document.getElementById('frMsgAdmin').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Fundraising Report' }); });
+      document.getElementById('frMsgMgmt').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Fundraising Update' }); });
+      document.getElementById('frMsgEvents').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Event Fundraising Coordination' }); });
       return;
     }
 
     if (user.role === 'management') {
       bodyEl.innerHTML = `
-        ${commonHeader}
-        <div class="section-title">Management dashboard</div>
-        <div class="muted-inline">Approvals, reporting, and cross-department communication.</div>
-        <div class="hr"></div>
-        <div class="kpi-grid">
-          <div class="kpi"><div class="kpi-label">Pending approvals</div><div class="kpi-value">5</div><div class="kpi-sub">(demo)</div></div>
-          <div class="kpi"><div class="kpi-label">Open issues</div><div class="kpi-value">2</div><div class="kpi-sub">(demo)</div></div>
+        ${welcomeHeader}
+
+        <div class="dash-grid">
+          <div class="dash-card accent-red">
+            <div class="dash-card-icon"><i class="fas fa-clock"></i></div>
+            <div class="dash-card-label">Pending Approvals</div>
+            <div class="dash-card-value">5</div>
+          </div>
+          <div class="dash-card accent-blue">
+            <div class="dash-card-icon"><i class="fas fa-users"></i></div>
+            <div class="dash-card-label">Total Staff</div>
+            <div class="dash-card-value">24</div>
+          </div>
+          <div class="dash-card accent-green">
+            <div class="dash-card-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="dash-card-label">Tasks Completed</div>
+            <div class="dash-card-value">18</div>
+          </div>
         </div>
-        <div class="hr"></div>
-        <div class="section-title">Quick actions</div>
-        <div class="split-actions">
-          <button class="btn btn-ghost" type="button" id="mgmtBroadcastTeachers"><i class="fas fa-paper-plane"></i> Broadcast to Teachers</button>
-          <button class="btn btn-ghost" type="button" id="mgmtBroadcastAll"><i class="fas fa-globe"></i> Broadcast to All</button>
+
+        <div class="dash-section">
+          <div class="dash-section-head">
+            <span class="dash-section-title"><i class="fas fa-tasks"></i> Recent Activity</span>
+          </div>
+          <ul class="activity-list">
+            <li><i class="fas fa-check text-green"></i> Budget approved for Q1 events</li>
+            <li><i class="fas fa-user-plus text-blue"></i> New teacher onboarded: Priya M.</li>
+            <li><i class="fas fa-file-alt text-orange"></i> Report submitted by Fundraising</li>
+            <li><i class="fas fa-bell text-purple"></i> Staff meeting scheduled for Feb 05</li>
+          </ul>
+        </div>
+
+        <div class="quick-actions-row">
+          <button class="action-btn" type="button" id="mgmtBroadcast"><i class="fas fa-bullhorn"></i> Broadcast to All</button>
+          <button class="action-btn" type="button" id="mgmtMsgTeachers"><i class="fas fa-chalkboard-teacher"></i> Message Teachers</button>
+          <button class="action-btn" type="button" id="mgmtMsgFund"><i class="fas fa-hand-holding-heart"></i> Message Fundraisers</button>
         </div>
       `;
 
-      document.getElementById('mgmtBroadcastTeachers').addEventListener('click', () => {
-        setTabs('compose');
-        renderCompose(user, { subject: 'Notice for Teachers' });
-      });
-      document.getElementById('mgmtBroadcastAll').addEventListener('click', () => {
-        setTabs('compose');
-        renderCompose(user, { subject: 'General notice' });
-      });
+      document.getElementById('mgmtBroadcast').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Announcement from Management' }); });
+      document.getElementById('mgmtMsgTeachers').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Notice for Teachers' }); });
+      document.getElementById('mgmtMsgFund').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Fundraising Discussion' }); });
       return;
     }
 
     if (user.role === 'events') {
+      const events = loadUserData(user, 'events_list_v1', [
+        { name: 'Orientation Drive', date: 'Feb 02', status: 'Upcoming' },
+        { name: 'Donation Camp', date: 'Feb 10', status: 'Planning' },
+        { name: 'Workshop', date: 'Feb 18', status: 'Upcoming' },
+        { name: 'Annual Day', date: 'Mar 15', status: 'Planning' }
+      ]);
+
       bodyEl.innerHTML = `
-        ${commonHeader}
-        <div class="section-title">Events operations</div>
-        <div class="muted-inline">Event planning tasks, schedules, and coordination.</div>
-        <div class="hr"></div>
-        <div class="section-title">Upcoming (demo)</div>
-        <ul class="simple-list">
-          <li>Orientation drive • Feb 02</li>
-          <li>Donation camp • Feb 10</li>
-          <li>Workshop • Feb 18</li>
-        </ul>
-        <div class="hr"></div>
-        <div class="section-title">Quick actions</div>
-        <div class="split-actions">
-          <button class="btn btn-ghost" type="button" id="evtAskTeachers"><i class="fas fa-chalkboard-teacher"></i> Message Teachers</button>
-          <button class="btn btn-ghost" type="button" id="evtAskFundraisers"><i class="fas fa-hand-holding-heart"></i> Message Fundraisers</button>
+        ${welcomeHeader}
+
+        <div class="dash-grid">
+          <div class="dash-card accent-purple">
+            <div class="dash-card-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="dash-card-label">Upcoming Events</div>
+            <div class="dash-card-value">${events.filter(e => e.status === 'Upcoming').length}</div>
+          </div>
+          <div class="dash-card accent-orange">
+            <div class="dash-card-icon"><i class="fas fa-clipboard-list"></i></div>
+            <div class="dash-card-label">In Planning</div>
+            <div class="dash-card-value">${events.filter(e => e.status === 'Planning').length}</div>
+          </div>
+          <div class="dash-card accent-green">
+            <div class="dash-card-icon"><i class="fas fa-check-double"></i></div>
+            <div class="dash-card-label">Completed</div>
+            <div class="dash-card-value">12</div>
+          </div>
+        </div>
+
+        <div class="dash-section">
+          <div class="dash-section-head">
+            <span class="dash-section-title"><i class="fas fa-calendar-alt"></i> Event Schedule</span>
+          </div>
+          <div class="table-wrap">
+            <table class="simple-table">
+              <thead><tr><th>Event</th><th>Date</th><th>Status</th></tr></thead>
+              <tbody>
+                ${events.map(e => `<tr><td>${escapeHtml(e.name)}</td><td>${escapeHtml(e.date)}</td><td><span class="status-badge ${e.status === 'Upcoming' ? 'status-active' : 'status-plan'}">${escapeHtml(e.status)}</span></td></tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="quick-actions-row">
+          <button class="action-btn" type="button" id="evtMsgTeachers"><i class="fas fa-chalkboard-teacher"></i> Invite Teachers</button>
+          <button class="action-btn" type="button" id="evtMsgFund"><i class="fas fa-hand-holding-heart"></i> Coordinate Fundraising</button>
+          <button class="action-btn" type="button" id="evtMsgMgmt"><i class="fas fa-building"></i> Report to Management</button>
         </div>
       `;
 
-      document.getElementById('evtAskTeachers').addEventListener('click', () => {
-        setTabs('compose');
-        renderCompose(user, { subject: 'Event support needed (Teachers)' });
-      });
-      document.getElementById('evtAskFundraisers').addEventListener('click', () => {
-        setTabs('compose');
-        renderCompose(user, { subject: 'Event support needed (Fundraising)' });
-      });
+      document.getElementById('evtMsgTeachers').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Event Support Request' }); });
+      document.getElementById('evtMsgFund').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Fundraising for Event' }); });
+      document.getElementById('evtMsgMgmt').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Event Status Update' }); });
       return;
     }
 
     // staff (default)
     bodyEl.innerHTML = `
-      ${commonHeader}
-      <div class="section-title">Staff dashboard</div>
-      <div class="muted-inline">Operations tasks, internal updates, and communication.</div>
-      <div class="hr"></div>
-      <div class="section-title">Quick actions</div>
-      <div class="split-actions">
-        <button class="btn btn-ghost" type="button" id="staffCompose"><i class="fas fa-paper-plane"></i> Send message</button>
+      ${welcomeHeader}
+
+      <div class="dash-grid">
+        <div class="dash-card accent-blue">
+          <div class="dash-card-icon"><i class="fas fa-tasks"></i></div>
+          <div class="dash-card-label">Pending Tasks</div>
+          <div class="dash-card-value">7</div>
+        </div>
+        <div class="dash-card accent-green">
+          <div class="dash-card-icon"><i class="fas fa-envelope"></i></div>
+          <div class="dash-card-label">Messages</div>
+          <div class="dash-card-value">${inboxForUser(user).length}</div>
+        </div>
+        <div class="dash-card accent-orange">
+          <div class="dash-card-icon"><i class="fas fa-bell"></i></div>
+          <div class="dash-card-label">Notifications</div>
+          <div class="dash-card-value">3</div>
+        </div>
+      </div>
+
+      <div class="dash-section">
+        <div class="dash-section-head">
+          <span class="dash-section-title"><i class="fas fa-clipboard-check"></i> Today's Tasks</span>
+        </div>
+        <ul class="activity-list">
+          <li><i class="fas fa-circle text-orange"></i> Complete inventory check</li>
+          <li><i class="fas fa-circle text-blue"></i> Update records database</li>
+          <li><i class="fas fa-circle text-green"></i> Prepare weekly report</li>
+        </ul>
+      </div>
+
+      <div class="quick-actions-row">
+        <button class="action-btn" type="button" id="staffMsgAdmin"><i class="fas fa-envelope"></i> Message Admin</button>
+        <button class="action-btn" type="button" id="staffMsgMgmt"><i class="fas fa-building"></i> Message Management</button>
       </div>
     `;
-    document.getElementById('staffCompose').addEventListener('click', () => {
-      setTabs('compose');
-      renderCompose(user, { subject: 'Update' });
-    });
+
+    document.getElementById('staffMsgAdmin').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Staff Update' }); });
+    document.getElementById('staffMsgMgmt').addEventListener('click', () => { openMessageModal('compose'); renderCompose(user, { subject: 'Request from Staff' }); });
   }
 
   function userTokens(user) {
@@ -488,6 +611,15 @@
     $('panel-directory').hidden = tabId !== 'directory';
   }
 
+  function openMessageModal(tabId = 'inbox') {
+    const overlay = $('msgModalOverlay');
+    if (!overlay) return;
+    overlay.hidden = false;
+    void overlay.offsetWidth;
+    overlay.classList.add('open');
+    setTabs(tabId);
+  }
+
   function formatRecipients(tokens) {
     if (!Array.isArray(tokens) || !tokens.length) return '—';
     return tokens.map(t => {
@@ -503,8 +635,10 @@
 
   function updateUnreadBadge(user) {
     const badge = $('unreadBadge');
+    const fabDot = $('msgFabDot');
     if (!user) {
       badge.style.display = 'none';
+      if (fabDot) fabDot.classList.remove('has-unread');
       return;
     }
     const inbox = inboxForUser(user);
@@ -512,8 +646,10 @@
     if (unread > 0) {
       badge.textContent = String(unread);
       badge.style.display = 'inline-flex';
+      if (fabDot) fabDot.classList.add('has-unread');
     } else {
       badge.style.display = 'none';
+      if (fabDot) fabDot.classList.remove('has-unread');
     }
   }
 
@@ -656,8 +792,8 @@
       .map(u => `<option value="${escapeHtml(u.userId)}">${escapeHtml(u.displayName)} (${escapeHtml(u.userId)})</option>`)
       .join('');
 
-    const roleChecks = ['teacher', 'events', 'management', 'fundraiser', 'staff']
-      .map(r => `<label class="pill"><input type="checkbox" value="${r}" class="roleCheck"> ${ROLE_LABELS[r]}</label>`)
+    const roleChecks = ['admin', 'user', 'teacher', 'events', 'management', 'fundraiser', 'staff']
+      .map(r => `<label class="pill"><input type="checkbox" value="${r}" class="roleCheck"> ${ROLE_LABELS[r] || r}</label>`)
       .join('');
 
     const deptChecks = Object.keys(DEPT_LABELS)
@@ -825,6 +961,41 @@
   }
 
   function setupEvents() {
+    // Floating message button - open modal
+    const msgFab = $('msgFab');
+    const msgModalOverlay = $('msgModalOverlay');
+    const msgModalClose = $('msgModalClose');
+    
+    if (msgFab && msgModalOverlay) {
+      msgFab.addEventListener('click', () => {
+        msgModalOverlay.hidden = false;
+        // Trigger reflow for animation
+        void msgModalOverlay.offsetWidth;
+        msgModalOverlay.classList.add('open');
+      });
+    }
+    
+    if (msgModalClose && msgModalOverlay) {
+      msgModalClose.addEventListener('click', () => {
+        msgModalOverlay.classList.remove('open');
+        setTimeout(() => {
+          msgModalOverlay.hidden = true;
+        }, 250);
+      });
+    }
+    
+    // Close modal when clicking overlay (outside modal)
+    if (msgModalOverlay) {
+      msgModalOverlay.addEventListener('click', (e) => {
+        if (e.target === msgModalOverlay) {
+          msgModalOverlay.classList.remove('open');
+          setTimeout(() => {
+            msgModalOverlay.hidden = true;
+          }, 250);
+        }
+      });
+    }
+    
     document.querySelectorAll('.tab').forEach(btn => {
       btn.addEventListener('click', () => {
         setTabs(btn.dataset.tab);
