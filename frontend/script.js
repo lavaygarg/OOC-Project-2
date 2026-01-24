@@ -5,11 +5,16 @@ const API_BASE_URL = 'https://ooc-project.onrender.com';
 // --- MOCK DATABASE ---
 const initialData = {
     donations: [
-        { id: 'D001', name: 'Rohan Sharma', amount: 5000, method: 'UPI (Razorpay)', date: '2023-10-15', paymentId: 'pay_NxK7GhKlMn012', orderId: 'order_NxK7GhKlMn012' },
-        { id: 'D002', name: 'Alice Smith', amount: 12000, method: 'Card (Razorpay)', date: '2023-10-18', paymentId: 'pay_NyL8HiLmNo345', orderId: 'order_NyL8HiLmNo345' },
-        { id: 'D003', name: 'Tech Corp Inc.', amount: 50000, method: 'Bank Transfer', date: '2023-10-20', paymentId: '', orderId: '' },
-        { id: 'D004', name: 'Priya Verma', amount: 2500, method: 'UPI (Razorpay)', date: '2023-11-05', paymentId: 'pay_NzM9IjMnOp678', orderId: 'order_NzM9IjMnOp678' },
-        { id: 'D005', name: 'Rajesh Kumar', amount: 8000, method: 'Card (Razorpay)', date: '2023-11-12', paymentId: 'pay_OaN0JkNoQr901', orderId: 'order_OaN0JkNoQr901' },
+        { id: 'D001', name: 'Rohan Sharma', amount: 5000, method: 'UPI (Razorpay)', date: '2023-10-15', paymentId: 'pay_NxK7GhKlMn012', orderId: 'order_NxK7GhKlMn012', timestamp: '2023-10-15T10:30:00' },
+        { id: 'D002', name: 'Alice Smith', amount: 12000, method: 'Card (Razorpay)', date: '2023-10-18', paymentId: 'pay_NyL8HiLmNo345', orderId: 'order_NyL8HiLmNo345', timestamp: '2023-10-18T14:45:00' },
+        { id: 'D003', name: 'Tech Corp Inc.', amount: 50000, method: 'Bank Transfer', date: '2023-10-20', paymentId: '', orderId: '', timestamp: '2023-10-20T09:15:00' },
+        { id: 'D004', name: 'Priya Verma', amount: 2500, method: 'UPI (Razorpay)', date: '2023-11-05', paymentId: 'pay_NzM9IjMnOp678', orderId: 'order_NzM9IjMnOp678', timestamp: '2023-11-05T16:20:00' },
+        { id: 'D005', name: 'Rajesh Kumar', amount: 8000, method: 'Card (Razorpay)', date: '2023-11-12', paymentId: 'pay_OaN0JkNoQr901', orderId: 'order_OaN0JkNoQr901', timestamp: '2023-11-12T11:00:00' },
+    ],
+    disbursements: [
+        { id: 'DIS001', recipient: 'Sunrise Public School', amount: 15000, category: 'Education', description: 'Monthly scholarship disbursement', date: '2023-10-25', timestamp: '2023-10-25T10:00:00' },
+        { id: 'DIS002', recipient: 'Seva Nutrition Center', amount: 8000, category: 'Nutrition', description: 'Weekly meal program funding', date: '2023-11-01', timestamp: '2023-11-01T14:30:00' },
+        { id: 'DIS003', recipient: 'Asha Health Clinic', amount: 5000, category: 'Healthcare', description: 'Medical supplies for health camp', date: '2023-11-08', timestamp: '2023-11-08T09:45:00' },
     ],
     volunteers: [
         { id: 'V001', name: 'Priya Patel', email: 'priya@example.com', interest: 'Teaching', status: 'Approved' },
@@ -336,6 +341,7 @@ async function initData() {
 function mergeSeedData(current, seed) {
     const merged = {
         donations: current.donations?.length ? current.donations : seed.donations,
+        disbursements: current.disbursements?.length ? current.disbursements : seed.disbursements || initialData.disbursements,
         volunteers: current.volunteers?.length ? current.volunteers : seed.volunteers,
         events: mergeEvents(current.events || [], seed.events || []),
         utilizationRatios: current.utilizationRatios || seed.utilizationRatios || initialData.utilizationRatios,
@@ -724,6 +730,7 @@ async function createRazorpayOrder(payload) {
 function recordDonationSuccess({ name, amount, method, paymentId, orderId }) {
     const now = new Date();
     const date = now.toISOString().split('T')[0];
+    const timestamp = now.toISOString();
     const data = getData();
     const newDonation = {
         id: paymentId || orderId || 'D' + Date.now(),
@@ -731,6 +738,7 @@ function recordDonationSuccess({ name, amount, method, paymentId, orderId }) {
         amount: Number(amount),
         method,
         date,
+        timestamp,
         paymentId: paymentId || '',
         orderId: orderId || ''
     };
@@ -822,21 +830,45 @@ function showDashboardTab(tabId) {
     // Show selected
     document.getElementById(tabId).style.display = 'block';
     
+function showDashboardTab(tabId) {
+    // Hide all dashboard tabs
+    document.querySelectorAll('.dash-tab').forEach(tab => {
+        tab.style.display = 'none';
+    });
+    // Show selected
+    document.getElementById(tabId).style.display = 'block';
+    
     // Initialize tasks and shifts when those tabs are shown
     if (tabId === 'dash-tasks') {
         renderTasksList();
     } else if (tabId === 'dash-shifts') {
         renderShiftsGrid();
+    } else if (tabId === 'dash-audit') {
+        renderAuditLog();
     }
 }
 
 function renderDashboard() {
     const data = getData();
+    
+    // Ensure disbursements array exists
+    if (!data.disbursements) {
+        data.disbursements = initialData.disbursements || [];
+        saveData(data);
+    }
 
     // 1. Overview Stats
     const totalFunds = data.donations.reduce((sum, d) => sum + d.amount, 0);
+    const totalDisbursed = (data.disbursements || []).reduce((sum, d) => sum + d.amount, 0);
+    const balanceFunds = totalFunds - totalDisbursed;
+    
     document.getElementById('total-funds').innerText = totalFunds.toLocaleString();
     document.getElementById('volunteer-count').innerText = data.volunteers.length;
+    document.getElementById('total-disbursed').innerText = totalDisbursed.toLocaleString();
+    document.getElementById('balance-funds').innerText = balanceFunds.toLocaleString();
+    
+    // Render recent audit in overview
+    renderRecentAudit(data);
 
     // 2. Donations Table
     const donBody = document.getElementById('donations-table-body');
@@ -893,6 +925,273 @@ function renderDashboard() {
     renderCharts(data);
     renderInstitutionsAdmin(data);
     renderMessagesAdmin(data);
+}
+
+// ===== AUDIT LOG FUNCTIONS =====
+
+function renderRecentAudit(data) {
+    const recentAuditBody = document.getElementById('recent-audit-body');
+    if (!recentAuditBody) return;
+    
+    const allTransactions = getAuditTransactions(data);
+    const recentTransactions = allTransactions.slice(0, 5); // Show only 5 most recent
+    
+    recentAuditBody.innerHTML = '';
+    
+    if (recentTransactions.length === 0) {
+        recentAuditBody.innerHTML = '<tr><td colspan="4" class="muted">No transactions yet.</td></tr>';
+        return;
+    }
+    
+    recentTransactions.forEach(t => {
+        const typeClass = t.type === 'credit' ? 'credit' : 'debit';
+        const typeIcon = t.type === 'credit' ? '↓' : '↑';
+        const amountPrefix = t.type === 'credit' ? '+' : '-';
+        const row = `<tr>
+            <td><span class="type-badge ${typeClass}">${typeIcon} ${t.type === 'credit' ? 'Credit' : 'Debit'}</span></td>
+            <td>${t.description}</td>
+            <td style="color: ${t.type === 'credit' ? '#16a34a' : '#dc2626'}; font-weight: 600;">${amountPrefix}₹${t.amount.toLocaleString()}</td>
+            <td class="timestamp">${formatDateTime(t.timestamp)}</td>
+        </tr>`;
+        recentAuditBody.innerHTML += row;
+    });
+}
+
+function getAuditTransactions(data) {
+    const transactions = [];
+    
+    // Add donations as credits
+    (data.donations || []).forEach(d => {
+        transactions.push({
+            id: d.id || d.paymentId || 'D' + Date.now(),
+            type: 'credit',
+            description: `Donation from ${d.name}`,
+            category: d.method || 'Donation',
+            amount: d.amount,
+            date: d.date,
+            timestamp: d.timestamp || d.date + 'T00:00:00',
+            reference: d.paymentId || d.orderId || '-'
+        });
+    });
+    
+    // Add disbursements as debits
+    (data.disbursements || []).forEach(d => {
+        transactions.push({
+            id: d.id,
+            type: 'debit',
+            description: `${d.description} - ${d.recipient}`,
+            category: d.category,
+            amount: d.amount,
+            date: d.date,
+            timestamp: d.timestamp || d.date + 'T00:00:00',
+            reference: d.id
+        });
+    });
+    
+    // Sort by timestamp desc
+    transactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    return transactions;
+}
+
+function renderAuditLog() {
+    const data = getData();
+    const transactions = getAuditTransactions(data);
+    
+    // Apply filters
+    const filterType = document.getElementById('audit-filter-type')?.value || 'all';
+    const dateFrom = document.getElementById('audit-date-from')?.value;
+    const dateTo = document.getElementById('audit-date-to')?.value;
+    
+    let filteredTransactions = transactions;
+    
+    if (filterType !== 'all') {
+        filteredTransactions = filteredTransactions.filter(t => t.type === filterType);
+    }
+    
+    if (dateFrom) {
+        filteredTransactions = filteredTransactions.filter(t => t.date >= dateFrom);
+    }
+    
+    if (dateTo) {
+        filteredTransactions = filteredTransactions.filter(t => t.date <= dateTo);
+    }
+    
+    // Calculate totals
+    const totalCredit = filteredTransactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
+    const totalDebit = filteredTransactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
+    const netBalance = totalCredit - totalDebit;
+    
+    // Update summary cards
+    document.getElementById('audit-total-credit').innerText = '₹' + totalCredit.toLocaleString();
+    document.getElementById('audit-total-debit').innerText = '₹' + totalDebit.toLocaleString();
+    document.getElementById('audit-net-balance').innerText = '₹' + netBalance.toLocaleString();
+    
+    // Render table
+    const auditBody = document.getElementById('audit-table-body');
+    auditBody.innerHTML = '';
+    
+    if (filteredTransactions.length === 0) {
+        auditBody.innerHTML = '<tr><td colspan="7" class="muted" style="text-align:center;">No transactions found.</td></tr>';
+        return;
+    }
+    
+    filteredTransactions.forEach(t => {
+        const typeClass = t.type === 'credit' ? 'credit' : 'debit';
+        const typeIcon = t.type === 'credit' ? '<i class="fas fa-arrow-down"></i>' : '<i class="fas fa-arrow-up"></i>';
+        const amountPrefix = t.type === 'credit' ? '+' : '-';
+        const categoryClass = (t.category || 'other').toLowerCase().replace(/[^a-z]/g, '');
+        
+        const row = `<tr>
+            <td><span class="transaction-id">${t.id}</span></td>
+            <td><span class="type-badge ${typeClass}">${typeIcon} ${t.type === 'credit' ? 'Credit' : 'Debit'}</span></td>
+            <td>${t.description}</td>
+            <td><span class="category-badge ${categoryClass}">${t.category}</span></td>
+            <td style="color: ${t.type === 'credit' ? '#16a34a' : '#dc2626'}; font-weight: 600;">${amountPrefix}₹${t.amount.toLocaleString()}</td>
+            <td class="timestamp">${formatDateTime(t.timestamp)}</td>
+            <td><span class="payment-id" title="${t.reference}">${t.reference.length > 12 ? t.reference.substring(0, 12) + '...' : t.reference}</span></td>
+        </tr>`;
+        auditBody.innerHTML += row;
+    });
+}
+
+function formatDateTime(timestamp) {
+    if (!timestamp) return '-';
+    const date = new Date(timestamp);
+    return date.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+}
+
+function filterAuditLog() {
+    renderAuditLog();
+}
+
+function clearAuditFilters() {
+    document.getElementById('audit-filter-type').value = 'all';
+    document.getElementById('audit-date-from').value = '';
+    document.getElementById('audit-date-to').value = '';
+    renderAuditLog();
+}
+
+function handleAddDisbursement(e) {
+    e.preventDefault();
+    
+    const recipient = document.getElementById('disb-recipient').value;
+    const amount = parseFloat(document.getElementById('disb-amount').value);
+    const category = document.getElementById('disb-category').value;
+    const description = document.getElementById('disb-description').value;
+    
+    if (!recipient || !amount || !category || !description) {
+        alert('Please fill all fields.');
+        return;
+    }
+    
+    const data = getData();
+    const totalFunds = data.donations.reduce((sum, d) => sum + d.amount, 0);
+    const totalDisbursed = (data.disbursements || []).reduce((sum, d) => sum + d.amount, 0);
+    const availableBalance = totalFunds - totalDisbursed;
+    
+    if (amount > availableBalance) {
+        alert(`Insufficient funds. Available balance: ₹${availableBalance.toLocaleString()}`);
+        return;
+    }
+    
+    const now = new Date();
+    const newDisbursement = {
+        id: 'DIS' + Date.now(),
+        recipient,
+        amount,
+        category,
+        description,
+        date: now.toISOString().split('T')[0],
+        timestamp: now.toISOString()
+    };
+    
+    if (!data.disbursements) data.disbursements = [];
+    data.disbursements.push(newDisbursement);
+    saveData(data);
+    
+    // Reset form
+    e.target.reset();
+    
+    // Re-render
+    renderAuditLog();
+    renderDashboard();
+    
+    alert('Disbursement recorded successfully!');
+}
+
+function exportAuditLog(format) {
+    const data = getData();
+    const transactions = getAuditTransactions(data);
+    
+    if (format === 'csv') {
+        let csv = 'Transaction ID,Type,Description,Category,Amount,Date & Time,Reference\n';
+        transactions.forEach(t => {
+            const amountPrefix = t.type === 'credit' ? '+' : '-';
+            csv += `"${t.id}","${t.type}","${t.description}","${t.category}","${amountPrefix}${t.amount}","${formatDateTime(t.timestamp)}","${t.reference}"\n`;
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `audit-log-${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    } else if (format === 'pdf') {
+        // For PDF, we'll create a printable view
+        const printContent = `
+            <html>
+            <head>
+                <title>Audit Log - Hope Foundation</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1 { color: #2ecc71; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+                    th { background: #f8f9fa; }
+                    .credit { color: #16a34a; }
+                    .debit { color: #dc2626; }
+                    .summary { margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; }
+                </style>
+            </head>
+            <body>
+                <h1>Hope Foundation - Audit Log</h1>
+                <p>Generated on: ${new Date().toLocaleString()}</p>
+                <div class="summary">
+                    <strong>Total Credits:</strong> ₹${transactions.filter(t => t.type === 'credit').reduce((s, t) => s + t.amount, 0).toLocaleString()} | 
+                    <strong>Total Debits:</strong> ₹${transactions.filter(t => t.type === 'debit').reduce((s, t) => s + t.amount, 0).toLocaleString()} | 
+                    <strong>Net Balance:</strong> ₹${(transactions.filter(t => t.type === 'credit').reduce((s, t) => s + t.amount, 0) - transactions.filter(t => t.type === 'debit').reduce((s, t) => s + t.amount, 0)).toLocaleString()}
+                </div>
+                <table>
+                    <tr><th>ID</th><th>Type</th><th>Description</th><th>Category</th><th>Amount</th><th>Date & Time</th></tr>
+                    ${transactions.map(t => `
+                        <tr>
+                            <td>${t.id}</td>
+                            <td class="${t.type}">${t.type.toUpperCase()}</td>
+                            <td>${t.description}</td>
+                            <td>${t.category}</td>
+                            <td class="${t.type}">${t.type === 'credit' ? '+' : '-'}₹${t.amount.toLocaleString()}</td>
+                            <td>${formatDateTime(t.timestamp)}</td>
+                        </tr>
+                    `).join('')}
+                </table>
+            </body>
+            </html>
+        `;
+        
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.print();
+    }
 }
 
 let donationsChartInstance = null;
