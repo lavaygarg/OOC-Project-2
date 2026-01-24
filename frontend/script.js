@@ -821,6 +821,13 @@ function showDashboardTab(tabId) {
     });
     // Show selected
     document.getElementById(tabId).style.display = 'block';
+    
+    // Initialize tasks and shifts when those tabs are shown
+    if (tabId === 'dash-tasks') {
+        renderTasksList();
+    } else if (tabId === 'dash-shifts') {
+        renderShiftsGrid();
+    }
 }
 
 function renderDashboard() {
@@ -1666,6 +1673,396 @@ function initAdminMessaging() {
     }, 100);
 }
 
+// --- TASK ASSIGNMENT & SHIFT MANAGEMENT ---
+const TASKS_STORAGE = 'ooc_admin_tasks';
+const SHIFTS_STORAGE = 'ooc_admin_shifts';
+
+// Load tasks from localStorage
+function loadTasks() {
+    try {
+        return JSON.parse(localStorage.getItem(TASKS_STORAGE)) || [];
+    } catch {
+        return [];
+    }
+}
+
+// Save tasks to localStorage
+function saveTasks(tasks) {
+    localStorage.setItem(TASKS_STORAGE, JSON.stringify(tasks));
+}
+
+// Load shifts from localStorage
+function loadShifts() {
+    try {
+        return JSON.parse(localStorage.getItem(SHIFTS_STORAGE)) || [];
+    } catch {
+        return [];
+    }
+}
+
+// Save shifts to localStorage
+function saveShifts(shifts) {
+    localStorage.setItem(SHIFTS_STORAGE, JSON.stringify(shifts));
+}
+
+// Get role label
+function getRoleLabel(roleToken) {
+    const labels = {
+        'role:staff': 'All Staff',
+        'role:teacher': 'All Teachers',
+        'role:events': 'Events Team',
+        'role:management': 'Management',
+        'role:fundraiser': 'Fundraising Team',
+        'role:user': 'All Users'
+    };
+    return labels[roleToken] || roleToken;
+}
+
+// Handle task assignment
+function handleAssignTask(event) {
+    event.preventDefault();
+    
+    const assignee = document.getElementById('task-assignee').value;
+    const priority = document.getElementById('task-priority').value;
+    const dueDate = document.getElementById('task-due-date').value;
+    const title = document.getElementById('task-title').value.trim();
+    const description = document.getElementById('task-description').value.trim();
+    
+    if (!assignee || !title || !dueDate) {
+        alert('Please fill all required fields');
+        return;
+    }
+    
+    const task = {
+        id: 'task-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        assignee,
+        assigneeLabel: getRoleLabel(assignee),
+        priority,
+        dueDate,
+        title,
+        description,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+    };
+    
+    // Save task
+    const tasks = loadTasks();
+    tasks.unshift(task);
+    saveTasks(tasks);
+    
+    // Send message notification to assignee
+    sendTaskNotification(task);
+    
+    // Reset form
+    document.getElementById('assignTaskForm').reset();
+    document.getElementById('task-priority').value = 'medium';
+    
+    // Refresh task list
+    renderTasksList();
+    
+    alert('Task assigned successfully! Notification sent to ' + task.assigneeLabel);
+}
+
+// Send task notification as a message
+function sendTaskNotification(task) {
+    const messages = loadUnifiedMessages();
+    
+    const priorityEmoji = {
+        'low': '🟢',
+        'medium': '🟡',
+        'high': '🔴',
+        'urgent': '🚨'
+    };
+    
+    const newMsg = {
+        id: 'msg-task-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        from: ADMIN_USER,
+        recipientTokens: [task.assignee],
+        subject: `📋 New Task Assigned: ${task.title}`,
+        body: `${priorityEmoji[task.priority]} **Priority:** ${task.priority.toUpperCase()}\n\n**Task:** ${task.title}\n\n**Description:**\n${task.description}\n\n**Due Date:** ${formatDateDisplay(task.dueDate)}\n\n---\n_Please complete this task by the due date. Contact admin if you have any questions._`,
+        createdAt: new Date().toISOString(),
+        type: 'task'
+    };
+    
+    messages.push(newMsg);
+    saveUnifiedMessages(messages);
+}
+
+// Render tasks list
+function renderTasksList() {
+    const container = document.getElementById('active-tasks-list');
+    if (!container) return;
+    
+    const tasks = loadTasks().filter(t => t.status !== 'completed');
+    
+    if (tasks.length === 0) {
+        container.innerHTML = '<div class="muted-inline" style="padding: 1rem; text-align: center;">No active tasks. Assign a new task above.</div>';
+        return;
+    }
+    
+    container.innerHTML = tasks.map(task => `
+        <div class="task-item">
+            <div class="task-priority-indicator task-priority-${task.priority}"></div>
+            <div class="task-content">
+                <div class="task-header">
+                    <h4 class="task-title">${escapeHtml(task.title)}</h4>
+                </div>
+                <p class="task-description">${escapeHtml(task.description)}</p>
+                <div class="task-meta">
+                    <span class="task-badge task-badge-assignee"><i class="fas fa-user"></i> ${task.assigneeLabel}</span>
+                    <span class="task-badge task-badge-due"><i class="fas fa-calendar"></i> Due: ${formatDateDisplay(task.dueDate)}</span>
+                    <span class="task-badge task-badge-priority"><i class="fas fa-flag"></i> ${task.priority.toUpperCase()}</span>
+                </div>
+            </div>
+            <div class="task-actions">
+                <button class="task-btn-complete" onclick="completeTask('${task.id}')" title="Mark Complete"><i class="fas fa-check"></i></button>
+                <button class="task-btn-delete" onclick="deleteTask('${task.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Complete a task
+function completeTask(taskId) {
+    const tasks = loadTasks();
+    const idx = tasks.findIndex(t => t.id === taskId);
+    if (idx >= 0) {
+        tasks[idx].status = 'completed';
+        tasks[idx].completedAt = new Date().toISOString();
+        saveTasks(tasks);
+        renderTasksList();
+    }
+}
+
+// Delete a task
+function deleteTask(taskId) {
+    if (!confirm('Are you sure you want to delete this task?')) return;
+    
+    const tasks = loadTasks().filter(t => t.id !== taskId);
+    saveTasks(tasks);
+    renderTasksList();
+}
+
+// Handle shift scheduling
+function handleScheduleShift(event) {
+    event.preventDefault();
+    
+    const assignee = document.getElementById('shift-assignee').value;
+    const shiftDate = document.getElementById('shift-date').value;
+    const startTime = document.getElementById('shift-start-time').value;
+    const endTime = document.getElementById('shift-end-time').value;
+    const shiftType = document.getElementById('shift-type').value;
+    const location = document.getElementById('shift-location').value.trim();
+    const notes = document.getElementById('shift-notes').value.trim();
+    
+    if (!assignee || !shiftDate || !startTime || !endTime) {
+        alert('Please fill all required fields');
+        return;
+    }
+    
+    const shift = {
+        id: 'shift-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        assignee,
+        assigneeLabel: getRoleLabel(assignee),
+        date: shiftDate,
+        startTime,
+        endTime,
+        type: shiftType,
+        location,
+        notes,
+        createdAt: new Date().toISOString()
+    };
+    
+    // Save shift
+    const shifts = loadShifts();
+    shifts.unshift(shift);
+    saveShifts(shifts);
+    
+    // Send shift notification as a message
+    sendShiftNotification(shift);
+    
+    // Reset form
+    document.getElementById('scheduleShiftForm').reset();
+    
+    // Refresh shifts display
+    renderShiftsGrid();
+    
+    alert('Shift scheduled successfully! Notification sent to ' + shift.assigneeLabel);
+}
+
+// Send shift notification as a message
+function sendShiftNotification(shift) {
+    const messages = loadUnifiedMessages();
+    
+    const typeLabels = {
+        'regular': '📅 Regular Shift',
+        'morning': '🌅 Morning Shift',
+        'afternoon': '☀️ Afternoon Shift',
+        'evening': '🌆 Evening Shift',
+        'weekend': '📆 Weekend Shift',
+        'event': '🎉 Event Duty',
+        'emergency': '🚨 Emergency/On-Call'
+    };
+    
+    const newMsg = {
+        id: 'msg-shift-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        from: ADMIN_USER,
+        recipientTokens: [shift.assignee],
+        subject: `🗓️ Shift Scheduled: ${formatDateDisplay(shift.date)}`,
+        body: `${typeLabels[shift.type]}\n\n**Date:** ${formatDateDisplay(shift.date)}\n**Time:** ${formatTime(shift.startTime)} - ${formatTime(shift.endTime)}\n**Location:** ${shift.location}\n\n${shift.notes ? '**Notes:**\n' + shift.notes : ''}\n\n---\n_Please be on time. Contact admin if you have any scheduling conflicts._`,
+        createdAt: new Date().toISOString(),
+        type: 'shift'
+    };
+    
+    messages.push(newMsg);
+    saveUnifiedMessages(messages);
+}
+
+// Format date for display
+function formatDateDisplay(dateStr) {
+    try {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    } catch {
+        return dateStr;
+    }
+}
+
+// Format time for display
+function formatTime(timeStr) {
+    try {
+        const [hours, minutes] = timeStr.split(':');
+        const h = parseInt(hours);
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const h12 = h % 12 || 12;
+        return `${h12}:${minutes} ${ampm}`;
+    } catch {
+        return timeStr;
+    }
+}
+
+// Current week offset for shift view
+let currentWeekOffset = 0;
+
+// Change shift week view
+function changeShiftWeek(direction) {
+    currentWeekOffset += direction;
+    renderShiftsGrid();
+}
+
+// Get week date range
+function getWeekRange(offset = 0) {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay() + (offset * 7));
+    
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    
+    return { start: startOfWeek, end: endOfWeek };
+}
+
+// Render shifts grid
+function renderShiftsGrid() {
+    const container = document.getElementById('shifts-schedule-grid');
+    const weekLabel = document.getElementById('shift-week-label');
+    if (!container) return;
+    
+    const { start, end } = getWeekRange(currentWeekOffset);
+    
+    // Update week label
+    if (weekLabel) {
+        if (currentWeekOffset === 0) {
+            weekLabel.textContent = 'This Week';
+        } else if (currentWeekOffset === 1) {
+            weekLabel.textContent = 'Next Week';
+        } else if (currentWeekOffset === -1) {
+            weekLabel.textContent = 'Last Week';
+        } else {
+            weekLabel.textContent = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        }
+    }
+    
+    const shifts = loadShifts().filter(shift => {
+        const shiftDate = new Date(shift.date);
+        return shiftDate >= start && shiftDate <= end;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    if (shifts.length === 0) {
+        container.innerHTML = '<div class="muted-inline" style="padding: 2rem; text-align: center;"><i class="fas fa-calendar-xmark" style="font-size: 2rem; color: #ccc; margin-bottom: 0.5rem;"></i><br>No shifts scheduled for this week.</div>';
+        return;
+    }
+    
+    container.innerHTML = shifts.map(shift => {
+        const date = new Date(shift.date);
+        const day = date.getDate();
+        const month = date.toLocaleDateString('en-US', { month: 'short' });
+        
+        return `
+            <div class="shift-item shift-type-${shift.type}">
+                <div class="shift-date-box">
+                    <div class="shift-date-day">${day}</div>
+                    <div class="shift-date-month">${month}</div>
+                </div>
+                <div class="shift-details">
+                    <h4 class="shift-assignee">${shift.assigneeLabel}</h4>
+                    <div class="shift-time">
+                        <i class="fas fa-clock"></i>
+                        ${formatTime(shift.startTime)} - ${formatTime(shift.endTime)}
+                    </div>
+                    <div class="shift-info">
+                        <span class="shift-badge shift-badge-type"><i class="fas fa-tag"></i> ${shift.type}</span>
+                        <span class="shift-badge shift-badge-location"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(shift.location)}</span>
+                    </div>
+                </div>
+                <div class="shift-actions">
+                    <button class="shift-btn-delete" onclick="deleteShift('${shift.id}')" title="Delete Shift"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Delete a shift
+function deleteShift(shiftId) {
+    if (!confirm('Are you sure you want to delete this shift?')) return;
+    
+    const shifts = loadShifts().filter(s => s.id !== shiftId);
+    saveShifts(shifts);
+    renderShiftsGrid();
+}
+
+// Escape HTML helper
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+// Initialize tasks and shifts on page load
+function initTasksAndShifts() {
+    renderTasksList();
+    renderShiftsGrid();
+    
+    // Set minimum date to today for forms
+    const today = new Date().toISOString().split('T')[0];
+    const taskDueDate = document.getElementById('task-due-date');
+    const shiftDate = document.getElementById('shift-date');
+    
+    if (taskDueDate) taskDueDate.min = today;
+    if (shiftDate) shiftDate.min = today;
+}
+
+// Call init when dashboard loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize after a short delay to ensure elements are loaded
+    setTimeout(initTasksAndShifts, 500);
+});
+
 // --- FEEDBACK & TESTIMONIALS ---
 const defaultTestimonials = [
     {
@@ -1762,6 +2159,30 @@ function toggleFeedback() {
     const form = document.getElementById('feedback-form');
     if (form) {
         form.classList.toggle('active');
+    }
+}
+
+// Stories Section Tab Switching
+function switchStoriesTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.stories-tab').forEach(tab => {
+        if (tab.dataset.tab === tabName) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+    
+    // Update tab content
+    document.querySelectorAll('.stories-tab-content').forEach(content => {
+        content.classList.remove('active');
+        content.style.display = 'none';
+    });
+    
+    const activeContent = document.getElementById(tabName + '-content');
+    if (activeContent) {
+        activeContent.classList.add('active');
+        activeContent.style.display = 'block';
     }
 }
 
