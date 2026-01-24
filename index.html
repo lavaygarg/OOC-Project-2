@@ -18,7 +18,10 @@
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-inner">
-            <a class="logo" href="#" onclick="showSection('home')">Hope Foundation</a>
+            <a class="logo" href="#" onclick="showSection('home')">
+                <img src="images/logo.jpeg" alt="Hope Foundation logo" loading="lazy">
+                <span>Hope Foundation</span>
+            </a>
             <div class="nav-actions">
                 <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle theme">
                     <i class="fas fa-moon"></i>
@@ -142,7 +145,7 @@
                             <li>Parent circles that turn caregivers into co-educators.</li>
                         </ul>
                     </div>
-                    <div class="impact-grid">
+                    <div class="impact-grid about-stats">
                         <div class="card">
                             <h3>12 cities</h3>
                             <p>Active programs across urban and peri-urban neighborhoods.</p>
@@ -725,26 +728,42 @@
     </section>
 
     <footer class="site-footer">
-        <div class="container footer-grid">
-            <div>
-                <h3>Hope Foundation</h3>
-                <p class="muted">Empowering underprivileged children through education, nutrition, and healthcare.</p>
-            </div>
-            <div>
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="#" onclick="showSection('about')">About</a></li>
-                    <li><a href="#" onclick="showSection('programs')">Programs</a></li>
-                    <li><a href="#" onclick="showSection('impact')">Impact</a></li>
-                    <li><a href="#" onclick="showSection('contact')">Contact</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4>Connect</h4>
-                <div class="socials">
-                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+        <div class="footer-top">
+            <div class="container footer-grid">
+                <div class="footer-brand">
+                    <span class="footer-badge">Since 2012</span>
+                    <h3>Hope Foundation</h3>
+                    <p class="muted">Empowering underprivileged children through education, nutrition, healthcare, and family support—backed by transparent reporting.</p>
+                    <div class="footer-meta">
+                        <span class="footer-pill">12 cities</span>
+                        <span class="footer-pill">86 facilitators</span>
+                        <span class="footer-pill">92% attendance</span>
+                    </div>
+                </div>
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#" onclick="showSection('about')">About</a></li>
+                        <li><a href="#" onclick="showSection('programs')">Programs</a></li>
+                        <li><a href="#" onclick="showSection('impact')">Impact</a></li>
+                        <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+                    <p><i class="fas fa-envelope"></i> hello@hopefoundation.org</p>
+                    <p><i class="fas fa-location-dot"></i> 21 Community Lane, Ahmedabad</p>
+                    <div class="socials">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-cta">
+                    <h4>Ready to help?</h4>
+                    <p class="muted">Your support funds learning kits, meals, and health camps. Every contribution is reported with receipts.</p>
+                    <button class="btn btn-primary" onclick="showSection('donate')">Donate Now</button>
                 </div>
             </div>
         </div>
