@@ -5,9 +5,11 @@ const API_BASE_URL = 'https://ooc-project.onrender.com';
 // --- MOCK DATABASE ---
 const initialData = {
     donations: [
-        { id: 'D001', name: 'Rohan Sharma', amount: 5000, method: 'UPI', date: '2023-10-15' },
-        { id: 'D002', name: 'Alice Smith', amount: 12000, method: 'Credit Card', date: '2023-10-18' },
-        { id: 'D003', name: 'Tech Corp Inc.', amount: 50000, method: 'Bank Transfer', date: '2023-10-20' },
+        { id: 'D001', name: 'Rohan Sharma', amount: 5000, method: 'UPI (Razorpay)', date: '2023-10-15', paymentId: 'pay_NxK7GhKlMn012', orderId: 'order_NxK7GhKlMn012' },
+        { id: 'D002', name: 'Alice Smith', amount: 12000, method: 'Card (Razorpay)', date: '2023-10-18', paymentId: 'pay_NyL8HiLmNo345', orderId: 'order_NyL8HiLmNo345' },
+        { id: 'D003', name: 'Tech Corp Inc.', amount: 50000, method: 'Bank Transfer', date: '2023-10-20', paymentId: '', orderId: '' },
+        { id: 'D004', name: 'Priya Verma', amount: 2500, method: 'UPI (Razorpay)', date: '2023-11-05', paymentId: 'pay_NzM9IjMnOp678', orderId: 'order_NzM9IjMnOp678' },
+        { id: 'D005', name: 'Rajesh Kumar', amount: 8000, method: 'Card (Razorpay)', date: '2023-11-12', paymentId: 'pay_OaN0JkNoQr901', orderId: 'order_OaN0JkNoQr901' },
     ],
     volunteers: [
         { id: 'V001', name: 'Priya Patel', email: 'priya@example.com', interest: 'Teaching', status: 'Approved' },
@@ -492,6 +494,9 @@ function handleDonationSubmit(e) {
         donateBtn.textContent = 'Processing...';
     }
 
+    // Get selected payment method from form (UPI or Card)
+    const selectedMethod = document.querySelector('input[name="pay-method"]:checked')?.value || 'UPI';
+    
     createRazorpayOrder({ amount, donorName: name })
         .then(order => {
             const options = {
@@ -508,10 +513,12 @@ function handleDonationSubmit(e) {
                 },
                 theme: { color: '#2ecc71' },
                 handler: function (response) {
+                    // Determine the payment method from Razorpay response or use selected method
+                    const paymentMethod = selectedMethod === 'Card' ? 'Card (Razorpay)' : 'UPI (Razorpay)';
                     recordDonationSuccess({
                         name,
                         amount,
-                        method: 'Razorpay',
+                        method: paymentMethod,
                         paymentId: response.razorpay_payment_id,
                         orderId: response.razorpay_order_id
                     });
@@ -570,7 +577,9 @@ function recordDonationSuccess({ name, amount, method, paymentId, orderId }) {
         name,
         amount: Number(amount),
         method,
-        date
+        date,
+        paymentId: paymentId || '',
+        orderId: orderId || ''
     };
 
     data.donations.push(newDonation);
@@ -677,11 +686,14 @@ function renderDashboard() {
     const sortedDonations = [...data.donations].sort((a,b) => new Date(b.date) - new Date(a.date));
     
     sortedDonations.forEach(d => {
+        // Display payment ID if available (for Razorpay/Online payments)
+        const paymentIdDisplay = d.paymentId ? `<span class="payment-id" title="${d.paymentId}">${d.paymentId.substring(0, 12)}...</span>` : (d.id || 'N/A');
         const row = `<tr>
             <td>${d.name}</td>
-            <td>₹${d.amount}</td>
-            <td>${d.method}</td>
+            <td>₹${d.amount.toLocaleString()}</td>
+            <td><span class="method-badge method-${(d.method || 'Other').toLowerCase().replace(/[^a-z]/g, '')}">${d.method || 'Other'}</span></td>
             <td>${d.date}</td>
+            <td>${paymentIdDisplay}</td>
         </tr>`;
         donBody.innerHTML += row;
     });
