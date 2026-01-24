@@ -2,6 +2,41 @@
 // Backend hosted on Render.com
 const API_BASE_URL = 'https://ooc-project.onrender.com';
 
+// --- XSS SECURITY ---
+// Escape HTML special characters to prevent XSS attacks
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .replace(/\//g, '&#x2F;');
+}
+
+// Sanitize URLs to prevent javascript: and data: XSS
+function sanitizeUrl(url) {
+    if (!url) return '';
+    const sanitized = String(url).trim();
+    // Only allow http, https, and relative URLs
+    if (sanitized.match(/^(https?:\/\/|\/|#|\.\/|\.\.\/)/i)) {
+        return escapeHtml(sanitized);
+    }
+    // Block javascript:, data:, vbscript:, etc.
+    if (sanitized.match(/^[a-z]+:/i)) {
+        console.warn('Blocked potentially dangerous URL:', sanitized);
+        return '';
+    }
+    return escapeHtml(sanitized);
+}
+
+// Sanitize and validate input data
+function sanitizeInput(input, maxLength = 1000) {
+    if (!input) return '';
+    return escapeHtml(String(input).trim().slice(0, maxLength));
+}
+
 // --- MOCK DATABASE ---
 const initialData = {
     donations: [
@@ -459,7 +494,127 @@ function getTotalFunds(data) {
 }
 
 // --- NAVIGATION ---
-function showSection(sectionId) {
+
+// Helper function to preload a single image
+function preloadImage(src) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(src);
+        img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+        img.src = src;
+    });
+}
+
+// Helper function to get all gallery image URLs
+function getGalleryImageUrls() {
+    const gallerySection = document.getElementById('gallery');
+    if (!gallerySection) return [];
+    
+    const imageCards = gallerySection.querySelectorAll('.image-card');
+    const urls = [];
+    
+    imageCards.forEach(card => {
+        const style = card.style.backgroundImage;
+        const match = style.match(/url\(['"]?([^'"\)]+)['"]?\)/);
+        if (match && match[1]) {
+            urls.push(match[1]);
+        }
+    });
+    
+    return urls;
+}
+
+// Async function to preload all gallery images
+async function preloadGalleryImages() {
+    const imageUrls = getGalleryImageUrls();
+    if (imageUrls.length === 0) return;
+    
+    const loadPromises = imageUrls.map(url => preloadImage(url));
+    
+    try {
+        await Promise.all(loadPromises);
+        console.log('All gallery images loaded successfully');
+    } catch (error) {
+        console.warn('Some gallery images failed to load:', error.message);
+    }
+}
+
+// Show loading overlay
+function showLoadingOverlay() {
+    // Create overlay if it doesn't exist
+    let overlay = document.getElementById('gallery-loading-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'gallery-loading-overlay';
+        overlay.innerHTML = `
+            <div class="loading-spinner"></div>
+            <p>Loading gallery images...</p>
+        `;
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            gap: 1rem;
+        `;
+        
+        // Add spinner styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .loading-spinner {
+                width: 50px;
+                height: 50px;
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid var(--primary, #2ecc71);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            #gallery-loading-overlay p {
+                font-size: 1.1rem;
+                color: #555;
+                margin: 0;
+            }
+            [data-theme="dark"] #gallery-loading-overlay {
+                background: rgba(30, 30, 30, 0.95);
+            }
+            [data-theme="dark"] #gallery-loading-overlay p {
+                color: #ccc;
+            }
+        `;
+        document.head.appendChild(style);
+        document.body.appendChild(overlay);
+    }
+    overlay.style.display = 'flex';
+}
+
+// Hide loading overlay
+function hideLoadingOverlay() {
+    const overlay = document.getElementById('gallery-loading-overlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+}
+
+// Main showSection function with async support for gallery
+async function showSection(sectionId) {
+    // Special handling for gallery - preload images first
+    if (sectionId === 'gallery') {
+        showLoadingOverlay();
+        await preloadGalleryImages();
+        hideLoadingOverlay();
+    }
+    
     // Hide all sections
     document.querySelectorAll('.page-section').forEach(sec => {
         sec.style.display = 'none';
@@ -515,9 +670,9 @@ function renderPublicEvents() {
     sortedEvents.forEach(evt => {
         const row = `
             <tr>
-                <td>${evt.title}</td>
-                <td>${evt.date}</td>
-                <td>${evt.desc}</td>
+                <td>${escapeHtml(evt.title)}</td>
+                <td>${escapeHtml(evt.date)}</td>
+                <td>${escapeHtml(evt.desc)}</td>
             </tr>`;
         list.innerHTML += row;
     });
@@ -539,13 +694,13 @@ function renderPublicInstitutions() {
         card.innerHTML = `
             <div class="inst-header">
                 <div>
-                    <h4>${inst.name}</h4>
-                    <p class="muted">${inst.city} • ${inst.sector}</p>
+                    <h4>${escapeHtml(inst.name)}</h4>
+                    <p class="muted">${escapeHtml(inst.city)} • ${escapeHtml(inst.sector)}</p>
                 </div>
-                <span class="pill">${inst.allocation}%</span>
+                <span class="pill">${escapeHtml(inst.allocation)}%</span>
             </div>
-            <p>${inst.impact}</p>
-            <div class="inst-bar"><span style="width:${inst.allocation}%;"></span></div>
+            <p>${escapeHtml(inst.impact)}</p>
+            <div class="inst-bar"><span style="width:${Number(inst.allocation) || 0}%;"></span></div>
             <div class="inst-amount">Est. ₹${allocatedAmount.toLocaleString()} allocated</div>
         `;
         grid.appendChild(card);
@@ -865,6 +1020,7 @@ function showDashboardTab(tabId) {
     });
     // Show selected
     document.getElementById(tabId).style.display = 'block';
+}
     
     // Initialize tasks and shifts when those tabs are shown
     if (tabId === 'dash-tasks') {
@@ -907,12 +1063,13 @@ function renderDashboard() {
     
     sortedDonations.forEach(d => {
         // Display payment ID if available (for Razorpay/Online payments)
-        const paymentIdDisplay = d.paymentId ? `<span class="payment-id" title="${d.paymentId}">${d.paymentId.substring(0, 12)}...</span>` : (d.id || 'N/A');
+        const paymentIdDisplay = d.paymentId ? `<span class="payment-id" title="${escapeHtml(d.paymentId)}">${escapeHtml(d.paymentId.substring(0, 12))}...</span>` : escapeHtml(d.id || 'N/A');
+        const methodClass = (d.method || 'Other').toLowerCase().replace(/[^a-z]/g, '');
         const row = `<tr>
-            <td>${d.name}</td>
-            <td>₹${d.amount.toLocaleString()}</td>
-            <td><span class="method-badge method-${(d.method || 'Other').toLowerCase().replace(/[^a-z]/g, '')}">${d.method || 'Other'}</span></td>
-            <td>${d.date}</td>
+            <td>${escapeHtml(d.name)}</td>
+            <td>₹${Number(d.amount).toLocaleString()}</td>
+            <td><span class="method-badge method-${methodClass}">${escapeHtml(d.method || 'Other')}</span></td>
+            <td>${escapeHtml(d.date)}</td>
             <td>${paymentIdDisplay}</td>
         </tr>`;
         donBody.innerHTML += row;
@@ -923,13 +1080,14 @@ function renderDashboard() {
     volBody.innerHTML = '';
 
     data.volunteers.forEach(v => {
+        const statusClass = (v.status || '').toLowerCase();
         const row = `<tr>
-            <td>${v.name}</td>
-            <td>${v.email}</td>
-            <td>${v.interest}</td>
-            <td><span class="status-${v.status.toLowerCase()}">${v.status}</span></td>
+            <td>${escapeHtml(v.name)}</td>
+            <td>${escapeHtml(v.email)}</td>
+            <td>${escapeHtml(v.interest)}</td>
+            <td><span class="status-${statusClass}">${escapeHtml(v.status)}</span></td>
             <td>
-                ${v.status === 'Pending' ? `<button onclick="approveVolunteer('${v.id}')" style="cursor:pointer; color:green; background:none; border:none;">Approve</button>` : ''}
+                ${v.status === 'Pending' ? `<button onclick="approveVolunteer('${escapeHtml(v.id)}')" style="cursor:pointer; color:green; background:none; border:none;">Approve</button>` : ''}
             </td>
         </tr>`;
         volBody.innerHTML += row;
@@ -941,9 +1099,9 @@ function renderDashboard() {
         evtBody.innerHTML = '';
         data.events.forEach(evt => {
             const row = `<tr>
-                <td>${evt.title}</td>
-                <td>${evt.date}</td>
-                <td><button onclick="deleteEvent('${evt.id}')" style="color:red; background:none; border:none; cursor:pointer;">Delete</button></td>
+                <td>${escapeHtml(evt.title)}</td>
+                <td>${escapeHtml(evt.date)}</td>
+                <td><button onclick="deleteEvent('${escapeHtml(evt.id)}')" style="color:red; background:none; border:none; cursor:pointer;">Delete</button></td>
             </tr>`;
             evtBody.innerHTML += row;
         });
@@ -977,8 +1135,8 @@ function renderRecentAudit(data) {
         const amountPrefix = t.type === 'credit' ? '+' : '-';
         const row = `<tr>
             <td><span class="type-badge ${typeClass}">${typeIcon} ${t.type === 'credit' ? 'Credit' : 'Debit'}</span></td>
-            <td>${t.description}</td>
-            <td style="color: ${t.type === 'credit' ? '#16a34a' : '#dc2626'}; font-weight: 600;">${amountPrefix}₹${t.amount.toLocaleString()}</td>
+            <td>${escapeHtml(t.description)}</td>
+            <td style="color: ${t.type === 'credit' ? '#16a34a' : '#dc2626'}; font-weight: 600;">${amountPrefix}₹${Number(t.amount).toLocaleString()}</td>
             <td class="timestamp">${formatDateTime(t.timestamp)}</td>
         </tr>`;
         recentAuditBody.innerHTML += row;
@@ -1069,15 +1227,16 @@ function renderAuditLog() {
         const typeIcon = t.type === 'credit' ? '<i class="fas fa-arrow-down"></i>' : '<i class="fas fa-arrow-up"></i>';
         const amountPrefix = t.type === 'credit' ? '+' : '-';
         const categoryClass = (t.category || 'other').toLowerCase().replace(/[^a-z]/g, '');
+        const refDisplay = t.reference && t.reference.length > 12 ? t.reference.substring(0, 12) + '...' : (t.reference || '-');
         
         const row = `<tr>
-            <td><span class="transaction-id">${t.id}</span></td>
+            <td><span class="transaction-id">${escapeHtml(t.id)}</span></td>
             <td><span class="type-badge ${typeClass}">${typeIcon} ${t.type === 'credit' ? 'Credit' : 'Debit'}</span></td>
-            <td>${t.description}</td>
-            <td><span class="category-badge ${categoryClass}">${t.category}</span></td>
-            <td style="color: ${t.type === 'credit' ? '#16a34a' : '#dc2626'}; font-weight: 600;">${amountPrefix}₹${t.amount.toLocaleString()}</td>
+            <td>${escapeHtml(t.description)}</td>
+            <td><span class="category-badge ${categoryClass}">${escapeHtml(t.category)}</span></td>
+            <td style="color: ${t.type === 'credit' ? '#16a34a' : '#dc2626'}; font-weight: 600;">${amountPrefix}₹${Number(t.amount).toLocaleString()}</td>
             <td class="timestamp">${formatDateTime(t.timestamp)}</td>
-            <td><span class="payment-id" title="${t.reference}">${t.reference.length > 12 ? t.reference.substring(0, 12) + '...' : t.reference}</span></td>
+            <td><span class="payment-id" title="${escapeHtml(t.reference)}">${escapeHtml(refDisplay)}</span></td>
         </tr>`;
         auditBody.innerHTML += row;
     });
@@ -1496,9 +1655,9 @@ function renderMessagesAdmin(data) {
     data.messages.forEach(msg => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${msg.name}<div class="muted small">${msg.email}</div></td>
-            <td>${msg.message}</td>
-            <td>${msg.id}</td>
+            <td>${escapeHtml(msg.name)}<div class="muted small">${escapeHtml(msg.email)}</div></td>
+            <td>${escapeHtml(msg.message)}</td>
+            <td>${escapeHtml(msg.id)}</td>
         `;
         table.appendChild(row);
     });
@@ -1715,11 +1874,8 @@ function formatAdminMsgDate(isoStr) {
     return d.toLocaleDateString();
 }
 
-function escAdminHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str || '';
-    return div.innerHTML;
-}
+// Alias for backward compatibility
+const escAdminHtml = escapeHtml;
 
 function showAdminMsgPanel(panelId) {
     // Hide all panels
@@ -2359,16 +2515,7 @@ function deleteShift(shiftId) {
     renderShiftsGrid();
 }
 
-// Escape HTML helper
-function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
+// escapeHtml is defined at top of file for XSS protection
 
 // Initialize tasks and shifts on page load
 function initTasksAndShifts() {
@@ -2455,16 +2602,17 @@ function renderTestimonials() {
     allTestimonials.forEach(t => {
         const card = document.createElement('div');
         card.className = 'testimonial-card';
+        const imgSrc = sanitizeUrl(t.image) || getRandomAvatar();
         card.innerHTML = `
             <div class="testimonial-header">
-                <img src="${t.image || getRandomAvatar()}" alt="${t.name}">
+                <img src="${imgSrc}" alt="${escapeHtml(t.name)}">
                 <div>
-                    <h4>${t.name}</h4>
-                    <p class="muted">${t.role}, ${t.city}</p>
+                    <h4>${escapeHtml(t.name)}</h4>
+                    <p class="muted">${escapeHtml(t.role)}, ${escapeHtml(t.city)}</p>
                 </div>
             </div>
-            <p>"${t.message}"</p>
-            <div class="stars">${getStarsHtml(t.rating)}</div>
+            <p>"${escapeHtml(t.message)}"</p>
+            <div class="stars">${getStarsHtml(Number(t.rating) || 0)}</div>
         `;
         grid.appendChild(card);
     });
@@ -2746,16 +2894,20 @@ function addMessage(text, sender, action = null) {
     
     let actionHTML = '';
     if (action) {
+        // Only allow known safe sections
+        const safeSection = escapeHtml(action.section);
         actionHTML = `
             <div class="quick-replies" style="margin-top: 10px;">
-                <button onclick="goToSection('${action.section}')">${action.text}</button>
+                <button onclick="goToSection('${safeSection}')">${escapeHtml(action.text)}</button>
             </div>
         `;
     }
     
-    // Convert markdown-style bold to HTML
-    const formattedText = text
+    // Escape user input, then convert markdown-style bold to HTML for bot messages
+    const safeText = sender === 'user' ? escapeHtml(text) : text;
+    const formattedText = safeText
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\\n/g, '<br>')
         .replace(/\n/g, '<br>');
     
     messageDiv.innerHTML = `
@@ -2838,4 +2990,4 @@ document.addEventListener('DOMContentLoaded', function() {
             if (badge) badge.style.display = 'flex';
         }
     }, 5000);
-});
+})
