@@ -609,6 +609,7 @@
                 <h3>Admin Panel</h3>
                 <ul>
                     <li onclick="showDashboardTab('dash-overview')">Overview</li>
+                    <li onclick="showDashboardTab('dash-audit')">Audit Log</li>
                     <li onclick="showDashboardTab('dash-donations')">Donations</li>
                     <li onclick="showDashboardTab('dash-volunteers')">Volunteers</li>
                     <li onclick="showDashboardTab('dash-events')">Manage Events</li>
@@ -630,7 +631,37 @@
                             <h3 id="volunteer-count">0</h3>
                             <p>Active Volunteers</p>
                         </div>
+                        <div class="card">
+                            <h3>₹<span id="total-disbursed">0</span></h3>
+                            <p>Total Disbursed</p>
+                        </div>
+                        <div class="card">
+                            <h3>₹<span id="balance-funds">0</span></h3>
+                            <p>Available Balance</p>
+                        </div>
                     </div>
+                    
+                    <!-- Quick Audit Summary -->
+                    <div class="card highlight" style="margin-top: 20px;">
+                        <div class="audit-summary-header">
+                            <h3><i class="fas fa-history"></i> Recent Transactions</h3>
+                            <button class="btn btn-outline btn-sm" onclick="showDashboardTab('dash-audit')">View Full Audit</button>
+                        </div>
+                        <table class="data-table" style="margin-top: 15px;">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Date & Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-audit-body">
+                                <!-- JS will populate -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
                     <div class="card highlight allocation-card">
                         <div class="allocation-header">
                             <h3>Fund Allocation by Sector</h3>
@@ -689,6 +720,122 @@
                     </table>
                 </div>
 
+                <!-- Audit Log Tab -->
+                <div id="dash-audit" class="dash-tab" style="display: none;">
+                    <div class="audit-header">
+                        <h2><i class="fas fa-clipboard-list"></i> Audit Log</h2>
+                        <p class="muted">Complete record of all financial transactions - incoming donations and outgoing disbursements.</p>
+                    </div>
+                    
+                    <!-- Audit Filters -->
+                    <div class="audit-filters card">
+                        <div class="filter-row">
+                            <div class="form-group">
+                                <label>Transaction Type</label>
+                                <select id="audit-filter-type" onchange="filterAuditLog()">
+                                    <option value="all">All Transactions</option>
+                                    <option value="credit">Credits (Incoming)</option>
+                                    <option value="debit">Debits (Outgoing)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Date From</label>
+                                <input type="date" id="audit-date-from" onchange="filterAuditLog()">
+                            </div>
+                            <div class="form-group">
+                                <label>Date To</label>
+                                <input type="date" id="audit-date-to" onchange="filterAuditLog()">
+                            </div>
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button class="btn btn-outline" onclick="clearAuditFilters()">Clear Filters</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Audit Summary Cards -->
+                    <div class="audit-summary-cards">
+                        <div class="audit-card credit">
+                            <div class="audit-card-icon"><i class="fas fa-arrow-down"></i></div>
+                            <div>
+                                <h4>Total Credits</h4>
+                                <p class="audit-amount" id="audit-total-credit">₹0</p>
+                            </div>
+                        </div>
+                        <div class="audit-card debit">
+                            <div class="audit-card-icon"><i class="fas fa-arrow-up"></i></div>
+                            <div>
+                                <h4>Total Debits</h4>
+                                <p class="audit-amount" id="audit-total-debit">₹0</p>
+                            </div>
+                        </div>
+                        <div class="audit-card balance">
+                            <div class="audit-card-icon"><i class="fas fa-wallet"></i></div>
+                            <div>
+                                <h4>Net Balance</h4>
+                                <p class="audit-amount" id="audit-net-balance">₹0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Add Disbursement Form -->
+                    <div class="card" style="margin: 20px 0;">
+                        <h3><i class="fas fa-paper-plane"></i> Record Fund Disbursement</h3>
+                        <form onsubmit="handleAddDisbursement(event)" class="disbursement-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Recipient/Institution</label>
+                                    <input type="text" id="disb-recipient" placeholder="e.g., Sunrise Public School" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Amount (₹)</label>
+                                    <input type="number" id="disb-amount" min="1" placeholder="Enter amount" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select id="disb-category" required>
+                                        <option value="">Select category</option>
+                                        <option value="Education">Education</option>
+                                        <option value="Nutrition">Nutrition</option>
+                                        <option value="Healthcare">Healthcare</option>
+                                        <option value="Shelter">Shelter</option>
+                                        <option value="Operations">Operations</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Description/Purpose</label>
+                                <input type="text" id="disb-description" placeholder="e.g., Monthly scholarship disbursement" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Record Disbursement</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Audit Table -->
+                    <table class="data-table audit-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Date & Time</th>
+                                <th>Reference</th>
+                            </tr>
+                        </thead>
+                        <tbody id="audit-table-body">
+                            <!-- JS will populate -->
+                        </tbody>
+                    </table>
+                    
+                    <!-- Export Options -->
+                    <div class="audit-export">
+                        <button class="btn btn-outline" onclick="exportAuditLog('csv')"><i class="fas fa-file-csv"></i> Export CSV</button>
+                        <button class="btn btn-outline" onclick="exportAuditLog('pdf')"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                    </div>
+                </div>
 
                 <!-- Dashboard Events -->
                 <div id="dash-events" class="dash-tab" style="display: none;">
