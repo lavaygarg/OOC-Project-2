@@ -1805,3 +1805,235 @@ function submitFeedback(e) {
     // Scroll to testimonials grid
     document.getElementById('testimonials-grid').scrollIntoView({ behavior: 'smooth' });
 }
+
+// ===== CHATBOT FUNCTIONALITY =====
+const chatbotResponses = {
+    greetings: [
+        "Hello! 👋 Welcome to Hope Foundation. How can I assist you today?",
+        "Hi there! 😊 I'm here to help you learn more about our work.",
+        "Hey! Great to see you. What would you like to know?"
+    ],
+    donation: {
+        keywords: ['donate', 'donation', 'give', 'contribute', 'money', 'payment', 'pay', 'support financially'],
+        responses: [
+            "Thank you for your interest in donating! 💚\n\nYou can donate through:\n• **UPI** - Scan QR or use UPI ID\n• **Card** - Credit/Debit via Razorpay\n• **Bank Transfer** - Direct to our account\n\nAll donations are tax-deductible under 80G. Would you like me to take you to the donation page?",
+        ],
+        action: { text: "Go to Donate Page", section: "donate" }
+    },
+    volunteer: {
+        keywords: ['volunteer', 'volunteering', 'help', 'join', 'participate', 'contribute time'],
+        responses: [
+            "We'd love to have you as a volunteer! 🙌\n\nOur volunteer opportunities include:\n• **Teaching** - Help children with education\n• **Fundraising** - Organize events & campaigns\n• **Healthcare** - Assist in health camps\n• **Administrative** - Help with office work\n\nWould you like to fill out a volunteer application?",
+        ],
+        action: { text: "Apply as Volunteer", section: "volunteer" }
+    },
+    programs: {
+        keywords: ['program', 'programs', 'activities', 'what do you do', 'services', 'initiatives', 'work'],
+        responses: [
+            "We run several impactful programs: 📚\n\n• **Education for All** - Books, uniforms & tutoring for street children\n• **Healthy Meals** - Daily nutritious meals to fight malnutrition\n• **Skill Development** - Vocational training for teens\n• **Healthcare Camps** - Regular health check-ups\n• **Mentorship** - One-on-one guidance programs\n\nWant to learn more about any specific program?",
+        ],
+        action: { text: "View All Programs", section: "programs" }
+    },
+    contact: {
+        keywords: ['contact', 'reach', 'phone', 'email', 'address', 'location', 'call', 'talk'],
+        responses: [
+            "Here's how you can reach us: 📞\n\n• **Phone:** +91 98765 43210\n• **Email:** hello@hopefoundation.org\n• **Address:** 21 Community Lane, Ahmedabad\n\nOur office hours are Mon-Sat, 9 AM to 6 PM. You can also fill out our contact form for queries!",
+        ],
+        action: { text: "Contact Form", section: "contact" }
+    },
+    impact: {
+        keywords: ['impact', 'results', 'achievement', 'statistics', 'numbers', 'report', 'transparency', 'funds used'],
+        responses: [
+            "We believe in full transparency! 📊\n\n**Our Impact So Far:**\n• 10,000+ children educated\n• 50+ community programs\n• 100% transparent fund utilization\n• 98% program completion rate\n\nYou can view detailed reports on how every rupee is spent. Would you like to see our impact dashboard?",
+        ],
+        action: { text: "View Impact Report", section: "impact" }
+    },
+    events: {
+        keywords: ['event', 'events', 'upcoming', 'program', 'camp', 'drive', 'gala'],
+        responses: [
+            "We have exciting events coming up! 🎉\n\nCheck out our Events page for:\n• Charity galas\n• Food & donation drives\n• Education camps\n• Health awareness programs\n\nYou can participate, volunteer, or sponsor our events!",
+        ],
+        action: { text: "View Events", section: "events" }
+    },
+    about: {
+        keywords: ['about', 'who are you', 'organization', 'ngo', 'foundation', 'history', 'mission'],
+        responses: [
+            "**About Hope Foundation** 🏛️\n\nWe are a community-first nonprofit working with schools, shelters, and local leaders to help underprivileged children.\n\n**Our Mission:** To ensure every child has access to quality education, healthy nutrition, and safe healthcare with dignity.\n\nWe operate in 12+ cities with 86 facilitators and maintain 92% attendance in our learning centers.",
+        ],
+        action: { text: "Learn More About Us", section: "about" }
+    },
+    tax: {
+        keywords: ['tax', '80g', 'receipt', 'certificate', 'deduction', 'exemption'],
+        responses: [
+            "Yes! All donations to Hope Foundation qualify for tax exemption under Section 80G of the Income Tax Act. 📝\n\nYou'll receive:\n• Instant digital receipt\n• 80G certificate via email\n• Annual donation summary\n\nThe receipt is generated immediately after your donation is confirmed.",
+        ],
+        action: { text: "Donate Now", section: "donate" }
+    },
+    thanks: {
+        keywords: ['thank', 'thanks', 'awesome', 'great', 'helpful', 'appreciate'],
+        responses: [
+            "You're welcome! 😊 It's my pleasure to help. Is there anything else you'd like to know?",
+            "Happy to help! 💚 Feel free to ask if you have more questions!",
+            "Glad I could assist! Don't hesitate to reach out anytime."
+        ]
+    },
+    fallback: [
+        "I'm not sure I understand. Could you rephrase that? Or you can ask about:\n• Donations\n• Volunteering\n• Our Programs\n• Contact Information",
+        "I didn't quite get that. Try asking about how to donate, volunteer, or learn about our programs!",
+        "Hmm, I'm still learning! You can ask me about donations, volunteering, events, or our impact."
+    ]
+};
+
+let chatbotOpen = false;
+
+function toggleChatbot() {
+    const window = document.getElementById('chatbot-window');
+    const toggle = document.getElementById('chatbot-toggle');
+    const badge = document.getElementById('chatbot-badge');
+    
+    chatbotOpen = !chatbotOpen;
+    
+    if (chatbotOpen) {
+        window.classList.add('active');
+        toggle.classList.add('active');
+        badge.style.display = 'none';
+        document.getElementById('chatbot-input').focus();
+    } else {
+        window.classList.remove('active');
+        toggle.classList.remove('active');
+    }
+}
+
+function handleChatSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById('chatbot-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    addMessage(message, 'user');
+    input.value = '';
+    
+    // Show typing indicator
+    showTypingIndicator();
+    
+    // Simulate response delay
+    setTimeout(() => {
+        hideTypingIndicator();
+        const response = generateResponse(message);
+        addMessage(response.text, 'bot', response.action);
+    }, 800 + Math.random() * 700);
+}
+
+function sendQuickReply(message) {
+    addMessage(message, 'user');
+    
+    showTypingIndicator();
+    
+    setTimeout(() => {
+        hideTypingIndicator();
+        const response = generateResponse(message);
+        addMessage(response.text, 'bot', response.action);
+    }, 600 + Math.random() * 500);
+}
+
+function addMessage(text, sender, action = null) {
+    const messagesContainer = document.getElementById('chatbot-messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${sender}`;
+    
+    let actionHTML = '';
+    if (action) {
+        actionHTML = `
+            <div class="quick-replies" style="margin-top: 10px;">
+                <button onclick="goToSection('${action.section}')">${action.text}</button>
+            </div>
+        `;
+    }
+    
+    // Convert markdown-style bold to HTML
+    const formattedText = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+    
+    messageDiv.innerHTML = `
+        <div class="message-content">
+            <p>${formattedText}</p>
+            ${actionHTML}
+        </div>
+    `;
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function showTypingIndicator() {
+    const messagesContainer = document.getElementById('chatbot-messages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'chat-message bot';
+    typingDiv.id = 'typing-indicator';
+    typingDiv.innerHTML = `
+        <div class="message-content">
+            <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    `;
+    messagesContainer.appendChild(typingDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    const typing = document.getElementById('typing-indicator');
+    if (typing) typing.remove();
+}
+
+function generateResponse(userMessage) {
+    const message = userMessage.toLowerCase();
+    
+    // Check for greetings
+    if (/^(hi|hello|hey|good morning|good evening|good afternoon|hola|namaste)/i.test(message)) {
+        return {
+            text: chatbotResponses.greetings[Math.floor(Math.random() * chatbotResponses.greetings.length)],
+            action: null
+        };
+    }
+    
+    // Check each category for keyword matches
+    for (const [category, data] of Object.entries(chatbotResponses)) {
+        if (category === 'greetings' || category === 'fallback') continue;
+        
+        if (data.keywords && data.keywords.some(keyword => message.includes(keyword))) {
+            return {
+                text: data.responses[Math.floor(Math.random() * data.responses.length)],
+                action: data.action || null
+            };
+        }
+    }
+    
+    // Fallback response
+    return {
+        text: chatbotResponses.fallback[Math.floor(Math.random() * chatbotResponses.fallback.length)],
+        action: null
+    };
+}
+
+function goToSection(sectionId) {
+    toggleChatbot(); // Close chatbot
+    setTimeout(() => {
+        showSection(sectionId);
+    }, 300);
+}
+
+// Initialize chatbot greeting after page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Show notification badge after 5 seconds if chatbot not opened
+    setTimeout(() => {
+        if (!chatbotOpen) {
+            const badge = document.getElementById('chatbot-badge');
+            if (badge) badge.style.display = 'flex';
+        }
+    }, 5000);
+});

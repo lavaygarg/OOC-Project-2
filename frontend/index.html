@@ -989,6 +989,49 @@
         </div>
     </footer>
 
+    <!-- Chatbot Widget -->
+    <div id="chatbot-container" class="chatbot-container">
+        <div id="chatbot-window" class="chatbot-window">
+            <div class="chatbot-header">
+                <div class="chatbot-header-info">
+                    <div class="chatbot-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <h4>Hope Assistant</h4>
+                        <span class="chatbot-status"><span class="status-dot"></span> Online</span>
+                    </div>
+                </div>
+                <button class="chatbot-close" onclick="toggleChatbot()" aria-label="Close chat">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="chatbot-messages" class="chatbot-messages">
+                <div class="chat-message bot">
+                    <div class="message-content">
+                        <p>Hello! 👋 I'm Hope Assistant. How can I help you today?</p>
+                        <div class="quick-replies">
+                            <button onclick="sendQuickReply('How can I donate?')">How to donate?</button>
+                            <button onclick="sendQuickReply('Tell me about your programs')">Programs</button>
+                            <button onclick="sendQuickReply('How can I volunteer?')">Volunteer</button>
+                            <button onclick="sendQuickReply('Contact information')">Contact</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form id="chatbot-form" class="chatbot-input" onsubmit="handleChatSubmit(event)">
+                <input type="text" id="chatbot-input" placeholder="Type your message..." autocomplete="off">
+                <button type="submit" aria-label="Send message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+        <button id="chatbot-toggle" class="chatbot-toggle" onclick="toggleChatbot()" aria-label="Open chat">
+            <i class="fas fa-comments"></i>
+            <span class="chatbot-badge" id="chatbot-badge" style="display:none;">1</span>
+        </button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="script.js"></script>
