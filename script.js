@@ -277,6 +277,8 @@ function showSection(sectionId) {
         renderPublicEvents();
     } else if (sectionId === 'impact') {
         renderPublicInstitutions();
+    } else if (sectionId === 'testimonials') {
+        renderTestimonials();
     }
 }
 
@@ -1092,3 +1094,137 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 });
+
+// --- FEEDBACK & TESTIMONIALS ---
+const defaultTestimonials = [
+    {
+        id: 1,
+        name: 'Priya Sharma',
+        role: 'Student',
+        city: 'Delhi',
+        message: 'Thanks to Hope Foundation\'s scholarship, I was able to continue my studies. Now I want to become a teacher myself!',
+        rating: 5,
+        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop'
+    },
+    {
+        id: 2,
+        name: 'Rajesh Kumar',
+        role: 'Volunteer',
+        city: 'Mumbai',
+        message: 'Being part of this mission has been transformative. Seeing the kids\' smiles makes every hour worthwhile.',
+        rating: 5,
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop'
+    },
+    {
+        id: 3,
+        name: 'Anjali Verma',
+        role: 'Parent',
+        city: 'Bangalore',
+        message: 'My daughter now has regular meals and attends school daily. The change is visible in her confidence and performance.',
+        rating: 5,
+        image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop'
+    }
+];
+
+const randomAvatars = [
+    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&h=60&fit=crop',
+    'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=60&h=60&fit=crop',
+    'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=60&h=60&fit=crop',
+    'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=60&h=60&fit=crop',
+    'https://images.unsplash.com/photo-1599566150163-29194dcabd36?w=60&h=60&fit=crop',
+    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&fit=crop',
+    'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=60&h=60&fit=crop',
+    'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=60&h=60&fit=crop'
+];
+
+function getRandomAvatar() {
+    return randomAvatars[Math.floor(Math.random() * randomAvatars.length)];
+}
+
+function getStarsHtml(rating) {
+    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+}
+
+function renderTestimonials() {
+    const grid = document.getElementById('testimonials-grid');
+    if (!grid) return;
+    
+    // Get user feedbacks from localStorage
+    const userFeedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
+    
+    // Combine default testimonials with user feedbacks
+    const allTestimonials = [...defaultTestimonials, ...userFeedbacks];
+    
+    grid.innerHTML = '';
+    
+    allTestimonials.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'testimonial-card';
+        card.innerHTML = `
+            <div class="testimonial-header">
+                <img src="${t.image || getRandomAvatar()}" alt="${t.name}">
+                <div>
+                    <h4>${t.name}</h4>
+                    <p class="muted">${t.role}, ${t.city}</p>
+                </div>
+            </div>
+            <p>"${t.message}"</p>
+            <div class="stars">${getStarsHtml(t.rating)}</div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function setRating(rating) {
+    document.getElementById('feedback-rating').value = rating;
+    const stars = document.querySelectorAll('.rating-stars .star');
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.classList.add('active');
+        } else {
+            star.classList.remove('active');
+        }
+    });
+}
+
+function submitFeedback(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('feedback-name').value;
+    const role = document.getElementById('feedback-role').value;
+    const city = document.getElementById('feedback-city').value;
+    const rating = document.getElementById('feedback-rating').value;
+    const message = document.getElementById('feedback-message').value;
+    
+    if (rating === '0') {
+        alert('Please select a rating');
+        return;
+    }
+    
+    // Save feedback to localStorage
+    const feedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
+    feedbacks.push({
+        id: Date.now(),
+        name,
+        role,
+        city,
+        rating: parseInt(rating),
+        message,
+        image: getRandomAvatar(),
+        date: new Date().toISOString()
+    });
+    localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+    
+    // Reset form
+    e.target.reset();
+    setRating(0);
+    
+    // Re-render testimonials
+    renderTestimonials();
+    
+    // Show success
+    alert('Thank you for sharing your story! It has been added to our Success Stories.');
+    
+    // Scroll to testimonials grid
+    document.getElementById('testimonials-grid').scrollIntoView({ behavior: 'smooth' });
+}
