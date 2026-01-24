@@ -324,41 +324,62 @@ function handleVolunteerSubmit(e) {
 // 2. Donation Form
 function handleDonationSubmit(e) {
     e.preventDefault();
-    const name = document.getElementById('don-name').value;
-    const amount = document.getElementById('don-amount').value;
-    const method = document.querySelector('input[name="pay-method"]:checked')?.value || 'UPI';
-    if (method === 'Card') {
-        const cardNum = document.getElementById('don-card-number').value.trim();
-        const cardExp = document.getElementById('don-card-exp').value.trim();
-        const cardCvv = document.getElementById('don-card-cvv').value.trim();
-        if (!cardNum || !cardExp || !cardCvv) {
-            alert('Please fill card details.');
-            return;
-        }
+
+    if (!window.Razorpay) {
+        alert('Payments unavailable right now. Please try again later.');
+        return;
     }
-    const now = new Date();
-    const date = now.toISOString().split('T')[0];
-    const id = 'D' + Math.floor(Math.random() * 10000);
 
-    const data = getData();
-    const newDonation = { id, name, amount: parseInt(amount), method, date };
-    
-    data.donations.push(newDonation);
-    saveData(data);
+    const name = document.getElementById('don-name').value || 'Guest';
+    const amount = parseFloat(document.getElementById('don-amount').value || '0');
+    if (!amount || amount <= 0) {
+        alert('Enter a valid amount.');
+        return;
+    }
 
-    // Show Receipt
-    document.getElementById('receipt-name').innerText = name;
-    document.getElementById('receipt-amount').innerText = amount;
-    document.getElementById('receipt-date').innerText = date;
-    document.getElementById('receipt-generated').innerText = now.toLocaleString();
-    document.getElementById('receipt-id').innerText = id;
-    
-    document.getElementById('receipt-area').style.display = 'block';
-    
-    // Hide form for better UX
-    e.target.style.display = 'none';
-    
-    alert('Thank you for your generous donation!');
+    const donateBtn = e.target.querySelector('button[type="submit"]');
+    if (donateBtn) {
+        donateBtn.disabled = true;
+        donateBtn.textContent = 'Processing...';
+    }
+
+    createRazorpayOrder({ amount, donorName: name })
+        .then(order => {
+            const options = {
+                key: order.keyId,
+                amount: order.amount,
+                currency: order.currency,
+                name: 'Hope Foundation',
+                description: 'Donation',
+                order_id: order.orderId,
+                prefill: {
+                    name,
+                    email: '',
+                    contact: ''
+                },
+                theme: { color: '#2ecc71' },
+                handler: function (response) {
+                    recordDonationSuccess({
+                        name,
+                        amount,
+                        method: 'Razorpay',
+                        paymentId: response.razorpay_payment_id,
+                        orderId: response.razorpay_order_id
+                    });
+                },
+                modal: {
+                    ondismiss: () => {
+                        resetDonateButton(donateBtn);
+                    }
+                }
+            };
+            const rzp = new Razorpay(options);
+            rzp.open();
+        })
+        .catch(() => {
+            alert('Unable to start payment. Please try again.');
+            resetDonateButton(donateBtn);
+        });
 }
 
 function togglePaymentMethod() {
@@ -370,6 +391,69 @@ function togglePaymentMethod() {
     if (activeLabel) activeLabel.classList.add('active');
     if (upiBox) upiBox.style.display = method === 'UPI' ? 'block' : 'none';
     if (cardBox) cardBox.style.display = method === 'Card' ? 'block' : 'none';
+}
+
+async function createRazorpayOrder(payload) {
+    const url = `${window.location.origin}/api/razorpay/create-order`;
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`order failed (${res.status}): ${text?.slice(0,120)}`);
+    }
+    try {
+        return await res.json();
+    } catch (err) {
+        const text = await res.text().catch(() => '');
+        throw new Error(`invalid JSON from server: ${text?.slice(0,120)}`);
+    }
+}
+
+function recordDonationSuccess({ name, amount, method, paymentId, orderId }) {
+    const now = new Date();
+    const date = now.toISOString().split('T')[0];
+    const data = getData();
+    const newDonation = {
+        id: paymentId || orderId || 'D' + Date.now(),
+        name,
+        amount: Number(amount),
+        method,
+        date
+    };
+
+    data.donations.push(newDonation);
+    saveData(data);
+
+    document.getElementById('receipt-name').innerText = name;
+    document.getElementById('receipt-amount').innerText = amount;
+    document.getElementById('receipt-date').innerText = date;
+    document.getElementById('receipt-generated').innerText = now.toLocaleString();
+    document.getElementById('receipt-id').innerText = paymentId || orderId || 'N/A';
+    document.getElementById('receipt-area').style.display = 'block';
+
+    const form = document.getElementById('donation-form');
+    if (form) form.reset();
+
+    const chips = document.querySelectorAll('.chip');
+    chips.forEach(c => c.classList.remove('active'));
+    const defaultMethod = document.querySelector('input[name="pay-method"][value="UPI"]');
+    if (defaultMethod) defaultMethod.checked = true;
+    togglePaymentMethod();
+
+    const donateBtn = document.querySelector('#donation-form button[type="submit"]');
+    resetDonateButton(donateBtn);
+
+    alert('Thank you for your generous donation!');
+}
+
+function resetDonateButton(btn) {
+    if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Donate Securely';
+    }
 }
 
 function copyUpiId() {
