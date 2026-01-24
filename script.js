@@ -572,7 +572,8 @@ function handleAdminLogin(e) {
 
 function logout() {
     if(confirm('Are you sure you want to log out?')) {
-        showSection('home');
+        localStorage.removeItem('adminLoggedIn');
+        window.location.href = 'index.html';
     }
 }
 
@@ -1044,7 +1045,14 @@ function deleteEvent(id) {
 // Initial Render catch
 document.addEventListener('DOMContentLoaded', async () => {
     await initData();
-    showSection('home');
+    
+    // Check if URL has a hash to navigate to a specific section
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(hash)) {
+        showSection(hash);
+    } else {
+        showSection('home');
+    }
 
     const menuBtn = document.querySelector('.mobile-menu-btn');
     const navLinks = document.querySelectorAll('.nav-links a');

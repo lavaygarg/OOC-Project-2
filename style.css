@@ -260,12 +260,20 @@ button {
 
 .goog-te-banner-frame.skiptranslate,
 .goog-te-banner-frame,
-.goog-te-gadget-icon {
+.goog-te-gadget-icon,
+iframe.goog-te-banner-frame {
     display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
 }
 
 body {
     top: 0 !important;
+    position: static !important;
+}
+
+.skiptranslate {
+    display: none !important;
 }
 
 .goog-logo-link,

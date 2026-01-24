@@ -55,6 +55,9 @@
     </div>
 
     <script>
+        // Clear any existing login state when visiting login page
+        localStorage.removeItem('adminLoggedIn');
+        
         function handlePortalLogin(e) {
             e.preventDefault();
             const user = document.getElementById('admin-user').value;
@@ -64,8 +67,8 @@
             if (user === 'admin' && pass === 'admin123') {
                 // Set a flag in localStorage to indicate admin is logged in
                 localStorage.setItem('adminLoggedIn', 'true');
-                // Redirect to main page
-                window.location.href = '../index.html';
+                // Redirect to main page with admin-dashboard section
+                window.location.href = '../index.html#admin-dashboard';
             } else {
                 alert('Invalid Credentials! (Try: admin / admin123)');
             }
