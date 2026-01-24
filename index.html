@@ -487,39 +487,60 @@
                 <h2>Success Stories</h2>
                 <p class="muted">Real impact from our community members and volunteers.</p>
             </div>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop" alt="Priya">
-                        <div>
-                            <h4>Priya Sharma</h4>
-                            <p class="muted">Student, Delhi</p>
-                        </div>
-                    </div>
-                    <p>"Thanks to Hope Foundation's scholarship, I was able to continue my studies. Now I want to become a teacher myself!"</p>
-                    <div class="stars">★★★★★</div>
+            <div class="testimonials-grid" id="testimonials-grid">
+                <!-- Testimonials will be rendered dynamically -->
+            </div>
+            
+            <!-- Feedback Form in Stories Section -->
+            <div class="feedback-section">
+                <div class="section-header" style="margin-top: 3rem;">
+                    <h3>Share Your Story</h3>
+                    <p class="muted">We'd love to hear about your experience with Hope Foundation.</p>
                 </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop" alt="Rajesh">
-                        <div>
-                            <h4>Rajesh Kumar</h4>
-                            <p class="muted">Volunteer, Mumbai</p>
+                <div class="feedback-form-inline card">
+                    <form onsubmit="submitFeedback(event)">
+                        <div class="feedback-form-grid">
+                            <div class="form-group">
+                                <label for="feedback-name">Your Name</label>
+                                <input type="text" id="feedback-name" placeholder="Enter your name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="feedback-role">Your Role</label>
+                                <select id="feedback-role" required>
+                                    <option value="">Select role...</option>
+                                    <option value="Donor">Donor</option>
+                                    <option value="Volunteer">Volunteer</option>
+                                    <option value="Beneficiary">Beneficiary</option>
+                                    <option value="Parent">Parent</option>
+                                    <option value="Student">Student</option>
+                                    <option value="Partner">Partner</option>
+                                    <option value="Visitor">Visitor</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="feedback-city">City</label>
+                                <input type="text" id="feedback-city" placeholder="Your city" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Rating</label>
+                                <div class="rating-stars">
+                                    <span class="star" data-rating="1" onclick="setRating(1)"><i class="fas fa-star"></i></span>
+                                    <span class="star" data-rating="2" onclick="setRating(2)"><i class="fas fa-star"></i></span>
+                                    <span class="star" data-rating="3" onclick="setRating(3)"><i class="fas fa-star"></i></span>
+                                    <span class="star" data-rating="4" onclick="setRating(4)"><i class="fas fa-star"></i></span>
+                                    <span class="star" data-rating="5" onclick="setRating(5)"><i class="fas fa-star"></i></span>
+                                </div>
+                                <input type="hidden" id="feedback-rating" value="0">
+                            </div>
                         </div>
-                    </div>
-                    <p>"Being part of this mission has been transformative. Seeing the kids' smiles makes every hour worthwhile."</p>
-                    <div class="stars">★★★★★</div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop" alt="Anjali">
-                        <div>
-                            <h4>Anjali Verma</h4>
-                            <p class="muted">Parent, Bangalore</p>
+                        <div class="form-group">
+                            <label for="feedback-message">Your Story</label>
+                            <textarea id="feedback-message" rows="4" placeholder="Share your experience with Hope Foundation..." required></textarea>
                         </div>
-                    </div>
-                    <p>"My daughter now has regular meals and attends school daily. The change is visible in her confidence and performance."</p>
-                    <div class="stars">★★★★★</div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Submit Your Story
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -874,6 +895,54 @@
             </main>
         </div>
     </section>
+
+    <!-- Feedback Button & Form -->
+    <div class="feedback-widget">
+        <button class="feedback-toggle" onclick="toggleFeedback()" aria-label="Open feedback form">
+            <i class="fas fa-comment-dots"></i>
+            <span>Feedback</span>
+        </button>
+        <div class="feedback-form" id="feedback-form">
+            <div class="feedback-header">
+                <h4><i class="fas fa-comment-dots"></i> Send Feedback</h4>
+                <button class="feedback-close" onclick="toggleFeedback()" aria-label="Close feedback form">&times;</button>
+            </div>
+            <form onsubmit="submitFeedback(event)">
+                <div class="feedback-group">
+                    <label>How would you rate your experience?</label>
+                    <div class="rating-stars">
+                        <span class="star" data-rating="1" onclick="setRating(1)"><i class="fas fa-star"></i></span>
+                        <span class="star" data-rating="2" onclick="setRating(2)"><i class="fas fa-star"></i></span>
+                        <span class="star" data-rating="3" onclick="setRating(3)"><i class="fas fa-star"></i></span>
+                        <span class="star" data-rating="4" onclick="setRating(4)"><i class="fas fa-star"></i></span>
+                        <span class="star" data-rating="5" onclick="setRating(5)"><i class="fas fa-star"></i></span>
+                    </div>
+                    <input type="hidden" id="feedback-rating" value="0">
+                </div>
+                <div class="feedback-group">
+                    <label for="feedback-type">Feedback Type</label>
+                    <select id="feedback-type" required>
+                        <option value="">Select type...</option>
+                        <option value="suggestion">Suggestion</option>
+                        <option value="bug">Bug Report</option>
+                        <option value="compliment">Compliment</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="feedback-group">
+                    <label for="feedback-message">Your Message</label>
+                    <textarea id="feedback-message" rows="4" placeholder="Tell us what you think..." required></textarea>
+                </div>
+                <div class="feedback-group">
+                    <label for="feedback-email">Email (optional)</label>
+                    <input type="email" id="feedback-email" placeholder="For follow-up responses">
+                </div>
+                <button type="submit" class="btn btn-primary feedback-submit">
+                    <i class="fas fa-paper-plane"></i> Submit Feedback
+                </button>
+            </form>
+        </div>
+    </div>
 
     <footer class="site-footer">
         <div class="footer-top">
