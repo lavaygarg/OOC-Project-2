@@ -141,6 +141,40 @@ const translations = {
         impactHL2: 'ग्रामीण समुदायों में 1,500 स्वास्थ्य जांच पूरी।',
         impactHL3: 'स्थानीय पहलों में 500+ स्वयंसेवक जुड़े।',
         impactHighlightsCTA: 'प्रभाव डैशबोर्ड देखें',
+        
+        // Impact KPI Cards
+        impactFunds: '₹2.8करोड़',
+        impactFundsDesc: 'शिक्षा, स्वास्थ्य और पोषण पर उपयोग की गई कुल निधि।',
+        impactSchools: '120+',
+        impactSchoolsDesc: 'सहयोगी स्कूल और सामुदायिक केंद्र समर्थित।',
+        impactImprovement: '86%',
+        impactImprovementDesc: '12 महीनों में सुधार दिखाने वाले बच्चे।',
+        impactKitsNum: '3,200',
+        impactKitsDesc: '2025 में वितरित लर्निंग किट।',
+        
+        // Program Utilization
+        programUtilization: 'कार्यक्रम उपयोग',
+        programUtilizationDesc: 'नियोजित लक्ष्यों के मुकाबले मासिक आवंटन प्रदर्शन।',
+        metricEducation: 'शिक्षा',
+        metricNutrition: 'पोषण',
+        metricHealthcare: 'स्वास्थ्य सेवा',
+        
+        // Reports
+        reportAnnual: 'वार्षिक प्रभाव रिपोर्ट 2025',
+        reportAnnualDesc: 'कार्यक्रम मुख्य बिंदु, ऑडिट उपयोग, और परिणाम।',
+        downloadPDF: 'PDF डाउनलोड करें',
+        reportFinancial: 'वित्तीय पारदर्शिता सारांश',
+        reportFinancialDesc: 'निधि आवंटन और परिचालन लागत का विवरण।',
+        viewSummary: 'सारांश देखें',
+        reportCaseStudies: 'बाल विकास केस स्टडीज़',
+        reportCaseStudiesDesc: 'कहानियाँ जो मापने योग्य प्रभाव और विकास दिखाती हैं।',
+        readStories: 'कहानियाँ पढ़ें',
+        
+        // Transparency Card
+        donationGoesTitle: 'आपका दान कहाँ जाता है',
+        donationGoesDesc: 'साझेदार संस्थानों में लाइव वितरण।',
+        totalAllocated: 'कुल आवंटित: 0%',
+        
         eventsTitle: 'आगामी ईवेंट और घोषणाएँ',
         eventsSubtitle: 'हमारे आगामी सामुदायिक ईवेंट और पहलों से जुड़ें।',
         eventsColName: 'ईवेंट का नाम',
@@ -170,7 +204,106 @@ const translations = {
         volunteerName: 'पूरा नाम',
         volunteerEmail: 'ईमेल',
         volunteerInterest: 'रुचियाँ',
-        volunteerSubmit: 'आवेदन जमा करें'
+        volunteerSubmit: 'आवेदन जमा करें',
+        
+        // Mission Section
+        missionDesc: 'हर बच्चे को गुणवत्तापूर्ण शिक्षा, पौष्टिक भोजन और सुरक्षित स्वास्थ्य सेवा सम्मान के साथ मिले।',
+        missionSubtext: 'हम स्थानीय समुदायों के साथ मिलकर दीर्घकालिक समाधान बनाते हैं और हर कार्यक्रम की पारदर्शी रिपोर्ट प्रकाशित करते हैं।',
+        impactSnapshot: '2025 प्रभाव झलक',
+        impactKits: '3,200 लर्निंग किट वितरित',
+        impactHealth: '1,500 स्वास्थ्य जांच पूरी',
+        impactRate: '98% कार्यक्रम पूरा होने की दर',
+        viewImpact: 'प्रभाव रिपोर्ट देखें',
+        
+        // Contact Section
+        contactTitle: 'संपर्क करें',
+        contactSubtitle: 'हम आपसे सुनना चाहते हैं। साझेदारी, स्वयंसेवा या दान के लिए संपर्क करें।',
+        contactOffice: 'मुख्य कार्यालय',
+        contactAddress: 'होप फाउंडेशन, 112 कम्युनिटी लेन, नई दिल्ली, भारत',
+        contactEmail: 'ईमेल',
+        contactPhone: 'फोन:',
+        contactHours: 'सोम–शुक्र, सुबह 9:00 – शाम 6:00',
+        contactFormTitle: 'संदेश भेजें',
+        contactName: 'नाम',
+        contactMessage: 'संदेश',
+        contactSend: 'संदेश भेजें',
+        
+        // Testimonials/Stories Section
+        storiesTitle: 'सफलता की कहानियाँ',
+        storiesSubtitle: 'हमारे समुदाय सदस्यों और स्वयंसेवकों का वास्तविक प्रभाव।',
+        shareStory: 'अपनी कहानी साझा करें',
+        shareStorySubtitle: 'होप फाउंडेशन के साथ अपने अनुभव के बारे में हम सुनना चाहते हैं।',
+        yourName: 'आपका नाम',
+        yourRole: 'आपकी भूमिका',
+        yourCity: 'शहर',
+        rating: 'रेटिंग',
+        yourStory: 'आपकी कहानी',
+        submitStory: 'अपनी कहानी सबमिट करें',
+        
+        // Footer
+        footerSince: '2012 से',
+        footerBrand: 'होप फाउंडेशन',
+        footerDesc: 'शिक्षा, पोषण, स्वास्थ्य सेवा और पारिवारिक सहायता के माध्यम से वंचित बच्चों को सशक्त बनाना—पारदर्शी रिपोर्टिंग द्वारा समर्थित।',
+        footerCities: '12 शहर',
+        footerFacilitators: '86 सुविधाकर्ता',
+        footerAttendance: '92% उपस्थिति',
+        footerQuickLinks: 'त्वरित लिंक',
+        footerContact: 'संपर्क',
+        footerReady: 'मदद के लिए तैयार?',
+        footerReadyDesc: 'आपका सहयोग लर्निंग किट, भोजन और स्वास्थ्य शिविरों को निधि देता है। हर योगदान रसीद के साथ रिपोर्ट किया जाता है।',
+        footerDonate: 'अभी दान करें',
+        footerCopyright: '© 2026 होप फाउंडेशन। सर्वाधिकार सुरक्षित।',
+        
+        // Admin/Login
+        adminLoginTitle: 'एडमिन लॉगिन',
+        adminUsername: 'यूज़रनेम',
+        adminPassword: 'पासवर्ड',
+        loginBtn: 'लॉगिन',
+        closeBtn: 'बंद करें',
+        
+        // Programs Section
+        programsTitle: 'हमारे कार्यक्रम',
+        
+        // Events Section
+        newslettersTitle: 'समाचार पत्र',
+        newslettersSubtitle: 'हमारे मासिक समाचार पत्र और प्रभाव कहानियों से अपडेट रहें।',
+        pastEventsTitle: 'पिछले ईवेंट',
+        pastEventsSubtitle: 'हमारे पिछले सामुदायिक ईवेंट और पहलों की झलकियाँ।',
+        
+        // Gallery
+        galleryCreative: 'रचनात्मक कार्यशालाएँ',
+        galleryLearning: 'लर्निंग सेंटर',
+        galleryNutrition: 'पोषण अभियान',
+        galleryHealth: 'स्वास्थ्य शिविर',
+        galleryVolunteer: 'स्वयंसेवक दिवस',
+        galleryLibrary: 'पुस्तकालय समय',
+        galleryCommunity: 'सामुदायिक आउटरीच',
+        galleryAfterSchool: 'आफ्टर-स्कूल गतिविधियाँ',
+        
+        // Volunteer Form Options
+        volunteerTeaching: 'शिक्षण',
+        volunteerEvent: 'ईवेंट प्रबंधन',
+        volunteerFund: 'फंडरेजिंग',
+        
+        // Donate Form
+        donateDonorName: 'दाता का नाम',
+        donatePaymentMethod: 'भुगतान विधि',
+        donateSecurely: 'सुरक्षित दान करें',
+        
+        // Contact Form Labels
+        contactHeadOffice: 'मुख्य कार्यालय',
+        contactEmailLabel: 'ईमेल:',
+        contactPhoneLabel: 'फोन:',
+        contactHoursLabel: 'कार्य समय:',
+        
+        // Feedback Form
+        feedbackName: 'आपका नाम',
+        feedbackRole: 'आपकी भूमिका',
+        feedbackCity: 'शहर',
+        feedbackRating: 'रेटिंग',
+        feedbackMessage: 'आपकी कहानी',
+        feedbackSubmit: 'अपनी कहानी सबमिट करें',
+        shareStoryTitle: 'अपनी कहानी साझा करें'
     }
 };
 
@@ -276,11 +409,30 @@ function applyLanguage(lang) {
 
 function initLanguage() {
     const saved = localStorage.getItem(LANG_KEY) || 'en';
+    
+    // Handle toggle switch for EN/HI
+    const langToggle = document.getElementById('lang-toggle');
+    if (langToggle) {
+        // Set initial state based on saved preference
+        langToggle.checked = saved === 'hi';
+        
+        langToggle.addEventListener('change', () => {
+            const newLang = langToggle.checked ? 'hi' : 'en';
+            applyLanguage(newLang);
+        });
+    }
+    
+    // Also handle button-based language switching if present
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             applyLanguage(btn.dataset.lang || 'en');
+            // Update toggle switch if present
+            if (langToggle) {
+                langToggle.checked = btn.dataset.lang === 'hi';
+            }
         });
     });
+    
     applyLanguage(saved);
 }
 

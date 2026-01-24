@@ -20,7 +20,7 @@
         <div class="nav-inner">
             <a class="logo" href="#" onclick="showSection('home')">
                 <img src="images/logo.jpeg" alt="Hope Foundation logo" loading="lazy">
-                <span>Hope Foundation</span>
+                <span data-i18n="brandName">Hope Foundation</span>
             </a>
             <div class="nav-actions">
                 <div class="language-toggle" aria-label="Translate between English and Hindi">
@@ -35,18 +35,18 @@
                     <i class="fas fa-moon"></i>
                 </button>
                 <ul class="nav-links">
-                    <li><a href="#" onclick="showSection('home')">Home</a></li>
-                    <li><a href="#" onclick="showSection('about')">About</a></li>
-                    <li><a href="#" onclick="showSection('programs')">Programs</a></li>
-                    <li><a href="#" onclick="showSection('gallery')">Gallery</a></li>
-                    <li><a href="#" onclick="showSection('impact')">Impact</a></li>
-                    <li><a href="#" onclick="showSection('events')">Events</a></li>
-                    <li><a href="#" onclick="showSection('testimonials')">Stories</a></li>
-                    <li><a href="#" onclick="showSection('volunteer')">Volunteer</a></li>
-                    <li><a href="#" onclick="showSection('contact')">Contact</a></li>
-                    <li><a href="portals/index.html" class="admin-link">Login</a></li>
+                    <li><a href="#" onclick="showSection('home')" data-i18n="navHome">Home</a></li>
+                    <li><a href="#" onclick="showSection('about')" data-i18n="navAbout">About</a></li>
+                    <li><a href="#" onclick="showSection('programs')" data-i18n="navPrograms">Programs</a></li>
+                    <li><a href="#" onclick="showSection('gallery')" data-i18n="navGallery">Gallery</a></li>
+                    <li><a href="#" onclick="showSection('impact')" data-i18n="navImpact">Impact</a></li>
+                    <li><a href="#" onclick="showSection('events')" data-i18n="navEvents">Events</a></li>
+                    <li><a href="#" onclick="showSection('testimonials')" data-i18n="navStories">Stories</a></li>
+                    <li><a href="#" onclick="showSection('volunteer')" data-i18n="navVolunteer">Volunteer</a></li>
+                    <li><a href="#" onclick="showSection('contact')" data-i18n="navContact">Contact</a></li>
+                    <li><a href="portals/index.html" class="admin-link" data-i18n="navLogin">Login</a></li>
                 </ul>
-                <button class="btn btn-primary nav-cta" onclick="showSection('donate')">Donate</button>
+                <button class="btn btn-primary nav-cta" onclick="showSection('donate')" data-i18n="navDonate">Donate</button>
             </div>
             <button class="mobile-menu-btn" aria-label="Open navigation menu">
                 <i class="fas fa-bars"></i>
@@ -69,17 +69,17 @@
             </div>
             <div class="hero-inner">
                 <div class="hero-content">
-                    <span class="eyebrow">Trusted NGO for Children</span>
-                    <h1>Empowering underprivileged children to learn, grow, and thrive.</h1>
-                    <p>We deliver education, nutrition, and healthcare programs that create measurable impact for families and communities.</p>
+                    <span class="eyebrow" data-i18n="heroEyebrow">Trusted NGO for Children</span>
+                    <h1 data-i18n="heroTitle">Empowering underprivileged children to learn, grow, and thrive.</h1>
+                    <p data-i18n="heroSubtitle">We deliver education, nutrition, and healthcare programs that create measurable impact for families and communities.</p>
                     <div class="hero-actions">
-                        <button type="button" class="btn btn-primary" onclick="showSection('donate')">Donate Now</button>
-                        <button type="button" class="btn btn-secondary" onclick="showSection('volunteer')">Become a Volunteer</button>
+                        <button type="button" class="btn btn-primary" onclick="showSection('donate')" data-i18n="heroDonate">Donate Now</button>
+                        <button type="button" class="btn btn-secondary" onclick="showSection('volunteer')" data-i18n="heroVolunteer">Become a Volunteer</button>
                     </div>
                     <div class="hero-badges">
-                        <button type="button" class="badge badge-btn" onclick="showSection('about')"><i class="fas fa-shield-heart"></i> Verified NGO</button>
-                        <button type="button" class="badge badge-btn" onclick="showSection('impact')"><i class="fas fa-chart-line"></i> Impact Reporting</button>
-                        <button type="button" class="badge badge-btn" onclick="showSection('donate')"><i class="fas fa-receipt"></i> Instant Receipts</button>
+                        <button type="button" class="badge badge-btn" onclick="showSection('about')" data-i18n="badgeVerified"><i class="fas fa-shield-heart"></i> Verified NGO</button>
+                        <button type="button" class="badge badge-btn" onclick="showSection('impact')" data-i18n="badgeReporting"><i class="fas fa-chart-line"></i> Impact Reporting</button>
+                        <button type="button" class="badge badge-btn" onclick="showSection('donate')" data-i18n="badgeReceipts"><i class="fas fa-receipt"></i> Instant Receipts</button>
                     </div>
                 </div>
             </div>
@@ -90,17 +90,17 @@
                 <div class="card">
                     <i class="fas fa-child fa-3x"></i>
                     <h3>10k+</h3>
-                    <p>Children Educated</p>
+                    <p data-i18n="statChildren">Children Educated</p>
                 </div>
                 <div class="card">
                     <i class="fas fa-hand-holding-heart fa-3x"></i>
                     <h3>50+</h3>
-                    <p>Community Programs</p>
+                    <p data-i18n="statPrograms">Community Programs</p>
                 </div>
                 <div class="card">
                     <i class="fas fa-file-invoice-dollar fa-3x"></i>
                     <h3>100%</h3>
-                    <p>Transparent Funds</p>
+                    <p data-i18n="statTransparent">Transparent Funds</p>
                 </div>
             </div>
         </div>
@@ -108,18 +108,18 @@
         <div class="mission-section">
             <div class="container split">
                 <div>
-                    <h2>Our Mission</h2>
-                    <p>To ensure every child has access to quality education, healthy nutrition, and safe healthcare with dignity and care.</p>
-                    <p class="muted">We partner with local communities to build long-term solutions and publish transparent reports on every program.</p>
+                    <h2 data-i18n="missionTitle">Our Mission</h2>
+                    <p data-i18n="missionDesc">To ensure every child has access to quality education, healthy nutrition, and safe healthcare with dignity and care.</p>
+                    <p class="muted" data-i18n="missionSubtext">We partner with local communities to build long-term solutions and publish transparent reports on every program.</p>
                 </div>
                 <div class="card highlight">
-                    <h3>2025 Impact Snapshot</h3>
+                    <h3 data-i18n="impactSnapshot">2025 Impact Snapshot</h3>
                     <ul class="list">
-                        <li>3,200 learning kits distributed</li>
-                        <li>1,500 health check-ups completed</li>
-                        <li>98% program completion rate</li>
+                        <li data-i18n="impactKits">3,200 learning kits distributed</li>
+                        <li data-i18n="impactHealth">1,500 health check-ups completed</li>
+                        <li data-i18n="impactRate">98% program completion rate</li>
                     </ul>
-                    <button class="btn btn-outline" onclick="showSection('impact')">View Impact Report</button>
+                    <button class="btn btn-outline" onclick="showSection('impact')" data-i18n="viewImpact">View Impact Report</button>
                 </div>
             </div>
         </div>
@@ -129,45 +129,45 @@
     <section id="about" class="page-section" style="display: none;">
         <div class="container">
             <div class="section-header">
-                <h2>About Hope Foundation</h2>
-                <p class="muted">A community-first nonprofit working with schools, shelters, and local leaders to help every child learn with dignity, stay healthy, and dream bigger.</p>
+                <h2 data-i18n="aboutTitle">About Hope Foundation</h2>
+                <p class="muted" data-i18n="aboutIntro">A community-first nonprofit working with schools, shelters, and local leaders to help every child learn with dignity, stay healthy, and dream bigger.</p>
             </div>
             <div class="split">
                 <div class="card highlight">
-                    <h3>Who we are</h3>
-                    <p>We are educators, social workers, and volunteers who co-create programs with the communities we serve. Our teams run learning centers, nutrition drives, and health camps across urban and rural clusters.</p>
-                    <p class="muted">Every rupee is tracked against clear outcomes—attendance, learning levels, nutrition status, and family engagement—so supporters see real progress.</p>
-                    <h4>What guides us</h4>
+                    <h3 data-i18n="aboutWhoTitle">Who we are</h3>
+                    <p data-i18n="aboutWhoBody">We are educators, social workers, and volunteers who co-create programs with the communities we serve. Our teams run learning centers, nutrition drives, and health camps across urban and rural clusters.</p>
+                    <p class="muted" data-i18n="aboutWhoMuted">Every rupee is tracked against clear outcomes—attendance, learning levels, nutrition status, and family engagement—so supporters see real progress.</p>
+                    <h4 data-i18n="aboutGuideTitle">What guides us</h4>
                     <ul class="list">
-                        <li>Community-led design and women-led facilitation wherever possible.</li>
-                        <li>Transparent funds with dashboards and audited reports.</li>
-                        <li>Child safety, dignity, and inclusive classrooms for all abilities.</li>
-                        <li>Impact measured with baselines, follow-ups, and partner reviews.</li>
+                        <li data-i18n="aboutGuide1">Community-led design and women-led facilitation wherever possible.</li>
+                        <li data-i18n="aboutGuide2">Transparent funds with dashboards and audited reports.</li>
+                        <li data-i18n="aboutGuide3">Child safety, dignity, and inclusive classrooms for all abilities.</li>
+                        <li data-i18n="aboutGuide4">Impact measured with baselines, follow-ups, and partner reviews.</li>
                     </ul>
                 </div>
                 <div>
                     <div class="card highlight" style="margin-bottom: 18px;">
-                        <h3>What we do each week</h3>
+                        <h3 data-i18n="aboutDoTitle">What we do each week</h3>
                         <ul class="list">
-                            <li>Early learning corners for ages 3–10 with story-led teaching.</li>
-                            <li>After-school support, STEM clubs, and board-exam prep for teens.</li>
-                            <li>Nutritious meals, health check-ups, and menstrual health sessions.</li>
-                            <li>Life-skills, career mentoring, and digital literacy labs.</li>
-                            <li>Parent circles that turn caregivers into co-educators.</li>
+                            <li data-i18n="aboutDo1">Early learning corners for ages 3–10 with story-led teaching.</li>
+                            <li data-i18n="aboutDo2">After-school support, STEM clubs, and board-exam prep for teens.</li>
+                            <li data-i18n="aboutDo3">Nutritious meals, health check-ups, and menstrual health sessions.</li>
+                            <li data-i18n="aboutDo4">Life-skills, career mentoring, and digital literacy labs.</li>
+                            <li data-i18n="aboutDo5">Parent circles that turn caregivers into co-educators.</li>
                         </ul>
                     </div>
                     <div class="impact-grid about-stats">
                         <div class="card">
-                            <h3>12 cities</h3>
-                            <p>Active programs across urban and peri-urban neighborhoods.</p>
+                            <h3 data-i18n="footerCities">12 cities</h3>
+                            <p data-i18n="aboutStat1">Active programs across urban and peri-urban neighborhoods.</p>
                         </div>
                         <div class="card">
-                            <h3>86 facilitators</h3>
-                            <p>Frontline educators, counselors, and community volunteers.</p>
+                            <h3 data-i18n="footerFacilitators">86 facilitators</h3>
+                            <p data-i18n="aboutStat2">Frontline educators, counselors, and community volunteers.</p>
                         </div>
                         <div class="card">
-                            <h3>92% attendance</h3>
-                            <p>Average monthly retention across learning centers.</p>
+                            <h3 data-i18n="footerAttendance">92% attendance</h3>
+                            <p data-i18n="aboutStat3">Average monthly retention across learning centers.</p>
                         </div>
                     </div>
                 </div>
@@ -179,93 +179,93 @@
     <section id="impact" class="page-section" style="display: none;">
         <div class="container wide">
             <div class="section-header">
-                <h2>Impact & Reports</h2>
-                <p class="muted">Clear, transparent updates on how donations are used and the results they achieve.</p>
+                <h2 data-i18n="impactTitle">Impact & Reports</h2>
+                <p class="muted" data-i18n="impactSubtitle">Clear, transparent updates on how donations are used and the results they achieve.</p>
             </div>
             <div class="impact-kpis">
                 <div class="impact-card">
                     <div class="impact-icon"><i class="fas fa-hand-holding-heart"></i></div>
                     <div>
-                        <h3>₹2.8Cr</h3>
-                        <p>Total funds utilized across education, health, and nutrition.</p>
+                        <h3 data-i18n="impactFunds">₹2.8Cr</h3>
+                        <p data-i18n="impactFundsDesc">Total funds utilized across education, health, and nutrition.</p>
                     </div>
                 </div>
                 <div class="impact-card">
                     <div class="impact-icon"><i class="fas fa-school"></i></div>
                     <div>
-                        <h3>120+</h3>
-                        <p>Partner schools and community centers supported.</p>
+                        <h3 data-i18n="impactSchools">120+</h3>
+                        <p data-i18n="impactSchoolsDesc">Partner schools and community centers supported.</p>
                     </div>
                 </div>
                 <div class="impact-card">
                     <div class="impact-icon"><i class="fas fa-chart-line"></i></div>
                     <div>
-                        <h3>86%</h3>
-                        <p>Children showing measurable improvement within 12 months.</p>
+                        <h3 data-i18n="impactImprovement">86%</h3>
+                        <p data-i18n="impactImprovementDesc">Children showing measurable improvement within 12 months.</p>
                     </div>
                 </div>
                 <div class="impact-card">
                     <div class="impact-icon"><i class="fas fa-user-graduate"></i></div>
                     <div>
-                        <h3>3,200</h3>
-                        <p>Learning kits delivered in 2025.</p>
+                        <h3 data-i18n="impactKitsNum">3,200</h3>
+                        <p data-i18n="impactKitsDesc">Learning kits delivered in 2025.</p>
                     </div>
                 </div>
             </div>
 
             <div class="impact-metrics">
                 <div class="card highlight">
-                    <h3>Program Utilization</h3>
-                    <p class="muted">Monthly allocation performance against planned targets.</p>
+                    <h3 data-i18n="programUtilization">Program Utilization</h3>
+                    <p class="muted" data-i18n="programUtilizationDesc">Monthly allocation performance against planned targets.</p>
                     <div class="metric">
-                        <div class="metric-label">Education</div>
+                        <div class="metric-label" data-i18n="metricEducation">Education</div>
                         <div class="metric-bar"><span style="width: 78%;"></span></div>
                     </div>
                     <div class="metric">
-                        <div class="metric-label">Nutrition</div>
+                        <div class="metric-label" data-i18n="metricNutrition">Nutrition</div>
                         <div class="metric-bar"><span style="width: 64%;"></span></div>
                     </div>
                     <div class="metric">
-                        <div class="metric-label">Healthcare</div>
+                        <div class="metric-label" data-i18n="metricHealthcare">Healthcare</div>
                         <div class="metric-bar"><span style="width: 71%;"></span></div>
                     </div>
                 </div>
                 <div class="card highlight">
-                    <h3>2025 Impact Highlights</h3>
+                    <h3 data-i18n="impactHighlightsTitle">2025 Impact Highlights</h3>
                     <ul class="list">
-                        <li>98% attendance improvement across supported schools.</li>
-                        <li>1,500 health check-ups completed in rural communities.</li>
-                        <li>500+ volunteers engaged in local initiatives.</li>
+                        <li data-i18n="impactHL1">98% attendance improvement across supported schools.</li>
+                        <li data-i18n="impactHL2">1,500 health check-ups completed in rural communities.</li>
+                        <li data-i18n="impactHL3">500+ volunteers engaged in local initiatives.</li>
                     </ul>
-                    <button class="btn btn-outline" onclick="focusImpactDashboard()">View Impact Dashboard</button>
+                    <button class="btn btn-outline" onclick="focusImpactDashboard()" data-i18n="impactHighlightsCTA">View Impact Dashboard</button>
                 </div>
             </div>
 
             <div class="reports-grid">
                 <div class="report-card">
-                    <h4>Annual Impact Report 2025</h4>
-                    <p>Program highlights, audited utilization, and outcomes.</p>
-                    <button class="btn btn-outline" onclick="downloadImpactReport()">Download PDF</button>
+                    <h4 data-i18n="reportAnnual">Annual Impact Report 2025</h4>
+                    <p data-i18n="reportAnnualDesc">Program highlights, audited utilization, and outcomes.</p>
+                    <button class="btn btn-outline" onclick="downloadImpactReport()" data-i18n="downloadPDF">Download PDF</button>
                 </div>
                 <div class="report-card">
-                    <h4>Financial Transparency Summary</h4>
-                    <p>Breakdown of fund allocation and operational costs.</p>
-                    <button class="btn btn-outline" onclick="openSummaryModal()">View Summary</button>
+                    <h4 data-i18n="reportFinancial">Financial Transparency Summary</h4>
+                    <p data-i18n="reportFinancialDesc">Breakdown of fund allocation and operational costs.</p>
+                    <button class="btn btn-outline" onclick="openSummaryModal()" data-i18n="viewSummary">View Summary</button>
                 </div>
                 <div class="report-card">
-                    <h4>Child Development Case Studies</h4>
-                    <p>Stories that show measurable impact and growth.</p>
-                    <button class="btn btn-outline" onclick="showSection('testimonials')">Read Stories</button>
+                    <h4 data-i18n="reportCaseStudies">Child Development Case Studies</h4>
+                    <p data-i18n="reportCaseStudiesDesc">Stories that show measurable impact and growth.</p>
+                    <button class="btn btn-outline" onclick="showSection('testimonials')" data-i18n="readStories">Read Stories</button>
                 </div>
             </div>
 
             <div class="card transparency-card">
                 <div class="transparency-header">
                     <div>
-                        <h3>Where Your Donation Goes</h3>
-                        <p class="muted">Live distribution across partner institutions.</p>
+                        <h3 data-i18n="donationGoesTitle">Where Your Donation Goes</h3>
+                        <p class="muted" data-i18n="donationGoesDesc">Live distribution across partner institutions.</p>
                     </div>
-                    <div id="institution-total" class="muted small">Total allocated: 0%</div>
+                    <div id="institution-total" class="muted small" data-i18n="totalAllocated">Total allocated: 0%</div>
                 </div>
                 <div class="institution-grid" id="institution-grid"></div>
             </div>
@@ -281,7 +281,7 @@
             </div>
             <div id="modal-body" class="modal-body"></div>
             <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeImpactModal()">Close</button>
+                <button class="btn btn-outline" onclick="closeImpactModal()" data-i18n="closeBtn">Close</button>
             </div>
         </div>
     </div>
@@ -290,15 +290,15 @@
     <section id="events" class="page-section" style="display: none;">
         <div class="container">
             <div class="section-header">
-                <h2>Upcoming Events & Announcements</h2>
-                <p class="muted">Join us at our upcoming community events and initiatives.</p>
+                <h2 data-i18n="eventsTitle">Upcoming Events & Announcements</h2>
+                <p class="muted" data-i18n="eventsSubtitle">Join us at our upcoming community events and initiatives.</p>
             </div>
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Event Name</th>
-                        <th>Date</th>
-                        <th>Description</th>
+                        <th data-i18n="eventsColName">Event Name</th>
+                        <th data-i18n="eventsColDate">Date</th>
+                        <th data-i18n="eventsColDesc">Description</th>
                     </tr>
                 </thead>
                 <tbody id="public-events-list">
@@ -311,41 +311,41 @@
     <!-- Programs Section -->
     <section id="programs" class="page-section" style="display: none;">
         <div class="container">
-            <h2>Our Programs</h2>
+            <h2 data-i18n="programsTitle">Our Programs</h2>
             <div class="programs-grid">
                 <div class="program-card">
                     <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=280&fit=crop" alt="Education program" class="card-image">
                     <div class="card-content">
-                        <h3>Education For All</h3>
-                        <p>Providing books, uniforms, and tuition for street children.</p>
+                        <h3 data-i18n="program1Title">Education For All</h3>
+                        <p data-i18n="program1Desc">Providing books, uniforms, and tuition for street children.</p>
                     </div>
                 </div>
                 <div class="program-card">
                     <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=280&fit=crop" alt="Nutrition program" class="card-image">
                     <div class="card-content">
-                        <h3>Healthy Meals</h3>
-                        <p>Daily nutritious meals to combat malnutrition in slums.</p>
+                        <h3 data-i18n="program2Title">Healthy Meals</h3>
+                        <p data-i18n="program2Desc">Daily nutritious meals to combat malnutrition in slums.</p>
                     </div>
                 </div>
                 <div class="program-card">
                     <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=280&fit=crop" alt="Skill development" class="card-image">
                     <div class="card-content">
-                        <h3>Skill Development</h3>
-                        <p>Vocational training for teenagers to ensure employability.</p>
+                        <h3 data-i18n="program3Title">Skill Development</h3>
+                        <p data-i18n="program3Desc">Vocational training for teenagers to ensure employability.</p>
                     </div>
                 </div>
                 <div class="program-card">
                     <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=280&fit=crop" alt="Mentorship program" class="card-image">
                     <div class="card-content">
-                        <h3>Mentorship & Tutoring</h3>
-                        <p>One-on-one mentoring and after-school tutoring programs.</p>
+                        <h3 data-i18n="program4Title">Mentorship & Tutoring</h3>
+                        <p data-i18n="program4Desc">One-on-one mentoring and after-school tutoring programs.</p>
                     </div>
                 </div>
                 <div class="program-card">
                     <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=400&h=280&fit=crop" alt="Healthcare program" class="card-image">
                     <div class="card-content">
-                        <h3>Community Healthcare</h3>
-                        <p>Health camps and preventive care for children and families.</p>
+                        <h3 data-i18n="program5Title">Community Healthcare</h3>
+                        <p data-i18n="program5Desc">Health camps and preventive care for children and families.</p>
                     </div>
                 </div>
             </div>
@@ -356,18 +356,18 @@
     <section id="gallery" class="page-section" style="display: none;">
         <div class="container">
             <div class="section-header">
-                <h2>Gallery</h2>
-                <p class="muted">A glimpse of our programs and community partners.</p>
+                <h2 data-i18n="galleryTitle">Gallery</h2>
+                <p class="muted" data-i18n="gallerySubtitle">A glimpse of our programs and community partners.</p>
             </div>
             <div class="gallery-grid">
-                <div class="image-card" style="background-image: url('images/photo_1.jpeg'); background-size: cover;"><span>Creative Workshops</span></div>
-                <div class="image-card" style="background-image: url('images/photo_3.jpeg'); background-size: cover;"><span>Learning Center</span></div>
-                <div class="image-card" style="background-image: url('images/photo_2.png'); background-size: cover;"><span>Nutrition Drive</span></div>
-                <div class="image-card" style="background-image: url('images/photo_4.jpeg'); background-size: cover;"><span>Health Camp</span></div>
-                <div class="image-card" style="background-image: url('images/photo_5.jpeg'); background-size: cover;"><span>Volunteer Day</span></div>
-                <div class="image-card" style="background-image: url('images/photo_6.jpeg'); background-size: cover;"><span>Library Time</span></div>
-                <div class="image-card" style="background-image: url('images/photo_7.jpeg'); background-size: cover;"><span>Community Outreach</span></div>
-                <div class="image-card" style="background-image: url('https://www.maasavitringo.org/wp-content/uploads/2024/05/Cmp-1.jpg'); background-size: cover;"><span>After-School Activities</span></div>
+                <div class="image-card" style="background-image: url('images/photo_1.jpeg'); background-size: cover;"><span data-i18n="galleryCreative">Creative Workshops</span></div>
+                <div class="image-card" style="background-image: url('images/photo_3.jpeg'); background-size: cover;"><span data-i18n="galleryLearning">Learning Center</span></div>
+                <div class="image-card" style="background-image: url('images/photo_2.png'); background-size: cover;"><span data-i18n="galleryNutrition">Nutrition Drive</span></div>
+                <div class="image-card" style="background-image: url('images/photo_4.jpeg'); background-size: cover;"><span data-i18n="galleryHealth">Health Camp</span></div>
+                <div class="image-card" style="background-image: url('images/photo_5.jpeg'); background-size: cover;"><span data-i18n="galleryVolunteer">Volunteer Day</span></div>
+                <div class="image-card" style="background-image: url('images/photo_6.jpeg'); background-size: cover;"><span data-i18n="galleryLibrary">Library Time</span></div>
+                <div class="image-card" style="background-image: url('images/photo_7.jpeg'); background-size: cover;"><span data-i18n="galleryCommunity">Community Outreach</span></div>
+                <div class="image-card" style="background-image: url('https://www.maasavitringo.org/wp-content/uploads/2024/05/Cmp-1.jpg'); background-size: cover;"><span data-i18n="galleryAfterSchool">After-School Activities</span></div>
             </div>
         </div>
     </section>
@@ -375,26 +375,26 @@
     <!-- Volunteer Section -->
     <section id="volunteer" class="page-section" style="display: none;">
         <div class="container small-container">
-            <h2>Become a Volunteer</h2>
-            <p>Join our team of change-makers.</p>
+            <h2 data-i18n="volunteerTitle">Become a Volunteer</h2>
+            <p data-i18n="volunteerSubtitle">Join our team of change-makers.</p>
             <form id="volunteer-form" onsubmit="handleVolunteerSubmit(event)">
                 <div class="form-group">
-                    <label>Full Name</label>
+                    <label data-i18n="volunteerName">Full Name</label>
                     <input type="text" id="vol-name" required>
                 </div>
                 <div class="form-group">
-                    <label>Email</label>
+                    <label data-i18n="volunteerEmail">Email</label>
                     <input type="email" id="vol-email" required>
                 </div>
                 <div class="form-group">
-                    <label>Interests</label>
+                    <label data-i18n="volunteerInterest">Interests</label>
                     <select id="vol-interest">
-                        <option>Teaching</option>
-                        <option>Event Management</option>
-                        <option>Fundraising</option>
+                        <option data-i18n="volunteerTeaching">Teaching</option>
+                        <option data-i18n="volunteerEvent">Event Management</option>
+                        <option data-i18n="volunteerFund">Fundraising</option>
                     </select>
                 </div>
-                <button type="submit" class="cta-btn">Submit Application</button>
+                <button type="submit" class="cta-btn" data-i18n="volunteerSubmit">Submit Application</button>
             </form>
         </div>
     </section>
@@ -402,8 +402,8 @@
     <!-- Donate Section -->
     <section id="donate" class="page-section" style="display: none;">
         <div class="container small-container">
-            <h2>Make a Donation</h2>
-            <p>Your support changes lives. All donations are tax-deductible.</p>
+            <h2 data-i18n="donateTitle">Make a Donation</h2>
+            <p data-i18n="donateSubtitle">Your support changes lives. All donations are tax-deductible.</p>
             <div id="payment-status" class="status-banner" style="display:none;"></div>
             <div class="donation-options">
                 <button type="button" class="chip">₹500</button>
@@ -413,15 +413,15 @@
             </div>
             <form id="donation-form" onsubmit="handleDonationSubmit(event)">
                 <div class="form-group">
-                    <label>Donor Name</label>
+                    <label data-i18n="donateDonorName">Donor Name</label>
                     <input type="text" id="don-name" required>
                 </div>
                 <div class="form-group">
-                    <label>Amount (INR)</label>
+                    <label data-i18n="donateAmount">Amount (INR)</label>
                     <input type="number" id="don-amount" required>
                 </div>
                 <div class="form-group">
-                    <label>Payment Method</label>
+                    <label data-i18n="donatePaymentMethod">Payment Method</label>
                     <div class="method-pills">
                         <label class="pill-option active"><input type="radio" name="pay-method" value="UPI" checked onchange="togglePaymentMethod()"> UPI</label>
                         <label class="pill-option"><input type="radio" name="pay-method" value="Card" onchange="togglePaymentMethod()"> Card</label>
@@ -464,8 +464,8 @@
                     <p class="muted small">This is a mock card form for demo; details are not charged or stored.</p>
                 </div>
 
-                <button type="submit" class="cta-btn">Donate Securely</button>
-                <p class="crypto-note"><small>Instant receipt + email confirmation.</small></p>
+                <button type="submit" class="cta-btn" data-i18n="donateSecurely">Donate Securely</button>
+                <p class="crypto-note"><small data-i18n="donateNote">Instant receipt + email confirmation.</small></p>
             </form>
             
             <div id="receipt-area" class="receipt" style="display:none;">
@@ -484,8 +484,8 @@
     <section id="testimonials" class="page-section" style="display: none;">
         <div class="container">
             <div class="section-header">
-                <h2>Success Stories</h2>
-                <p class="muted">Real impact from our community members and volunteers.</p>
+                <h2 data-i18n="storiesTitle">Success Stories</h2>
+                <p class="muted" data-i18n="storiesSubtitle">Real impact from our community members and volunteers.</p>
             </div>
             <div class="testimonials-grid" id="testimonials-grid">
                 <!-- Testimonials will be rendered dynamically -->
@@ -494,18 +494,18 @@
             <!-- Feedback Form in Stories Section -->
             <div class="feedback-section">
                 <div class="section-header" style="margin-top: 3rem;">
-                    <h3>Share Your Story</h3>
-                    <p class="muted">We'd love to hear about your experience with Hope Foundation.</p>
+                    <h3 data-i18n="shareStoryTitle">Share Your Story</h3>
+                    <p class="muted" data-i18n="shareStorySubtitle">We'd love to hear about your experience with Hope Foundation.</p>
                 </div>
                 <div class="feedback-form-inline card">
                     <form onsubmit="submitFeedback(event)">
                         <div class="feedback-form-grid">
                             <div class="form-group">
-                                <label for="feedback-name">Your Name</label>
+                                <label for="feedback-name" data-i18n="feedbackName">Your Name</label>
                                 <input type="text" id="feedback-name" placeholder="Enter your name" required>
                             </div>
                             <div class="form-group">
-                                <label for="feedback-role">Your Role</label>
+                                <label for="feedback-role" data-i18n="feedbackRole">Your Role</label>
                                 <select id="feedback-role" required>
                                     <option value="">Select role...</option>
                                     <option value="Donor">Donor</option>
@@ -518,11 +518,11 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="feedback-city">City</label>
+                                <label for="feedback-city" data-i18n="feedbackCity">City</label>
                                 <input type="text" id="feedback-city" placeholder="Your city" required>
                             </div>
                             <div class="form-group">
-                                <label>Rating</label>
+                                <label data-i18n="feedbackRating">Rating</label>
                                 <div class="rating-stars">
                                     <span class="star" data-rating="1" onclick="setRating(1)"><i class="fas fa-star"></i></span>
                                     <span class="star" data-rating="2" onclick="setRating(2)"><i class="fas fa-star"></i></span>
@@ -534,11 +534,11 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="feedback-message">Your Story</label>
+                            <label for="feedback-message" data-i18n="feedbackMessage">Your Story</label>
                             <textarea id="feedback-message" rows="4" placeholder="Share your experience with Hope Foundation..." required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i> Submit Your Story
+                            <i class="fas fa-paper-plane"></i> <span data-i18n="feedbackSubmit">Submit Your Story</span>
                         </button>
                     </form>
                 </div>
@@ -550,32 +550,30 @@
     <section id="contact" class="page-section" style="display: none;">
         <div class="container">
             <div class="section-header">
-                <h2>Contact Us</h2>
+                <h2 data-i18n="contactTitle">Contact Us</h2>
                 <p class="muted">We’d love to hear from you. Reach out for partnerships, volunteering, or donations.</p>
             </div>
             <div class="contact-grid">
                 <div class="card contact-card">
-                    <h3>Head Office</h3>
-                    <p>Hope Foundation, 112 Community Lane, New Delhi, India</p>
-                    <p><strong>Email:</strong> hello@hopefoundation.org</p>
-                    <p><strong>Phone:</strong> +91 98765 43210</p>
-                    <p><strong>Working Hours:</strong> Mon–Fri, 9:00 AM – 6:00 PM</p>
+                    <h3 data-i18n="contactHeadOffice">Head Office</h3>
+                    <p data-i18n="contactAddress">Hope Foundation, 112 Community Lane, New Delhi, India</p>
+                    <p><strong data-i18n="contactEmailLabel">Email:</strong> hello@hopefoundation.org</p>
+                    <p><strong data-i18n="contactPhoneLabel">Phone:</strong> +91 98765 43210</p>
+                    <p><strong data-i18n="contactHoursLabel">Working Hours:</strong> <span data-i18n="contactHours">Mon–Fri, 9:00 AM – 6:00 PM</span></p>
                 </div>
                 <form class="card contact-form" onsubmit="handleContactSubmit(event)">
-                    <h3>Send a Message</h3>
+                    <h3 data-i18n="contactFormTitle">Send a Message</h3>
                     <div class="form-group">
-                        <label>Name</label>
+                        <label data-i18n="contactName">Name</label>
                         <input type="text" name="contact-name" required>
                     </div>
                     <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" name="contact-email" required>
+                        <label data-i18n="contactEmail">Email</label><input type="email" name="contact-email" required>
                     </div>
                     <div class="form-group">
-                        <label>Message</label>
-                        <textarea name="contact-message" required rows="4"></textarea>
+                        <label data-i18n="contactMessage">Message</label><textarea name="contact-message" required rows="4"></textarea>
                     </div>
-                    <button class="btn btn-primary" type="submit">Send Message</button>
+                    <button class="btn btn-primary" type="submit" data-i18n="contactSend">Send Message</button>
                 </form>
             </div>
         </div>
@@ -586,17 +584,17 @@
     <!-- Admin Login -->
     <section id="admin-login/" class="page-section" style="display: none;">
         <div class="container small-container login-box">
-            <h2>Admin Login</h2>
+            <h2 data-i18n="adminLoginTitle">Admin Login</h2>
             <form onsubmit="handleAdminLogin(event)">
                 <div class="form-group">
-                    <label>Username</label>
+                    <label data-i18n="adminUsername">Username</label>
                     <input type="text" id="admin-user" required>
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
+                    <label data-i18n="adminPassword">Password</label>
                     <input type="password" id="admin-pass" required>
                 </div>
-                <button type="submit" class="cta-btn">Login</button>
+                <button type="submit" class="cta-btn" data-i18n="loginBtn">Login</button>
             </form>
         </div>
     </section>
@@ -867,7 +865,7 @@
                         <form onsubmit="handleAddInstitution(event)" class="inst-form">
                             <div class="form-grid">
                                 <div class="form-group">
-                                    <label>Name</label>
+                                    <label data-i18n="contactName">Name</label>
                                     <input type="text" id="inst-name" required>
                                 </div>
                                 <div class="form-group">
@@ -948,26 +946,26 @@
         <div class="footer-top">
             <div class="container footer-grid">
                 <div class="footer-brand">
-                    <span class="footer-badge">Since 2012</span>
-                    <h3>Hope Foundation</h3>
-                    <p class="muted">Empowering underprivileged children through education, nutrition, healthcare, and family support—backed by transparent reporting.</p>
+                    <span class="footer-badge" data-i18n="footerSince">Since 2012</span>
+                    <h3 data-i18n="footerBrand">Hope Foundation</h3>
+                    <p class="muted" data-i18n="footerDesc">Empowering underprivileged children through education, nutrition, healthcare, and family support—backed by transparent reporting.</p>
                     <div class="footer-meta">
-                        <span class="footer-pill">12 cities</span>
-                        <span class="footer-pill">86 facilitators</span>
-                        <span class="footer-pill">92% attendance</span>
+                        <span class="footer-pill" data-i18n="footerCities">12 cities</span>
+                        <span class="footer-pill" data-i18n="footerFacilitators">86 facilitators</span>
+                        <span class="footer-pill" data-i18n="footerAttendance">92% attendance</span>
                     </div>
                 </div>
                 <div>
-                    <h4>Quick Links</h4>
+                    <h4 data-i18n="footerQuickLinks">Quick Links</h4>
                     <ul>
-                        <li><a href="#" onclick="showSection('about')">About</a></li>
-                        <li><a href="#" onclick="showSection('programs')">Programs</a></li>
-                        <li><a href="#" onclick="showSection('impact')">Impact</a></li>
-                        <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+                        <li><a href="#" onclick="showSection('about')" data-i18n="navAbout">About</a></li>
+                        <li><a href="#" onclick="showSection('programs')" data-i18n="navPrograms">Programs</a></li>
+                        <li><a href="#" onclick="showSection('impact')" data-i18n="navImpact">Impact</a></li>
+                        <li><a href="#" onclick="showSection('contact')" data-i18n="navContact">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-contact">
-                    <h4>Contact</h4>
+                    <h4 data-i18n="footerContact">Contact</h4>
                     <p><i class="fas fa-phone"></i> +91 98765 43210</p>
                     <p><i class="fas fa-envelope"></i> hello@hopefoundation.org</p>
                     <p><i class="fas fa-location-dot"></i> 21 Community Lane, Ahmedabad</p>
@@ -978,14 +976,14 @@
                     </div>
                 </div>
                 <div class="footer-cta">
-                    <h4>Ready to help?</h4>
-                    <p class="muted">Your support funds learning kits, meals, and health camps. Every contribution is reported with receipts.</p>
-                    <button class="btn btn-primary" onclick="showSection('donate')">Donate Now</button>
+                    <h4 data-i18n="footerReady">Ready to help?</h4>
+                    <p class="muted" data-i18n="footerReadyDesc">Your support funds learning kits, meals, and health camps. Every contribution is reported with receipts.</p>
+                    <button class="btn btn-primary" onclick="showSection('donate')" data-i18n="footerDonate">Donate Now</button>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <small>© 2026 Hope Foundation. All rights reserved.</small>
+            <small data-i18n="footerCopyright">© 2026 Hope Foundation. All rights reserved.</small>
         </div>
     </footer>
 
