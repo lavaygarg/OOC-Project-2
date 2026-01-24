@@ -1,0 +1,19 @@
+services:
+  # Backend API Service
+  - type: web
+    name: ooc-backend
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: RAZORPAY_KEY_ID
+        sync: false  # Set this in Render dashboard
+      - key: RAZORPAY_KEY_SECRET
+        sync: false  # Set this in Render dashboard
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false  # Set this in Render dashboard (optional)
+      - key: FRONTEND_URL
+        sync: false  # Set your frontend URL in Render dashboard
+    healthCheckPath: /api/health

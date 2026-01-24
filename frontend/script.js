@@ -1,6 +1,6 @@
 // --- API CONFIGURATION ---
 // Backend hosted on Render.com
-const API_BASE_URL = 'https://ooc-project.onrender.com';
+const API_BASE_URL = 'https://ooc-project-2-1.onrender.com';
 
 // --- XSS SECURITY ---
 // Escape HTML special characters to prevent XSS attacks

@@ -28,8 +28,8 @@ app.use(cors({
             return callback(null, true);
         }
         
-        // Allow netlify.app and vercel.app domains
-        if (origin.includes('netlify.app') || origin.includes('vercel.app')) {
+        // Allow netlify.app, vercel.app, and onrender.com domains
+        if (origin.includes('netlify.app') || origin.includes('vercel.app') || origin.includes('onrender.com')) {
             return callback(null, true);
         }
         

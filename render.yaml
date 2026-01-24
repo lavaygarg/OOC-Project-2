@@ -1,0 +1,47 @@
+# Render Blueprint - Deploy both frontend and backend
+# https://render.com/docs/blueprint-spec
+
+services:
+  # =====================
+  # BACKEND API SERVICE
+  # =====================
+  - type: web
+    name: ooc-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free  # Change to 'starter' or higher for paid plans
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: RAZORPAY_KEY_ID
+        sync: false  # Set manually in Render Dashboard
+      - key: RAZORPAY_KEY_SECRET
+        sync: false  # Set manually in Render Dashboard
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false  # Optional - Set in Render Dashboard
+      - key: FRONTEND_URL
+        sync: false  # Set your frontend URL after deployment
+
+  # =====================
+  # FRONTEND STATIC SITE
+  # =====================
+  - type: web
+    name: ooc-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: echo "No build step needed"
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
