@@ -2489,6 +2489,59 @@ function toggleFeedback() {
     }
 }
 
+// Events Section Tab Switching
+function switchEventsTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.events-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Find and activate the clicked button
+    const activeBtn = document.querySelector(`.events-tab-btn[onclick*="${tabName}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+    
+    // Update tab content
+    document.querySelectorAll('.events-tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    const activeContent = document.getElementById('events-tab-' + tabName);
+    if (activeContent) {
+        activeContent.classList.add('active');
+    }
+}
+
+// Newsletter Subscription Handler
+function handleNewsletterSubscribe(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('newsletter-email').value;
+    
+    if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address.');
+        return;
+    }
+    
+    // Store subscription (in localStorage for demo)
+    const subscriptions = JSON.parse(localStorage.getItem('newsletter_subscriptions') || '[]');
+    
+    if (subscriptions.includes(email)) {
+        alert('You are already subscribed to our newsletter!');
+        return;
+    }
+    
+    subscriptions.push(email);
+    localStorage.setItem('newsletter_subscriptions', JSON.stringify(subscriptions));
+    
+    // Show success message
+    alert('🎉 Thank you for subscribing!\n\nYou will receive our monthly newsletter with updates on our programs, events, and impact stories.');
+    
+    // Reset form
+    document.getElementById('newsletter-email').value = '';
+}
+
 // Stories Section Tab Switching
 function switchStoriesTab(tabName) {
     // Update tab buttons

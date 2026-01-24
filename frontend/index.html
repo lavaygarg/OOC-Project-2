@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -84,7 +84,7 @@
                 </div>
             </div>
         </header>
-        
+
         <div class="stats-container">
             <div class="impact-grid">
                 <div class="card">
@@ -289,22 +289,353 @@
     <!-- Events Section -->
     <section id="events" class="page-section" style="display: none;">
         <div class="container">
-            <div class="section-header">
-                <h2 data-i18n="eventsTitle">Upcoming Events & Announcements</h2>
-                <p class="muted" data-i18n="eventsSubtitle">Join us at our upcoming community events and initiatives.</p>
+            <!-- Hero Banner for Events -->
+            <div class="events-hero">
+                <div class="events-hero-content">
+                    <span class="events-badge"><i class="fas fa-calendar-star"></i> Events & Updates</span>
+                    <h1 data-i18n="eventsHeroTitle">Experience the Spirit of Giving</h1>
+                    <p data-i18n="eventsHeroSubtitle">Join us at community events, celebrate achievements, and be part of the change.</p>
+                </div>
             </div>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th data-i18n="eventsColName">Event Name</th>
-                        <th data-i18n="eventsColDate">Date</th>
-                        <th data-i18n="eventsColDesc">Description</th>
-                    </tr>
-                </thead>
-                <tbody id="public-events-list">
-                    <!-- JS will populate -->
-                </tbody>
-            </table>
+
+            <!-- Events Tabs Navigation -->
+            <div class="events-tabs-nav">
+                <button class="events-tab-btn active" onclick="switchEventsTab('upcoming')">
+                    <i class="fas fa-calendar-alt"></i> Upcoming Events
+                </button>
+                <button class="events-tab-btn" onclick="switchEventsTab('past')">
+                    <i class="fas fa-history"></i> Past Prayas Events
+                </button>
+                <button class="events-tab-btn" onclick="switchEventsTab('newsletter')">
+                    <i class="fas fa-newspaper"></i> Newsletters
+                </button>
+            </div>
+
+            <!-- Tab Content: Upcoming Events -->
+            <div id="events-tab-upcoming" class="events-tab-content active">
+                <div class="section-header">
+                    <h2><i class="fas fa-bullhorn"></i> Upcoming Events & Announcements</h2>
+                    <p class="muted">Mark your calendars and join us!</p>
+                </div>
+                <div class="upcoming-events-grid">
+                    <table class="data-table events-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="eventsColName">Event Name</th>
+                                <th data-i18n="eventsColDate">Date</th>
+                                <th data-i18n="eventsColDesc">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody id="public-events-list">
+                            <!-- JS will populate -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Content: Past Prayas Events -->
+            <div id="events-tab-past" class="events-tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-photo-film"></i> Prayas Event Gallery</h2>
+                    <p class="muted">Relive the moments that made a difference in our community.</p>
+                </div>
+
+                <div class="past-events-gallery">
+                    <!-- Event 1 -->
+                    <div class="past-event-card">
+                        <div class="past-event-image">
+                            <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&h=400&fit=crop" alt="Annual Education Camp 2025">
+                            <div class="event-date-badge">
+                                <span class="day">15</span>
+                                <span class="month">Dec</span>
+                            </div>
+                        </div>
+                        <div class="past-event-content">
+                            <span class="event-category education"><i class="fas fa-graduation-cap"></i> Education</span>
+                            <h3>Annual Education Camp 2025</h3>
+                            <p>Over 500 underprivileged children received free books, uniforms, and stationery. Teachers volunteered to provide career guidance and motivational sessions.</p>
+                            <div class="event-stats">
+                                <span><i class="fas fa-users"></i> 500+ Children</span>
+                                <span><i class="fas fa-map-marker-alt"></i> Prayagraj</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event 2 -->
+                    <div class="past-event-card">
+                        <div class="past-event-image">
+                            <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&h=400&fit=crop" alt="Diwali Food Distribution">
+                            <div class="event-date-badge">
+                                <span class="day">01</span>
+                                <span class="month">Nov</span>
+                            </div>
+                        </div>
+                        <div class="past-event-content">
+                            <span class="event-category nutrition"><i class="fas fa-utensils"></i> Nutrition</span>
+                            <h3>Diwali Food & Joy Drive</h3>
+                            <p>Distributed festive meals and sweets to 1000+ families. Children received new clothes and crackers, spreading the joy of Diwali to every household.</p>
+                            <div class="event-stats">
+                                <span><i class="fas fa-box-heart"></i> 1000+ Meals</span>
+                                <span><i class="fas fa-map-marker-alt"></i> Multiple Villages</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event 3 -->
+                    <div class="past-event-card">
+                        <div class="past-event-image">
+                            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&h=400&fit=crop" alt="Free Health Camp">
+                            <div class="event-date-badge">
+                                <span class="day">20</span>
+                                <span class="month">Sep</span>
+                            </div>
+                        </div>
+                        <div class="past-event-content">
+                            <span class="event-category healthcare"><i class="fas fa-heartbeat"></i> Healthcare</span>
+                            <h3>Free Medical Health Camp</h3>
+                            <p>Expert doctors provided free health checkups, eye tests, and dental care. Over 300 patients received free medicines and health consultations.</p>
+                            <div class="event-stats">
+                                <span><i class="fas fa-user-md"></i> 15 Doctors</span>
+                                <span><i class="fas fa-procedures"></i> 300+ Checkups</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event 4 -->
+                    <div class="past-event-card">
+                        <div class="past-event-image">
+                            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&h=400&fit=crop" alt="Independence Day Celebration">
+                            <div class="event-date-badge">
+                                <span class="day">15</span>
+                                <span class="month">Aug</span>
+                            </div>
+                        </div>
+                        <div class="past-event-content">
+                            <span class="event-category community"><i class="fas fa-flag"></i> Community</span>
+                            <h3>Independence Day Celebration</h3>
+                            <p>Patriotic cultural program by Prayas students. Flag hoisting ceremony followed by inspiring speeches and talent showcase by the children.</p>
+                            <div class="event-stats">
+                                <span><i class="fas fa-child"></i> 200+ Students</span>
+                                <span><i class="fas fa-music"></i> 15 Performances</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event 5 -->
+                    <div class="past-event-card">
+                        <div class="past-event-image">
+                            <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?w=600&h=400&fit=crop" alt="Summer Learning Camp">
+                            <div class="event-date-badge">
+                                <span class="day">05</span>
+                                <span class="month">Jun</span>
+                            </div>
+                        </div>
+                        <div class="past-event-content">
+                            <span class="event-category education"><i class="fas fa-book-reader"></i> Education</span>
+                            <h3>Summer Learning Camp</h3>
+                            <p>A 30-day intensive learning program covering academics, arts, and sports. Students improved their skills and discovered new talents during summer vacation.</p>
+                            <div class="event-stats">
+                                <span><i class="fas fa-calendar-days"></i> 30 Days</span>
+                                <span><i class="fas fa-users"></i> 150 Students</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event 6 -->
+                    <div class="past-event-card">
+                        <div class="past-event-image">
+                            <img src="https://images.unsplash.com/photo-1488521787991-ed7bdbcfa4ea?w=600&h=400&fit=crop" alt="Blanket Distribution">
+                            <div class="event-date-badge">
+                                <span class="day">25</span>
+                                <span class="month">Jan</span>
+                            </div>
+                        </div>
+                        <div class="past-event-content">
+                            <span class="event-category community"><i class="fas fa-hand-holding-heart"></i> Welfare</span>
+                            <h3>Winter Blanket Distribution</h3>
+                            <p>Distributed warm blankets and winter clothes to homeless and needy families. Volunteers also served hot meals to bring warmth during the cold season.</p>
+                            <div class="event-stats">
+                                <span><i class="fas fa-blanket"></i> 500+ Blankets</span>
+                                <span><i class="fas fa-mug-hot"></i> Hot Meals</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Newsletters -->
+            <div id="events-tab-newsletter" class="events-tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-envelope-open-text"></i> Prayas Newsletters</h2>
+                    <p class="muted">Stay updated with our latest news, stories, and impact reports.</p>
+                </div>
+
+                <!-- Newsletter Subscription Banner -->
+                <div class="newsletter-subscribe-banner">
+                    <div class="newsletter-subscribe-content">
+                        <div class="newsletter-icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <div class="newsletter-text">
+                            <h3>Subscribe to Our Newsletter</h3>
+                            <p>Get monthly updates about our programs, success stories, and upcoming events.</p>
+                        </div>
+                        <form class="newsletter-form" onsubmit="handleNewsletterSubscribe(event)">
+                            <input type="email" id="newsletter-email" placeholder="Enter your email address" required>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-envelope"></i> Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Newsletter Archive -->
+                <div class="newsletter-grid">
+                    <!-- Newsletter 1 -->
+                    <div class="newsletter-card">
+                        <div class="newsletter-header">
+                            <span class="newsletter-issue">Issue #24</span>
+                            <span class="newsletter-date"><i class="fas fa-calendar"></i> December 2025</span>
+                        </div>
+                        <div class="newsletter-cover">
+                            <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&h=250&fit=crop" alt="December Newsletter">
+                            <div class="newsletter-overlay">
+                                <span class="featured-tag"><i class="fas fa-star"></i> Featured</span>
+                            </div>
+                        </div>
+                        <div class="newsletter-body">
+                            <h3>Year in Review: 2025 Impact Report</h3>
+                            <p>A comprehensive look at how your donations transformed 5000+ lives this year. Special feature on our education initiatives and scholarship recipients.</p>
+                            <div class="newsletter-highlights">
+                                <span><i class="fas fa-users"></i> 5000+ Beneficiaries</span>
+                                <span><i class="fas fa-rupee-sign"></i> ₹25L Utilized</span>
+                            </div>
+                        </div>
+                        <div class="newsletter-footer">
+                            <a href="#" class="btn-read-newsletter"><i class="fas fa-book-open"></i> Read Newsletter</a>
+                            <a href="#" class="btn-download-newsletter"><i class="fas fa-download"></i> PDF</a>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter 2 -->
+                    <div class="newsletter-card">
+                        <div class="newsletter-header">
+                            <span class="newsletter-issue">Issue #23</span>
+                            <span class="newsletter-date"><i class="fas fa-calendar"></i> November 2025</span>
+                        </div>
+                        <div class="newsletter-cover">
+                            <img src="https://images.unsplash.com/photo-1607453998774-d533f65dac99?w=400&h=250&fit=crop" alt="November Newsletter">
+                        </div>
+                        <div class="newsletter-body">
+                            <h3>Diwali Special: Festival of Hope</h3>
+                            <p>Heartwarming stories from our Diwali celebrations across communities. See how we brought smiles to thousands of families this festive season.</p>
+                            <div class="newsletter-highlights">
+                                <span><i class="fas fa-gift"></i> 1000+ Gifts</span>
+                                <span><i class="fas fa-home"></i> 50 Villages</span>
+                            </div>
+                        </div>
+                        <div class="newsletter-footer">
+                            <a href="#" class="btn-read-newsletter"><i class="fas fa-book-open"></i> Read Newsletter</a>
+                            <a href="#" class="btn-download-newsletter"><i class="fas fa-download"></i> PDF</a>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter 3 -->
+                    <div class="newsletter-card">
+                        <div class="newsletter-header">
+                            <span class="newsletter-issue">Issue #22</span>
+                            <span class="newsletter-date"><i class="fas fa-calendar"></i> October 2025</span>
+                        </div>
+                        <div class="newsletter-cover">
+                            <img src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=400&h=250&fit=crop" alt="October Newsletter">
+                        </div>
+                        <div class="newsletter-body">
+                            <h3>Health First: Medical Camps Report</h3>
+                            <p>Detailed coverage of our free health camps and the impact on rural healthcare accessibility. Featuring interviews with volunteer doctors.</p>
+                            <div class="newsletter-highlights">
+                                <span><i class="fas fa-stethoscope"></i> 5 Health Camps</span>
+                                <span><i class="fas fa-pills"></i> Free Medicines</span>
+                            </div>
+                        </div>
+                        <div class="newsletter-footer">
+                            <a href="#" class="btn-read-newsletter"><i class="fas fa-book-open"></i> Read Newsletter</a>
+                            <a href="#" class="btn-download-newsletter"><i class="fas fa-download"></i> PDF</a>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter 4 -->
+                    <div class="newsletter-card">
+                        <div class="newsletter-header">
+                            <span class="newsletter-issue">Issue #21</span>
+                            <span class="newsletter-date"><i class="fas fa-calendar"></i> September 2025</span>
+                        </div>
+                        <div class="newsletter-cover">
+                            <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=250&fit=crop" alt="September Newsletter">
+                        </div>
+                        <div class="newsletter-body">
+                            <h3>Back to School: Scholarship Drive</h3>
+                            <p>How we helped 200+ students start their new academic year with complete school kits. Stories of determination and dreams.</p>
+                            <div class="newsletter-highlights">
+                                <span><i class="fas fa-school"></i> 200+ Students</span>
+                                <span><i class="fas fa-backpack"></i> School Kits</span>
+                            </div>
+                        </div>
+                        <div class="newsletter-footer">
+                            <a href="#" class="btn-read-newsletter"><i class="fas fa-book-open"></i> Read Newsletter</a>
+                            <a href="#" class="btn-download-newsletter"><i class="fas fa-download"></i> PDF</a>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter 5 -->
+                    <div class="newsletter-card">
+                        <div class="newsletter-header">
+                            <span class="newsletter-issue">Issue #20</span>
+                            <span class="newsletter-date"><i class="fas fa-calendar"></i> August 2025</span>
+                        </div>
+                        <div class="newsletter-cover">
+                            <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&h=250&fit=crop" alt="August Newsletter">
+                        </div>
+                        <div class="newsletter-body">
+                            <h3>Independence Day Special Edition</h3>
+                            <p>Celebrating freedom with education. Coverage of patriotic events and the launch of our new "Freedom Through Education" scholarship program.</p>
+                            <div class="newsletter-highlights">
+                                <span><i class="fas fa-flag"></i> Celebrations</span>
+                                <span><i class="fas fa-award"></i> New Scholarships</span>
+                            </div>
+                        </div>
+                        <div class="newsletter-footer">
+                            <a href="#" class="btn-read-newsletter"><i class="fas fa-book-open"></i> Read Newsletter</a>
+                            <a href="#" class="btn-download-newsletter"><i class="fas fa-download"></i> PDF</a>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter 6 -->
+                    <div class="newsletter-card">
+                        <div class="newsletter-header">
+                            <span class="newsletter-issue">Issue #19</span>
+                            <span class="newsletter-date"><i class="fas fa-calendar"></i> July 2025</span>
+                        </div>
+                        <div class="newsletter-cover">
+                            <img src="https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=400&h=250&fit=crop" alt="July Newsletter">
+                        </div>
+                        <div class="newsletter-body">
+                            <h3>Monsoon Relief: Helping Flood Victims</h3>
+                            <p>Our rapid response to monsoon floods affecting rural areas. Distribution of essential supplies, temporary shelters, and rehabilitation efforts.</p>
+                            <div class="newsletter-highlights">
+                                <span><i class="fas fa-hands-helping"></i> Relief Work</span>
+                                <span><i class="fas fa-home"></i> 100+ Families</span>
+                            </div>
+                        </div>
+                        <div class="newsletter-footer">
+                            <a href="#" class="btn-read-newsletter"><i class="fas fa-book-open"></i> Read Newsletter</a>
+                            <a href="#" class="btn-download-newsletter"><i class="fas fa-download"></i> PDF</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Load More Button -->
+                <div class="newsletter-load-more">
+                    <button class="btn btn-secondary"><i class="fas fa-archive"></i> View Older Newsletters</button>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -374,28 +705,182 @@
 
     <!-- Volunteer Section -->
     <section id="volunteer" class="page-section" style="display: none;">
-        <div class="container small-container">
-            <h2 data-i18n="volunteerTitle">Become a Volunteer</h2>
-            <p data-i18n="volunteerSubtitle">Join our team of change-makers.</p>
-            <form id="volunteer-form" onsubmit="handleVolunteerSubmit(event)">
-                <div class="form-group">
-                    <label data-i18n="volunteerName">Full Name</label>
-                    <input type="text" id="vol-name" required>
+        <div class="container">
+            <!-- Volunteer Hero -->
+            <div class="volunteer-hero">
+                <div class="volunteer-hero-content">
+                    <span class="volunteer-badge"><i class="fas fa-hands-helping"></i> Join Our Mission</span>
+                    <h1 data-i18n="volunteerHeroTitle">Be the Change You Want to See</h1>
+                    <p data-i18n="volunteerHeroSubtitle">Join 500+ volunteers who are making a real difference in children's lives every day.</p>
                 </div>
-                <div class="form-group">
-                    <label data-i18n="volunteerEmail">Email</label>
-                    <input type="email" id="vol-email" required>
+                <div class="volunteer-hero-stats">
+                    <div class="vol-stat">
+                        <span class="vol-stat-number">500+</span>
+                        <span class="vol-stat-label">Active Volunteers</span>
+                    </div>
+                    <div class="vol-stat">
+                        <span class="vol-stat-number">50+</span>
+                        <span class="vol-stat-label">Cities</span>
+                    </div>
+                    <div class="vol-stat">
+                        <span class="vol-stat-number">10K+</span>
+                        <span class="vol-stat-label">Hours Contributed</span>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label data-i18n="volunteerInterest">Interests</label>
-                    <select id="vol-interest">
-                        <option data-i18n="volunteerTeaching">Teaching</option>
-                        <option data-i18n="volunteerEvent">Event Management</option>
-                        <option data-i18n="volunteerFund">Fundraising</option>
-                    </select>
+            </div>
+
+            <div class="volunteer-content-grid">
+                <!-- Left Column: Why Volunteer -->
+                <div class="volunteer-info">
+                    <h2><i class="fas fa-heart"></i> Why Volunteer With Us?</h2>
+
+                    <div class="volunteer-benefits">
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-graduation-cap"></i></div>
+                            <div class="benefit-content">
+                                <h4>Make Real Impact</h4>
+                                <p>Directly help underprivileged children access education, healthcare, and opportunities.</p>
+                            </div>
+                        </div>
+
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-users"></i></div>
+                            <div class="benefit-content">
+                                <h4>Join a Community</h4>
+                                <p>Connect with like-minded individuals passionate about social change.</p>
+                            </div>
+                        </div>
+
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-certificate"></i></div>
+                            <div class="benefit-content">
+                                <h4>Get Certified</h4>
+                                <p>Receive volunteer certificates and letters of recommendation.</p>
+                            </div>
+                        </div>
+
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-clock"></i></div>
+                            <div class="benefit-content">
+                                <h4>Flexible Timing</h4>
+                                <p>Choose your own schedule - weekdays, weekends, or special events.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Volunteer Roles -->
+                    <h3><i class="fas fa-briefcase"></i> Volunteer Roles</h3>
+                    <div class="volunteer-roles">
+                        <div class="role-tag"><i class="fas fa-chalkboard-teacher"></i> Teaching</div>
+                        <div class="role-tag"><i class="fas fa-calendar-check"></i> Event Management</div>
+                        <div class="role-tag"><i class="fas fa-hand-holding-usd"></i> Fundraising</div>
+                        <div class="role-tag"><i class="fas fa-camera"></i> Photography</div>
+                        <div class="role-tag"><i class="fas fa-laptop-code"></i> Tech Support</div>
+                        <div class="role-tag"><i class="fas fa-bullhorn"></i> Social Media</div>
+                        <div class="role-tag"><i class="fas fa-stethoscope"></i> Healthcare</div>
+                        <div class="role-tag"><i class="fas fa-truck"></i> Logistics</div>
+                    </div>
                 </div>
-                <button type="submit" class="cta-btn" data-i18n="volunteerSubmit">Submit Application</button>
-            </form>
+
+                <!-- Right Column: Application Form -->
+                <div class="volunteer-form-container">
+                    <div class="volunteer-form-card">
+                        <div class="form-header">
+                            <div class="form-header-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <h2 data-i18n="volunteerTitle">Become a Volunteer</h2>
+                            <p data-i18n="volunteerSubtitle">Fill out the form to join our team of change-makers.</p>
+                        </div>
+
+                        <form id="volunteer-form" onsubmit="handleVolunteerSubmit(event)">
+                            <div class="form-group">
+                                <label data-i18n="volunteerName"><i class="fas fa-user"></i> Full Name</label>
+                                <input type="text" id="vol-name" placeholder="Enter your full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="volunteerEmail"><i class="fas fa-envelope"></i> Email Address</label>
+                                <input type="email" id="vol-email" placeholder="your.email@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-phone"></i> Phone Number</label>
+                                <input type="tel" id="vol-phone" placeholder="+91 98765 43210">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-map-marker-alt"></i> City</label>
+                                <input type="text" id="vol-city" placeholder="Your city">
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="volunteerInterest"><i class="fas fa-star"></i> Area of Interest</label>
+                                <select id="vol-interest">
+                                    <option value="" disabled selected>Select your interest</option>
+                                    <option data-i18n="volunteerTeaching" value="Teaching">Teaching & Mentoring</option>
+                                    <option data-i18n="volunteerEvent" value="Event Management">Event Management</option>
+                                    <option data-i18n="volunteerFund" value="Fundraising">Fundraising</option>
+                                    <option value="Healthcare">Healthcare Support</option>
+                                    <option value="Tech">Tech & Social Media</option>
+                                    <option value="Photography">Photography & Media</option>
+                                    <option value="Logistics">Logistics & Operations</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-comment-alt"></i> Why do you want to volunteer? (Optional)</label>
+                                <textarea id="vol-message" rows="3" placeholder="Share your motivation..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-volunteer-submit" data-i18n="volunteerSubmit">
+                                <i class="fas fa-paper-plane"></i> Submit Application
+                            </button>
+                        </form>
+
+                        <div class="form-footer">
+                            <p><i class="fas fa-shield-alt"></i> Your information is safe with us. We'll contact you within 48 hours.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Volunteer Testimonials -->
+            <div class="volunteer-testimonials">
+                <h3><i class="fas fa-quote-left"></i> What Our Volunteers Say</h3>
+                <div class="vol-testimonial-grid">
+                    <div class="vol-testimonial-card">
+                        <div class="vol-testimonial-content">
+                            <p>"Volunteering with Hope Foundation has been the most rewarding experience. Seeing the smiles on children's faces makes every moment worthwhile."</p>
+                        </div>
+                        <div class="vol-testimonial-author">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop" alt="Volunteer">
+                            <div>
+                                <strong>Rahul Mehta</strong>
+                                <span>Teaching Volunteer, 2 years</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vol-testimonial-card">
+                        <div class="vol-testimonial-content">
+                            <p>"I joined as a weekend volunteer and now I lead our fundraising team. The growth opportunities here are amazing!"</p>
+                        </div>
+                        <div class="vol-testimonial-author">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop" alt="Volunteer">
+                            <div>
+                                <strong>Priya Sharma</strong>
+                                <span>Fundraising Lead, 3 years</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="vol-testimonial-card">
+                        <div class="vol-testimonial-content">
+                            <p>"As a medical professional, I found the perfect platform to give back. Our health camps have helped thousands of children."</p>
+                        </div>
+                        <div class="vol-testimonial-author">
+                            <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=60&h=60&fit=crop" alt="Volunteer">
+                            <div>
+                                <strong>Dr. Amit Patel</strong>
+                                <span>Healthcare Volunteer, 1 year</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -467,7 +952,7 @@
                 <button type="submit" class="cta-btn" data-i18n="donateSecurely">Donate Securely</button>
                 <p class="crypto-note"><small data-i18n="donateNote">Instant receipt + email confirmation.</small></p>
             </form>
-            
+
             <div id="receipt-area" class="receipt" style="display:none;">
                 <h3>Donation Receipt</h3>
                 <p>Thank you, <span id="receipt-name"></span>!</p>
@@ -530,7 +1015,7 @@
                     </div>
                 </div>
                 <div class="accomplishments-grid">
-                    
+
                     <!-- Student 1 - IIITA -->
                     <div class="card accomplishment-card">
                         <div class="accomplishment-header">
@@ -659,7 +1144,7 @@
                         <p class="muted">Words of appreciation and encouragement from our community members.</p>
                     </div>
                 </div>
-                
+
                 <div class="feedback-section">
                     <div class="feedback-form-inline card">
                         <div class="feedback-form-header">
@@ -718,35 +1203,206 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
+    <!-- Contact Section - Enhanced -->
     <section id="contact" class="page-section" style="display: none;">
         <div class="container">
-            <div class="section-header">
-                <h2 data-i18n="contactTitle">Contact Us</h2>
-                <p class="muted">We’d love to hear from you. Reach out for partnerships, volunteering, or donations.</p>
-            </div>
-            <div class="contact-grid">
-                <div class="card contact-card">
-                    <h3 data-i18n="contactHeadOffice">Head Office</h3>
-                    <p data-i18n="contactAddress">Hope Foundation, 112 Community Lane, New Delhi, India</p>
-                    <p><strong data-i18n="contactEmailLabel">Email:</strong> hello@hopefoundation.org</p>
-                    <p><strong data-i18n="contactPhoneLabel">Phone:</strong> +91 98765 43210</p>
-                    <p><strong data-i18n="contactHoursLabel">Working Hours:</strong> <span data-i18n="contactHours">Mon–Fri, 9:00 AM – 6:00 PM</span></p>
+            <!-- Contact Hero -->
+            <div class="contact-hero">
+                <div class="contact-hero-content">
+                    <span class="contact-badge"><i class="fas fa-envelope-open-text"></i> Get In Touch</span>
+                    <h1 data-i18n="contactHeroTitle">We'd Love to Hear From You</h1>
+                    <p data-i18n="contactHeroSubtitle">Whether you want to partner, volunteer, donate, or simply learn more about our work, we're here to help.</p>
                 </div>
-                <form class="card contact-form" onsubmit="handleContactSubmit(event)">
-                    <h3 data-i18n="contactFormTitle">Send a Message</h3>
-                    <div class="form-group">
-                        <label data-i18n="contactName">Name</label>
-                        <input type="text" name="contact-name" required>
+            </div>
+
+            <!-- Quick Contact Cards -->
+            <div class="contact-quick-cards">
+                <div class="quick-contact-card">
+                    <div class="quick-icon phone-icon">
+                        <i class="fas fa-phone-alt"></i>
                     </div>
-                    <div class="form-group">
-                        <label data-i18n="contactEmail">Email</label><input type="email" name="contact-email" required>
+                    <h4>Call Us</h4>
+                    <p>+91 98765 43210</p>
+                    <span class="availability">Mon-Fri, 9AM-6PM</span>
+                </div>
+                <div class="quick-contact-card">
+                    <div class="quick-icon email-icon">
+                        <i class="fas fa-envelope"></i>
                     </div>
-                    <div class="form-group">
-                        <label data-i18n="contactMessage">Message</label><textarea name="contact-message" required rows="4"></textarea>
+                    <h4>Email Us</h4>
+                    <p>hello@hopefoundation.org</p>
+                    <span class="availability">24/7 Response</span>
+                </div>
+                <div class="quick-contact-card">
+                    <div class="quick-icon location-icon">
+                        <i class="fas fa-map-marker-alt"></i>
                     </div>
-                    <button class="btn btn-primary" type="submit" data-i18n="contactSend">Send Message</button>
-                </form>
+                    <h4>Visit Us</h4>
+                    <p>112 Community Lane, Delhi</p>
+                    <span class="availability">Walk-ins Welcome</span>
+                </div>
+                <div class="quick-contact-card">
+                    <div class="quick-icon social-icon">
+                        <i class="fas fa-share-alt"></i>
+                    </div>
+                    <h4>Follow Us</h4>
+                    <div class="contact-socials">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Contact Grid -->
+            <div class="contact-main-grid">
+                <!-- Left Column: Office Info & Map -->
+                <div class="contact-info-column">
+                    <!-- Office Details Card -->
+                    <div class="office-details-card">
+                        <div class="office-header">
+                            <div class="office-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div>
+                                <h3 data-i18n="contactHeadOffice">Head Office</h3>
+                                <span class="office-status"><i class="fas fa-circle"></i> Open Now</span>
+                            </div>
+                        </div>
+
+                        <div class="office-info-list">
+                            <div class="office-info-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>
+                                    <strong>Address</strong>
+                                    <p data-i18n="contactAddress">Hope Foundation, 112 Community Lane, New Delhi, India - 110001</p>
+                                </div>
+                            </div>
+                            <div class="office-info-item">
+                                <i class="fas fa-envelope"></i>
+                                <div>
+                                    <strong>Email</strong>
+                                    <p>hello@hopefoundation.org</p>
+                                    <p class="secondary">partnerships@hopefoundation.org</p>
+                                </div>
+                            </div>
+                            <div class="office-info-item">
+                                <i class="fas fa-phone-alt"></i>
+                                <div>
+                                    <strong>Phone</strong>
+                                    <p>+91 98765 43210 (General)</p>
+                                    <p class="secondary">+91 98765 43211 (Donations)</p>
+                                </div>
+                            </div>
+                            <div class="office-info-item">
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    <strong data-i18n="contactHoursLabel">Working Hours</strong>
+                                    <p data-i18n="contactHours">Monday – Friday: 9:00 AM – 6:00 PM</p>
+                                    <p class="secondary">Saturday: 10:00 AM – 2:00 PM</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Placeholder -->
+                    <div class="contact-map-card">
+                        <div class="map-header">
+                            <i class="fas fa-map-location-dot"></i>
+                            <span>Find Us on Map</span>
+                        </div>
+                        <div class="map-container">
+                            <iframe 
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.0684493371146!2d77.20650661508144!3d28.628454682419445!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cfd37b741d057%3A0xcdee88e47393c3f1!2sConnaught%20Place%2C%20New%20Delhi%2C%20Delhi!5e0!3m2!1sen!2sin!4v1643723456789!5m2!1sen!2sin" 
+                                width="100%" 
+                                height="250" 
+                                style="border:0; border-radius: 12px;" 
+                                allowfullscreen="" 
+                                loading="lazy">
+                            </iframe>
+                        </div>
+                        <a href="https://maps.google.com" target="_blank" class="map-directions-btn">
+                            <i class="fas fa-directions"></i> Get Directions
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Column: Contact Form -->
+                <div class="contact-form-column">
+                    <div class="contact-form-card">
+                        <div class="form-card-header">
+                            <div class="form-card-icon">
+                                <i class="fas fa-paper-plane"></i>
+                            </div>
+                            <h3 data-i18n="contactFormTitle">Send Us a Message</h3>
+                            <p>Fill out the form and we'll get back to you within 24 hours.</p>
+                        </div>
+
+                        <form class="enhanced-contact-form" onsubmit="handleContactSubmit(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label data-i18n="contactName"><i class="fas fa-user"></i> Your Name</label>
+                                    <input type="text" name="contact-name" placeholder="John Doe" required>
+                                </div>
+                                <div class="form-group">
+                                    <label data-i18n="contactEmail"><i class="fas fa-envelope"></i> Email Address</label>
+                                    <input type="email" name="contact-email" placeholder="john@example.com" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-phone"></i> Phone Number (Optional)</label>
+                                <input type="tel" name="contact-phone" placeholder="+91 98765 43210">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-tag"></i> Subject</label>
+                                <select name="contact-subject">
+                                    <option value="" disabled selected>Select a topic</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="donation">Donation Related</option>
+                                    <option value="volunteer">Volunteering</option>
+                                    <option value="partnership">Partnership Proposal</option>
+                                    <option value="media">Media & Press</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="contactMessage"><i class="fas fa-comment-alt"></i> Your Message</label>
+                                <textarea name="contact-message" required rows="5" placeholder="Tell us how we can help you..."></textarea>
+                            </div>
+                            <button class="btn-contact-submit" type="submit" data-i18n="contactSend">
+                                <i class="fas fa-paper-plane"></i> Send Message
+                            </button>
+                        </form>
+
+                        <div class="form-card-footer">
+                            <p><i class="fas fa-shield-alt"></i> Your information is secure and will never be shared.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="contact-faq-section">
+                <h3><i class="fas fa-question-circle"></i> Frequently Asked Questions</h3>
+                <div class="faq-grid">
+                    <div class="faq-card">
+                        <h4><i class="fas fa-hand-holding-heart"></i> How can I donate?</h4>
+                        <p>You can donate online through our secure payment gateway (UPI/Card), or by bank transfer. All donations are tax-deductible under 80G.</p>
+                    </div>
+                    <div class="faq-card">
+                        <h4><i class="fas fa-users"></i> How do I become a volunteer?</h4>
+                        <p>Visit our Volunteer page and fill out the application form. We'll contact you within 48 hours to discuss opportunities.</p>
+                    </div>
+                    <div class="faq-card">
+                        <h4><i class="fas fa-handshake"></i> Do you accept corporate partnerships?</h4>
+                        <p>Yes! We welcome CSR partnerships. Email us at partnerships@hopefoundation.org to discuss collaboration opportunities.</p>
+                    </div>
+                    <div class="faq-card">
+                        <h4><i class="fas fa-file-alt"></i> Can I get donation receipts?</h4>
+                        <p>Absolutely! All donors receive an 80G tax-exemption receipt via email within 24 hours of their donation.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -814,7 +1470,7 @@
                             <p>Available Balance</p>
                         </div>
                     </div>
-                    
+
                     <!-- Quick Audit Summary -->
                     <div class="card highlight" style="margin-top: 20px;">
                         <div class="audit-summary-header">
@@ -835,7 +1491,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <div class="card highlight allocation-card">
                         <div class="allocation-header">
                             <h3>Fund Allocation by Sector</h3>
@@ -900,7 +1556,7 @@
                         <h2><i class="fas fa-clipboard-list"></i> Audit Log</h2>
                         <p class="muted">Complete record of all financial transactions - incoming donations and outgoing disbursements.</p>
                     </div>
-                    
+
                     <!-- Audit Filters -->
                     <div class="audit-filters card">
                         <div class="filter-row">
@@ -926,7 +1582,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Audit Summary Cards -->
                     <div class="audit-summary-cards">
                         <div class="audit-card credit">
@@ -951,7 +1607,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Add Disbursement Form -->
                     <div class="card" style="margin: 20px 0;">
                         <h3><i class="fas fa-paper-plane"></i> Record Fund Disbursement</h3>
@@ -985,7 +1641,7 @@
                             <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Record Disbursement</button>
                         </form>
                     </div>
-                    
+
                     <!-- Audit Table -->
                     <table class="data-table audit-table">
                         <thead>
@@ -1003,7 +1659,7 @@
                             <!-- JS will populate -->
                         </tbody>
                     </table>
-                    
+
                     <!-- Export Options -->
                     <div class="audit-export">
                         <button class="btn btn-outline" onclick="exportAuditLog('csv')"><i class="fas fa-file-csv"></i> Export CSV</button>
@@ -1085,7 +1741,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Message Content Area -->
                         <div class="admin-msg-content">
                             <!-- Inbox Panel -->
@@ -1097,7 +1753,7 @@
                                     <div class="admin-msg-empty">Loading messages...</div>
                                 </div>
                             </div>
-                            
+
                             <!-- Compose Panel -->
                             <div class="admin-msg-panel" id="admin-panel-compose" style="display:none;">
                                 <div class="admin-msg-panel-header">
@@ -1128,7 +1784,7 @@
                                     <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Message</button>
                                 </form>
                             </div>
-                            
+
                             <!-- Sent Panel -->
                             <div class="admin-msg-panel" id="admin-panel-sent" style="display:none;">
                                 <div class="admin-msg-panel-header">
@@ -1138,7 +1794,7 @@
                                     <div class="admin-msg-empty">Loading sent messages...</div>
                                 </div>
                             </div>
-                            
+
                             <!-- Contact Forms Panel -->
                             <div class="admin-msg-panel" id="admin-panel-contact" style="display:none;">
                                 <div class="admin-msg-panel-header">
@@ -1155,7 +1811,7 @@
                                     <tbody id="messages-table-body"></tbody>
                                 </table>
                             </div>
-                            
+
                             <!-- Directory Panel -->
                             <div class="admin-msg-panel" id="admin-panel-directory" style="display:none;">
                                 <div class="admin-msg-panel-header">
@@ -1165,7 +1821,7 @@
                                     <!-- Will be populated by JS -->
                                 </div>
                             </div>
-                            
+
                             <!-- Message Detail View -->
                             <div class="admin-msg-panel" id="admin-panel-detail" style="display:none;">
                                 <div class="admin-msg-panel-header">
@@ -1181,7 +1837,7 @@
                 <div id="dash-tasks" class="dash-tab" style="display: none;">
                     <h2><i class="fas fa-tasks"></i> Task Assignment</h2>
                     <p class="muted" style="margin-bottom: 1.5rem;">Assign tasks to staff members and users. They will receive notifications in their messages.</p>
-                    
+
                     <div class="task-management-grid">
                         <!-- Assign New Task Form -->
                         <div class="card" style="margin-bottom: 1.5rem;">
@@ -1227,7 +1883,7 @@
                                 <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Assign Task</button>
                             </form>
                         </div>
-                        
+
                         <!-- Active Tasks List -->
                         <div class="card">
                             <h3><i class="fas fa-list-check" style="color: #3498db;"></i> Active Tasks</h3>
@@ -1242,7 +1898,7 @@
                 <div id="dash-shifts" class="dash-tab" style="display: none;">
                     <h2><i class="fas fa-calendar-alt"></i> Shift Management</h2>
                     <p class="muted" style="margin-bottom: 1.5rem;">Schedule and manage shifts for staff members. Assigned shifts will be sent to their messages automatically.</p>
-                    
+
                     <div class="shift-management-container">
                         <!-- Create Shift Form -->
                         <div class="card" style="margin-bottom: 1.5rem;">
@@ -1300,7 +1956,7 @@
                                 <button type="submit" class="btn btn-primary"><i class="fas fa-calendar-plus"></i> Schedule Shift</button>
                             </form>
                         </div>
-                        
+
                         <!-- Weekly Shift Overview -->
                         <div class="card">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
