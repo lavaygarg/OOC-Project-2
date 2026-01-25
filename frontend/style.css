@@ -3169,6 +3169,19 @@ body {
         line-height: 1.6;
     }
 
+    /* Light theme mobile: add dark text shadow for better visibility */
+    body:not(.dark-theme) .hero .eyebrow {
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    body:not(.dark-theme) .hero h1 {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    body:not(.dark-theme) .hero p {
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.4);
+    }
+
     .split {
         grid-template-columns: 1fr;
     }
