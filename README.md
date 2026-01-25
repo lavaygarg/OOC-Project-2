@@ -1,8 +1,6 @@
 # Hope Foundation  
 ### *Empowering Underprivileged Children Through Education, Nutrition, and Healthcare*
 
-![Banner Image](https://images.unsplash.com/photo-1488521787991-ed7fe863a665?w=1200&h=400&fit=crop)
-
 ---
 
 ## 📖 About The Project
