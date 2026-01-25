@@ -12,7 +12,14 @@ We identified a critical gap in how NGOs operate: managing donations transparenc
 Our platform serves as a bridge between compassionate donors, dedicated volunteers, and the administration, ensuring that every resource—whether time or money—reaches the children who need it most.
 
 ---
-
+## Credentials for Demo Access
+* Admin Panel:
+  - username:admin
+    - password:iiita@123
+* Staff Panel: click on demo login and select staff
+* Username Panel: 
+    - username: anything
+    - password: anything
 ## 🌟 Comprehensive Functionality Guide
 
 We have built a feature-rich platform catering to four distinct user groups: Public Visitors, Donors, Volunteers, and Administrators.
