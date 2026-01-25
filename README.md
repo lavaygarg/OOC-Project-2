@@ -165,8 +165,8 @@ We are constantly working to improve this platform. Upcoming features include:
 This project was passionately developed by:
 *   **Riya Ghoshi** - *Frontend Developer*
 *   **Lavay Garg** - *Full Stack Developer*
-*   **Jatin** - *UI and UX Designer*
-*   **Bhaskar Sarate** - *Full Stack Developer*
+*   **Jatin** - *Frontend Developer and UI & UX Designer*
+*   **Bhaskar Sarate** - *Designer*
 
 ---
 
