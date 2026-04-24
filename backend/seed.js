@@ -65,6 +65,38 @@ const seedData = async () => {
             console.log('   Password: Staff@123');
         }
 
+        // Create manager user
+        const existingManager = await Staff.findOne({ email: 'manager@hopefoundation.org' });
+        if (!existingManager) {
+            await Staff.create({
+                name: 'Programs Manager',
+                email: 'manager@hopefoundation.org',
+                password: 'Manager@123',
+                role: 'manager',
+                department: 'Programs',
+                status: 'Active'
+            });
+            console.log('👤 Created manager user');
+            console.log('   Email: manager@hopefoundation.org');
+            console.log('   Password: Manager@123');
+        }
+
+        // Create hr user
+        const existingHR = await Staff.findOne({ email: 'hr@hopefoundation.org' });
+        if (!existingHR) {
+            await Staff.create({
+                name: 'HR Coordinator',
+                email: 'hr@hopefoundation.org',
+                password: 'Human@123',
+                role: 'staff',
+                department: 'Human Resources',
+                status: 'Active'
+            });
+            console.log('👤 Created HR staff user');
+            console.log('   Email: hr@hopefoundation.org');
+            console.log('   Password: Human@123');
+        }
+
         // Seed sample volunteers
         const volunteerCount = await Volunteer.countDocuments();
         if (volunteerCount === 0) {
