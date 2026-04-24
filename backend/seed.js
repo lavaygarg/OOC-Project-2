@@ -10,6 +10,16 @@ const Institution = require('./models/Institution');
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
+// Default credentials from environment variables
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@hopefoundation.org';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin@123';
+const STAFF_EMAIL = process.env.STAFF_EMAIL || 'staff@hopefoundation.org';
+const STAFF_PASSWORD = process.env.STAFF_PASSWORD || 'Staff@123';
+const MANAGER_EMAIL = process.env.MANAGER_EMAIL || 'manager@hopefoundation.org';
+const MANAGER_PASSWORD = process.env.MANAGER_PASSWORD || 'Manager@123';
+const HR_EMAIL = process.env.HR_EMAIL || 'hr@hopefoundation.org';
+const HR_PASSWORD = process.env.HR_PASSWORD || 'Human@123';
+
 const seedData = async () => {
     try {
         await mongoose.connect(MONGODB_URI, { 
@@ -32,69 +42,69 @@ const seedData = async () => {
         // console.log('🗑️  Cleared existing data');
 
         // Create default admin user
-        const existingAdmin = await Staff.findOne({ email: 'admin@hopefoundation.org' });
+        const existingAdmin = await Staff.findOne({ email: ADMIN_EMAIL });
         if (!existingAdmin) {
             await Staff.create({
                 name: 'Admin User',
-                email: 'admin@hopefoundation.org',
-                password: 'Admin@123',  // Will be hashed automatically
+                email: ADMIN_EMAIL,
+                password: ADMIN_PASSWORD,  // Will be hashed automatically
                 role: 'admin',
                 department: 'Administration',
                 status: 'Active'
             });
             console.log('👤 Created default admin user');
-            console.log('   Email: admin@hopefoundation.org');
-            console.log('   Password: Admin@123');
+            console.log(`   Email: ${ADMIN_EMAIL}`);
+            console.log('   Password: [Set in environment variables]');
         } else {
             console.log('👤 Admin user already exists');
         }
 
         // Create default staff user
-        const existingStaff = await Staff.findOne({ email: 'staff@hopefoundation.org' });
+        const existingStaff = await Staff.findOne({ email: STAFF_EMAIL });
         if (!existingStaff) {
             await Staff.create({
                 name: 'Staff User',
-                email: 'staff@hopefoundation.org',
-                password: 'Staff@123',
+                email: STAFF_EMAIL,
+                password: STAFF_PASSWORD,
                 role: 'staff',
                 department: 'Operations',
                 status: 'Active'
             });
             console.log('👤 Created default staff user');
-            console.log('   Email: staff@hopefoundation.org');
-            console.log('   Password: Staff@123');
+            console.log(`   Email: ${STAFF_EMAIL}`);
+            console.log('   Password: [Set in environment variables]');
         }
 
         // Create manager user
-        const existingManager = await Staff.findOne({ email: 'manager@hopefoundation.org' });
+        const existingManager = await Staff.findOne({ email: MANAGER_EMAIL });
         if (!existingManager) {
             await Staff.create({
                 name: 'Programs Manager',
-                email: 'manager@hopefoundation.org',
-                password: 'Manager@123',
+                email: MANAGER_EMAIL,
+                password: MANAGER_PASSWORD,
                 role: 'manager',
                 department: 'Programs',
                 status: 'Active'
             });
             console.log('👤 Created manager user');
-            console.log('   Email: manager@hopefoundation.org');
-            console.log('   Password: Manager@123');
+            console.log(`   Email: ${MANAGER_EMAIL}`);
+            console.log('   Password: [Set in environment variables]');
         }
 
         // Create hr user
-        const existingHR = await Staff.findOne({ email: 'hr@hopefoundation.org' });
+        const existingHR = await Staff.findOne({ email: HR_EMAIL });
         if (!existingHR) {
             await Staff.create({
                 name: 'HR Coordinator',
-                email: 'hr@hopefoundation.org',
-                password: 'Human@123',
+                email: HR_EMAIL,
+                password: HR_PASSWORD,
                 role: 'staff',
                 department: 'Human Resources',
                 status: 'Active'
             });
             console.log('👤 Created HR staff user');
-            console.log('   Email: hr@hopefoundation.org');
-            console.log('   Password: Human@123');
+            console.log(`   Email: ${HR_EMAIL}`);
+            console.log('   Password: [Set in environment variables]');
         }
 
         // Seed sample volunteers
@@ -168,8 +178,8 @@ const seedData = async () => {
 
         console.log('\n✅ Database seeding completed!');
         console.log('\n📋 Default Login Credentials:');
-        console.log('   Admin: admin@hopefoundation.org / Admin@123');
-        console.log('   Staff: staff@hopefoundation.org / Staff@123');
+        console.log(`   Admin: ${ADMIN_EMAIL} / [Set in environment variables]`);
+        console.log(`   Staff: ${STAFF_EMAIL} / [Set in environment variables]`);
         
         process.exit(0);
     } catch (error) {
