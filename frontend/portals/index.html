@@ -4,208 +4,362 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Hope Foundation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
         body {
+            background-color: #fafbfc;
+            color: #111827;
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(-45deg, #0f172a, #1b4332, #14532d, #0f172a);
-            background-size: 400% 400%;
-            animation: gradientBG 12s ease infinite;
-            padding: 20px;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Floating orbs */
-        body::before, body::after {
-            content: '';
-            position: fixed;
-            border-radius: 50%;
-            pointer-events: none;
-            opacity: 0.08;
-        }
+        /* Top soft gradient glow */
         body::before {
-            width: 400px; height: 400px;
-            background: radial-gradient(circle, #2ecc71, transparent);
-            top: -100px; right: -100px;
-            animation: float 8s ease-in-out infinite;
-        }
-        body::after {
-            width: 300px; height: 300px;
-            background: radial-gradient(circle, #fca311, transparent);
-            bottom: -80px; left: -80px;
-            animation: float 10s ease-in-out infinite reverse;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(30px, -30px) scale(1.1); }
+            content: '';
+            position: absolute;
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 400px;
+            background: radial-gradient(ellipse at center, rgba(46, 204, 113, 0.1) 0%, rgba(250, 251, 252, 0) 70%);
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .portal-container {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 3rem;
-            border-radius: 24px;
-            text-align: center;
-            max-width: 800px;
-            width: 100%;
-            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Top Navigation */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2rem;
+            background: white;
+            z-index: 10;
+            position: relative;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .portal-container h1 {
-            color: white;
-            margin-bottom: 0.5rem;
-            font-size: 1.8rem;
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             font-weight: 700;
+            font-size: 1.1rem;
+            color: #111827;
         }
 
-        .portal-subtitle {
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
+        .nav-left i {
+            color: #10b981;
+            font-size: 1.25rem;
+            cursor: pointer;
         }
 
-        .portal-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        .nav-right {
+            display: flex;
+            align-items: center;
             gap: 1.5rem;
         }
 
-        .portal-card {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 2.5rem 2rem;
-            border-radius: 20px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
+        .nav-right a {
+            color: #6b7280;
             text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-right a:hover { color: #111827; }
+
+        .help-icon {
+            background: #10b981;
             color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Main Container */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            z-index: 1;
+            position: relative;
+        }
+
+        .portal-board {
+            background: white;
+            border-radius: 12px;
+            padding: 4rem 3rem 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            text-align: center;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .portal-board h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: #111827;
+            letter-spacing: -0.02em;
+        }
+
+        .portal-board p.subtitle {
+            color: #4b5563;
+            font-size: 1.05rem;
+            margin-bottom: 3.5rem;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3.5rem;
+        }
+
+        .role-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 2.5rem 1.5rem 2rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
+            background: white;
             position: relative;
-            overflow: hidden;
         }
 
-        .portal-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
-            border-radius: 20px;
-            opacity: 0;
-            transition: opacity 0.4s;
+        .role-card:hover {
+            border-color: #10b981;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.08);
+            transform: translateY(-2px);
         }
 
-        .portal-card:hover {
-            transform: translateY(-8px) scale(1.03);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(46, 204, 113, 0.1);
-        }
-
-        .portal-card:hover::before { opacity: 1; }
-
-        .icon-halo {
-            width: 70px; height: 70px;
+        .icon-circle {
+            width: 56px;
+            height: 56px;
+            background: #e6f9f1;
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
         }
 
-        .portal-card:nth-child(1) .icon-halo { background: linear-gradient(135deg, rgba(252, 163, 17, 0.2), rgba(252, 163, 17, 0.05)); box-shadow: 0 0 20px rgba(252, 163, 17, 0.15); }
-        .portal-card:nth-child(2) .icon-halo { background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(46, 204, 113, 0.05)); box-shadow: 0 0 20px rgba(46, 204, 113, 0.15); }
-        .portal-card:nth-child(3) .icon-halo { background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.05)); box-shadow: 0 0 20px rgba(99, 102, 241, 0.15); }
-
-        .portal-card:hover .icon-halo { transform: scale(1.1); }
-
-        .portal-card i { font-size: 1.8rem; }
-        .portal-card:nth-child(1) i { color: #fca311; }
-        .portal-card:nth-child(2) i { color: #2ecc71; }
-        .portal-card:nth-child(3) i { color: #6366f1; }
-
-        .portal-card h3 { font-size: 1.1rem; font-weight: 600; }
-        .portal-card p { font-size: 0.8rem; color: rgba(255, 255, 255, 0.5); margin: 0; }
-
-        .back-btn {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            margin-top: 2rem; padding: 0.75rem 1.5rem;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none; font-size: 0.9rem; font-weight: 500;
-            transition: all 0.3s ease;
+        .icon-circle i {
+            color: #047857;
+            font-size: 1.5rem;
         }
 
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: white; transform: translateX(-3px);
+        .role-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #111827;
+        }
+
+        .role-card p {
+            font-size: 0.85rem;
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Small horizontal divider inside card */
+        .role-card::after {
+            content: '';
+            width: calc(100% - 3rem);
+            height: 3px;
+            background: #f3f4f6;
+            position: absolute;
+            bottom: 2rem;
+            border-radius: 2px;
+            transition: background 0.2s;
+        }
+
+        .role-card:hover::after {
+            background: #10b981;
+        }
+
+        /* Support Link */
+        .support-text {
+            color: #4b5563;
+            font-size: 0.9rem;
+        }
+
+        .support-link {
+            color: #10b981;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid #10b981;
+            padding-bottom: 1px;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        /* Marquee Bar */
+        .marquee-bar {
+            background-color: #fce1c4; /* Peach/orange tint */
+            padding: 0.8rem 0;
+            overflow: hidden;
+            border-top: 1px solid #fbd3a7;
+            border-bottom: 1px solid #fbd3a7;
+            white-space: nowrap;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #431f00;
+        }
+
+        .marquee-content span {
+            margin: 0 2rem;
+        }
+
+        .marquee-content i {
+            margin-right: 0.4rem;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem;
+            background: #fafbfc;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-links a {
+            color: #6b7280;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #111827;
         }
 
         @media (max-width: 768px) {
-            .portal-container { padding: 2rem; }
-            .portal-container h1 { font-size: 1.4rem; }
-            .portal-grid { grid-template-columns: 1fr; gap: 1rem; }
-            .portal-card { padding: 1.5rem; flex-direction: row; gap: 1rem; }
-            .portal-card h3 { font-size: 1rem; }
-            .icon-halo { width: 55px; height: 55px; }
-            .portal-card i { font-size: 1.4rem; }
+            .cards-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .portal-board { padding: 2.5rem 1.5rem 2rem; }
+            .portal-board h1 { font-size: 2rem; }
+            .footer { flex-direction: column; gap: 1rem; text-align: center; }
+            .nav-left span { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="portal-container">
-        <h1>Select Login Portal</h1>
-        <p class="portal-subtitle">Choose your role to access the dashboard</p>
-        <div class="portal-grid">
-            <a href="admin.html" class="portal-card">
-                <div class="icon-halo"><i class="fas fa-user-shield"></i></div>
-                <div>
-                    <h3>Admin</h3>
-                    <p>Full system access</p>
-                </div>
-            </a>
-            <a href="staff.html" class="portal-card">
-                <div class="icon-halo"><i class="fas fa-users-cog"></i></div>
-                <div>
-                    <h3>Staff</h3>
-                    <p>Manage operations</p>
-                </div>
-            </a>
-            <a href="user.html" class="portal-card">
-                <div class="icon-halo"><i class="fas fa-user"></i></div>
-                <div>
-                    <h3>User</h3>
-                    <p>Donate & volunteer</p>
-                </div>
-            </a>
+
+    <!-- Top Navigation -->
+    <header class="top-nav">
+        <div class="nav-left">
+            <a href="../index.html" style="color: inherit; text-decoration: none;"><i class="fas fa-arrow-left"></i></a>
+            <span>Hope Foundation</span>
         </div>
-        <a href="../index.html" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Home
-        </a>
+        <div class="nav-right">
+            <a href="../index.html">Back to Home</a>
+            <div class="help-icon" title="Get Help">?</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="portal-board">
+            <h1>Welcome Back</h1>
+            <p class="subtitle">Please select your role to access the portal</p>
+
+            <div class="cards-grid">
+                <!-- Admin Card -->
+                <a href="admin.html" class="role-card">
+                    <div class="icon-circle">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3>Admin</h3>
+                    <p>Manage organization settings and oversee operations.</p>
+                </a>
+
+                <!-- Staff Card -->
+                <a href="staff.html" class="role-card">
+                    <div class="icon-circle">
+                        <i class="fas fa-id-badge"></i>
+                    </div>
+                    <h3>Staff</h3>
+                    <p>Coordinate projects, manage donations and field activities.</p>
+                </a>
+
+                <!-- User Card -->
+                <a href="user.html" class="role-card">
+                    <div class="icon-circle">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <h3>User</h3>
+                    <p>View success stories, manage profile, and contribute to causes.</p>
+                </a>
+            </div>
+
+            <!-- Support section -->
+            <div class="support-text">
+                Need help accessing your account?<br>
+                <a href="#" class="support-link">Contact IT Support</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Marquee Updates Bar -->
+    <div class="marquee-bar">
+        <div class="marquee-content">
+            <!-- First set -->
+            <span><i class="fas fa-star" style="color: #431f00;"></i> New Milestone: $1.2M raised for Clean Water Initiative</span>
+            <span><i class="fas fa-heart" style="color: #431f00;"></i> Community Impact: 500+ students received school kits today</span>
+            <span><i class="fas fa-asterisk" style="color: #431f00;"></i> Urgent: Medical supplies reached the rural clinic</span>
+            <!-- Duplicate set for seamless looping -->
+            <span><i class="fas fa-star" style="color: #431f00;"></i> New Milestone: $1.2M raised for Clean Water Initiative</span>
+            <span><i class="fas fa-heart" style="color: #431f00;"></i> Community Impact: 500+ students received school kits today</span>
+            <span><i class="fas fa-asterisk" style="color: #431f00;"></i> Urgent: Medical supplies reached the rural clinic</span>
+        </div>
     </div>
+
+    <!-- Bottom Footer -->
+    <footer class="footer">
+        <div>© 2024 Hope Foundation. All rights reserved.</div>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Support</a>
+        </div>
+    </footer>
+
 </body>
 </html>
