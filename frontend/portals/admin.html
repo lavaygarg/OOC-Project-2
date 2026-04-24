@@ -179,6 +179,52 @@
             gap: 0.4rem;
         }
         .security-note i { color: #10b981; }
+
+        .twofa-panel {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid #d1fae5;
+            background: #f0fdf4;
+        }
+
+        .twofa-panel.active { display: block; }
+
+        .twofa-panel h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: #065f46;
+        }
+
+        .twofa-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .twofa-qr {
+            width: 180px;
+            height: 180px;
+            border-radius: 14px;
+            background: white;
+            border: 1px solid #d1d5db;
+            padding: 10px;
+            display: block;
+            margin: 0.25rem auto;
+        }
+
+        .twofa-secret,
+        .twofa-note {
+            font-size: 0.85rem;
+            color: #374151;
+            word-break: break-all;
+            background: rgba(255,255,255,0.75);
+            border: 1px solid #dcfce7;
+            border-radius: 10px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -214,6 +260,21 @@
                 </button>
             </form>
 
+            <form id="admin-2fa-form" class="twofa-panel" onsubmit="handleAdminTwoFactorVerify(event)">
+                <h3><i class="fas fa-shield-halved"></i> Two-Factor Verification</h3>
+                <div id="admin-2fa-setup"></div>
+                <div class="form-group">
+                    <label for="admin-2fa-code">Verification Code</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-key"></i>
+                        <input type="text" id="admin-2fa-code" class="form-control" placeholder="Enter 6-digit code" inputmode="numeric" autocomplete="one-time-code" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-lock"></i> Verify & Continue
+                </button>
+            </form>
+
             <p class="security-note">
                 <i class="fas fa-shield-alt"></i> Secure admin access
             </p>
@@ -222,6 +283,7 @@
 
     <script>
         const API_BASE = 'https://ooc-backend.onrender.com/api';
+        let pendingAdminTempToken = '';
 
         // Clear any existing login state when visiting login page
         sessionStorage.removeItem('adminToken');
@@ -247,13 +309,24 @@
                 if (res.ok) {
                     const data = await res.json();
                     
-                    if (data.role !== 'admin') {
+                    if (data.staff?.role !== 'admin') {
                         throw new Error('Unauthorized access. This portal is for Administrators only.');
+                    }
+
+                    if (data.requiresTwoFactor) {
+                        pendingAdminTempToken = data.tempToken;
+                        sessionStorage.setItem('pendingAdmin2faToken', data.tempToken);
+                        sessionStorage.setItem('pendingAdmin2faEmail', data.staff.email);
+                        showAdminTwoFactorSetup(data.twoFactor);
+                        showAdminTwoFactorForm();
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Dashboard';
+                        return;
                     }
                     
                     sessionStorage.setItem('adminToken', data.token);
                     sessionStorage.setItem('adminLoggedIn', 'true');
-                    sessionStorage.setItem('staffRole', data.role);
+                    sessionStorage.setItem('staffRole', data.staff.role);
                     
                     btn.innerHTML = '<i class="fas fa-check"></i> Success!';
                     btn.style.background = '#059669';
@@ -263,7 +336,7 @@
                     }, 800);
                 } else {
                     const error = await res.json();
-                    throw new Error(error.message || 'Invalid credentials');
+                    throw new Error(error.error || error.message || 'Invalid credentials');
                 }
             } catch (err) {
                 alert(err.message || 'Login failed. Please check your credentials.');
@@ -271,6 +344,101 @@
                 btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Dashboard';
             }
         }
+
+        function restorePendingAdminTwoFactor() {
+            const storedToken = sessionStorage.getItem('pendingAdmin2faToken');
+            const storedSetup = sessionStorage.getItem('pendingAdmin2faSetup');
+
+            if (!storedToken) return;
+
+            pendingAdminTempToken = storedToken;
+            showAdminTwoFactorForm();
+
+            if (storedSetup) {
+                try {
+                    showAdminTwoFactorSetup(JSON.parse(storedSetup));
+                } catch (error) {
+                    console.warn('Unable to restore pending admin 2FA setup:', error);
+                }
+            }
+        }
+
+        function showAdminTwoFactorSetup(twoFactor) {
+            const setup = document.getElementById('admin-2fa-setup');
+            if (!setup) return;
+
+            if (!twoFactor?.secret) {
+                setup.innerHTML = '<div class="twofa-note">Enter the verification code from your authenticator app to continue.</div>';
+                return;
+            }
+
+            setup.innerHTML = `
+                <div class="twofa-note"><strong>First-time setup:</strong> scan the QR code in your authenticator app, or add the secret manually.</div>
+                ${twoFactor.qrCodeDataUrl ? `<img class="twofa-qr" src="${twoFactor.qrCodeDataUrl}" alt="Admin 2FA QR code">` : ''}
+                <div class="twofa-secret"><strong>Secret:</strong> ${twoFactor.secret}</div>
+                ${twoFactor.otpauthUrl ? `<div class="twofa-note"><strong>Manual entry URI:</strong> ${twoFactor.otpauthUrl}</div>` : ''}
+            `;
+        }
+
+        function showAdminTwoFactorForm() {
+            const panel = document.getElementById('admin-2fa-form');
+            if (panel) panel.classList.add('active');
+        }
+
+        async function handleAdminTwoFactorVerify(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('.btn-login');
+            const code = document.getElementById('admin-2fa-code').value.trim();
+            const tempToken = pendingAdminTempToken || sessionStorage.getItem('pendingAdmin2faToken');
+
+            if (!tempToken) {
+                alert('Please sign in again to continue.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+
+            try {
+                const res = await fetch(`${API_BASE}/staff/verify-2fa`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tempToken, code })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Verification failed');
+                }
+
+                sessionStorage.removeItem('pendingAdmin2faToken');
+                sessionStorage.removeItem('pendingAdmin2faEmail');
+                sessionStorage.removeItem('pendingAdmin2faSetup');
+                pendingAdminTempToken = '';
+
+                sessionStorage.setItem('adminToken', data.token);
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                sessionStorage.setItem('staffRole', data.staff.role);
+
+                if (data.securityAlert) {
+                    alert(data.securityAlert);
+                }
+
+                btn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                btn.style.background = '#059669';
+
+                setTimeout(() => {
+                    window.location.href = '../admin-dashboard/index.html';
+                }, 800);
+            } catch (err) {
+                alert(err.message || 'Verification failed.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-lock"></i> Verify & Continue';
+            }
+        }
+
+        restorePendingAdminTwoFactor();
     </script>
 </body>
 </html>

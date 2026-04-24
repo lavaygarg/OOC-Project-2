@@ -558,6 +558,32 @@ async function apiDelete(endpoint) {
     }
 }
 
+function decodeJwtPayload(token) {
+    try {
+        const payload = token.split('.')[1];
+        const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+        const decoded = atob(base64);
+        return JSON.parse(decoded);
+    } catch {
+        return null;
+    }
+}
+
+function hasValidAdminSession() {
+    const token = sessionStorage.getItem('adminToken');
+    if (!token) return false;
+
+    const payload = decodeJwtPayload(token);
+    if (!payload) return false;
+    if (payload.role !== 'admin') return false;
+    if (payload.twoFactorVerified !== true) return false;
+
+    const now = Math.floor(Date.now() / 1000);
+    if (!payload.exp || payload.exp <= now) return false;
+
+    return true;
+}
+
 function getTotalFunds(data) {
     return data.donations.reduce((sum, d) => sum + d.amount, 0);
 }
@@ -719,6 +745,11 @@ async function showSection(sectionId) {
 
     // Dynamic Rendering
     if (sectionId === 'admin-dashboard') {
+        if (!hasValidAdminSession()) {
+            alert('Please login through the Admin Portal with 2FA.');
+            window.location.href = 'portals/admin.html';
+            return;
+        }
         renderDashboard();
     } else if (sectionId === 'events') {
         renderPublicEvents();
@@ -1107,18 +1138,24 @@ async function handleAdminLogin(e) {
     // Try database login first
     const result = await apiPost('staff/login', { email, password: pass });
 
-    if (result && result.token) {
-        // Successful database login
-        localStorage.setItem('staffToken', result.token);
-        localStorage.setItem('staffUser', JSON.stringify(result.staff));
-        localStorage.setItem('adminLoggedIn', 'true');
-        alert('Login Successful!');
-        showSection('admin-dashboard');
-    } else if (email === 'admin' && pass === 'admin123') {
-        // Fallback to mock auth for backward compatibility
-        localStorage.setItem('adminLoggedIn', 'true');
-        alert('Login Successful (demo mode)');
-        showSection('admin-dashboard');
+    if (result && result.requiresTwoFactor) {
+        sessionStorage.setItem('pendingAdmin2faToken', result.tempToken);
+        sessionStorage.setItem('pendingAdmin2faEmail', result.staff?.email || email);
+        if (result.twoFactor) {
+            sessionStorage.setItem('pendingAdmin2faSetup', JSON.stringify(result.twoFactor));
+        }
+        alert('Two-factor verification is required. Please continue in the Admin Portal.');
+        window.location.href = 'portals/admin.html';
+    } else if (result && result.token) {
+        if (result.staff?.role !== 'admin' || result.twoFactorVerified !== true) {
+            alert('Admin 2FA verification is required. Please use the Admin Portal.');
+            window.location.href = 'portals/admin.html';
+        } else {
+            sessionStorage.setItem('adminToken', result.token);
+            sessionStorage.setItem('adminLoggedIn', 'true');
+            alert('Login Successful!');
+            showSection('admin-dashboard');
+        }
     } else {
         alert(result?.error || 'Invalid Credentials! Try: admin@hopefoundation.org / Admin@123');
     }
@@ -1161,7 +1198,8 @@ async function handleStaffLogin(e) {
 function logout() {
     if(confirm('Are you sure you want to log out?')) {
         // Clear admin login state
-        localStorage.removeItem('adminLoggedIn');
+        sessionStorage.removeItem('adminLoggedIn');
+        sessionStorage.removeItem('adminToken');
         // Clear hash from URL
         history.replaceState(null, '', window.location.pathname);
         showSection('home');
@@ -1910,7 +1948,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hash = window.location.hash;
     if (hash === '#admin-dashboard') {
         // Verify admin is logged in
-        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+        if (hasValidAdminSession()) {
             showSection('admin-dashboard');
         } else {
             // Not logged in, redirect to login page
@@ -1971,7 +2009,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     
     // Initialize admin messaging if on admin dashboard
-    if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+    if (hasValidAdminSession()) {
         initAdminMessaging();
     }
 });

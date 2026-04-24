@@ -1494,7 +1494,7 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Donation History</h3>
-                    <button class="btn btn-sm btn-primary"><i class="fas fa-download"></i> Export</button>
+                    <button type="button" id="export-donations-btn" class="btn btn-sm btn-primary"><i class="fas fa-download"></i> Export</button>
                 </div>
                 <div class="table-container">
                     <table>
@@ -1515,7 +1515,7 @@
                                 <td>₹5,000</td>
                                 <td>UPI</td>
                                 <td><span class="status status-success">Completed</span></td>
-                                <td><button class="btn btn-sm btn-secondary"><i class="fas fa-download"></i></button></td>
+                                <td><button type="button" class="btn btn-sm btn-secondary receipt-download-btn" data-transaction-id="TXN001234" data-date="Jan 20, 2026" data-amount="5000" data-method="UPI" data-status="Completed"><i class="fas fa-download"></i></button></td>
                             </tr>
                             <tr>
                                 <td>TXN001233</td>
@@ -1523,7 +1523,7 @@
                                 <td>₹10,000</td>
                                 <td>Card</td>
                                 <td><span class="status status-success">Completed</span></td>
-                                <td><button class="btn btn-sm btn-secondary"><i class="fas fa-download"></i></button></td>
+                                <td><button type="button" class="btn btn-sm btn-secondary receipt-download-btn" data-transaction-id="TXN001233" data-date="Jan 05, 2026" data-amount="10000" data-method="Card" data-status="Completed"><i class="fas fa-download"></i></button></td>
                             </tr>
                             <tr>
                                 <td>TXN001232</td>
@@ -1531,7 +1531,7 @@
                                 <td>₹10,000</td>
                                 <td>Bank Transfer</td>
                                 <td><span class="status status-success">Completed</span></td>
-                                <td><button class="btn btn-sm btn-secondary"><i class="fas fa-download"></i></button></td>
+                                <td><button type="button" class="btn btn-sm btn-secondary receipt-download-btn" data-transaction-id="TXN001232" data-date="Dec 25, 2025" data-amount="10000" data-method="Bank Transfer" data-status="Completed"><i class="fas fa-download"></i></button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -1548,11 +1548,11 @@
                 <p style="color: var(--gray); margin-bottom: 1.5rem;">Make a quick one-time donation to support our cause.</p>
                 
                 <div class="amount-chips">
-                    <span class="chip" onclick="selectAmount(500)">₹500</span>
-                    <span class="chip active" onclick="selectAmount(1000)">₹1,000</span>
-                    <span class="chip" onclick="selectAmount(2000)">₹2,000</span>
-                    <span class="chip" onclick="selectAmount(5000)">₹5,000</span>
-                    <span class="chip" onclick="selectAmount(10000)">₹10,000</span>
+                    <span class="chip" onclick="selectAmount(500,this)">₹500</span>
+                    <span class="chip active" onclick="selectAmount(1000,this)">₹1,000</span>
+                    <span class="chip" onclick="selectAmount(2000,this)">₹2,000</span>
+                    <span class="chip" onclick="selectAmount(5000,this)">₹5,000</span>
+                    <span class="chip" onclick="selectAmount(10000,this)">₹10,000</span>
                 </div>
                 
                 <div class="form-group">
@@ -1570,7 +1570,7 @@
                     </select>
                 </div>
                 
-                <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                <button type="button" id="quick-donate-btn" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
                     <i class="fas fa-heart"></i> Donate Now
                 </button>
             </div>
@@ -1625,12 +1625,12 @@
                             <tr>
                                 <td>2025-26</td>
                                 <td>₹25,000</td>
-                                <td><button class="btn btn-sm btn-primary"><i class="fas fa-download"></i> Download 80G</button></td>
+                                <td><button type="button" class="btn btn-sm btn-primary certificate-download-btn" data-financial-year="2025-26" data-total-donated="25000"><i class="fas fa-download"></i> Download 80G</button></td>
                             </tr>
                             <tr>
                                 <td>2024-25</td>
                                 <td>₹15,000</td>
-                                <td><button class="btn btn-sm btn-primary"><i class="fas fa-download"></i> Download 80G</button></td>
+                                <td><button type="button" class="btn btn-sm btn-primary certificate-download-btn" data-financial-year="2024-25" data-total-donated="15000"><i class="fas fa-download"></i> Download 80G</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -1678,7 +1678,7 @@
                 <i class="fas fa-child" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
                 <h4 style="color: var(--dark); margin-bottom: 0.5rem;">Sponsor Another Child</h4>
                 <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 1rem;">₹2,000/month provides education, nutrition, and healthcare for a child.</p>
-                <button class="btn btn-primary"><i class="fas fa-heart"></i> Sponsor Now</button>
+                <button type="button" id="sponsor-now-btn" class="btn btn-primary"><i class="fas fa-heart"></i> Sponsor Now</button>
             </div>
         </section>
         
@@ -2385,10 +2385,386 @@
         }
         
         // Quick donate amount selection
-        function selectAmount(amount) {
+        function selectAmount(amount, chipEl) {
             document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
+            const activeChip = chipEl || window.event?.target;
+            if (activeChip) activeChip.classList.add('active');
             document.getElementById('custom-amount').value = amount;
+        }
+
+        const DASHBOARD_API_BASE_URL = window.location.hostname.includes('localhost')
+            ? 'http://localhost:3000'
+            : 'https://ooc-backend.onrender.com';
+        const USER_AUTH_TOKEN = sessionStorage.getItem('userAuthToken');
+
+        if (!USER_AUTH_TOKEN) {
+            window.location.replace('./user.html');
+        }
+
+        function dashboardFetch(endpoint, options = {}) {
+            return fetch(`${DASHBOARD_API_BASE_URL}/api/${endpoint}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(USER_AUTH_TOKEN ? { Authorization: `Bearer ${USER_AUTH_TOKEN}` } : {}),
+                    ...(options.headers || {})
+                },
+                ...options
+            }).then(async response => {
+                const payload = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    throw new Error(payload.error || payload.message || 'Request failed');
+                }
+                return payload;
+            });
+        }
+
+        function ensureRazorpayLoaded() {
+            if (window.Razorpay) return Promise.resolve();
+
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error('Unable to load Razorpay checkout'));
+                document.head.appendChild(script);
+            });
+        }
+
+        function formatMoney(amount) {
+            const value = Number(amount) || 0;
+            return `₹${value.toLocaleString('en-IN')}`;
+        }
+
+        function downloadFile(content, filename, mimeType = 'text/plain') {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        function ensureJsPdfLoaded() {
+            if (window.jspdf?.jsPDF) {
+                return Promise.resolve(window.jspdf.jsPDF);
+            }
+
+            return new Promise((resolve, reject) => {
+                const existingScript = document.querySelector('script[data-jspdf-loader]');
+                if (existingScript) {
+                    existingScript.addEventListener('load', () => resolve(window.jspdf.jsPDF), { once: true });
+                    existingScript.addEventListener('error', () => reject(new Error('Unable to load PDF generator')),
+                        { once: true });
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                script.async = true;
+                script.dataset.jspdfLoader = 'true';
+                script.onload = () => resolve(window.jspdf.jsPDF);
+                script.onerror = () => reject(new Error('Unable to load PDF generator'));
+                document.head.appendChild(script);
+            });
+        }
+
+        function formatCurrencyForPdf(amount) {
+            const value = Number(amount) || 0;
+            return `INR ${value.toLocaleString('en-IN')}`;
+        }
+
+        function drawPdfKeyValueBox(doc, x, y, width, label, value) {
+            doc.setDrawColor(214, 222, 235);
+            doc.setFillColor(248, 250, 252);
+            doc.roundedRect(x, y, width, 48, 8, 8, 'FD');
+            doc.setFontSize(9);
+            doc.setTextColor(107, 114, 128);
+            doc.text(label, x + 12, y + 16);
+            doc.setFontSize(13);
+            doc.setTextColor(17, 24, 39);
+            const lines = doc.splitTextToSize(String(value || 'N/A'), width - 24);
+            doc.text(lines, x + 12, y + 32);
+        }
+
+        async function createReceiptPdf(data) {
+            const JsPdf = await ensureJsPdfLoaded();
+            const doc = new JsPdf({ unit: 'pt', format: 'a4' });
+            const pageWidth = doc.internal.pageSize.getWidth();
+
+            doc.setFillColor(20, 83, 45);
+            doc.rect(0, 0, pageWidth, 92, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.text('Hope Foundation', 40, 46);
+            doc.setFontSize(12);
+            doc.text('Donation Receipt', 40, 70);
+            doc.setFontSize(11);
+            doc.text(data.transactionId, pageWidth - 40, 54, { align: 'right' });
+
+            doc.setTextColor(17, 24, 39);
+            drawPdfKeyValueBox(doc, 40, 128, 240, 'Donor', data.profile.fullName);
+            drawPdfKeyValueBox(doc, 310, 128, 240, 'Email', data.profile.email || 'N/A');
+            drawPdfKeyValueBox(doc, 40, 196, 240, 'Amount', formatCurrencyForPdf(data.amount));
+            drawPdfKeyValueBox(doc, 310, 196, 240, 'Method', data.method);
+            drawPdfKeyValueBox(doc, 40, 264, 240, 'Date', data.date);
+            drawPdfKeyValueBox(doc, 310, 264, 240, 'Status', data.status);
+
+            doc.setFontSize(11);
+            doc.setTextColor(107, 114, 128);
+            doc.text('This receipt is generated by Hope Foundation\'s donation dashboard.', 40, 366);
+            doc.save(`${data.transactionId}-receipt.pdf`);
+        }
+
+        async function createCertificatePdf(data) {
+            const JsPdf = await ensureJsPdfLoaded();
+            const doc = new JsPdf({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+            const pageWidth = doc.internal.pageSize.getWidth();
+
+            doc.setFillColor(243, 244, 246);
+            doc.rect(0, 0, pageWidth, doc.internal.pageSize.getHeight(), 'F');
+            doc.setFillColor(220, 252, 231);
+            doc.roundedRect(36, 36, pageWidth - 72, 760, 18, 18, 'F');
+            doc.setDrawColor(187, 247, 208);
+            doc.roundedRect(48, 48, pageWidth - 96, 736, 14, 14, 'S');
+
+            doc.setFillColor(22, 101, 52);
+            doc.roundedRect(72, 72, 165, 28, 14, 14, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(11);
+            doc.text('80G Tax Exemption Certificate', 154, 91, { align: 'center' });
+
+            doc.setTextColor(20, 83, 45);
+            doc.setFontSize(28);
+            doc.text('Hope Foundation', 72, 146);
+            doc.setFontSize(13);
+            doc.setTextColor(75, 85, 99);
+            doc.text(`Certificate for financial year ${data.financialYear}`, 72, 172);
+            doc.text(`Issued on ${data.issuedOn}`, 72, 194);
+
+            drawPdfKeyValueBox(doc, 72, 236, 220, 'Donor Name', data.profile.fullName);
+            drawPdfKeyValueBox(doc, 312, 236, 220, 'Email', data.profile.email || 'N/A');
+            drawPdfKeyValueBox(doc, 72, 304, 220, 'Total Donated', formatCurrencyForPdf(data.totalDonated));
+            drawPdfKeyValueBox(doc, 312, 304, 220, 'Certificate Type', '80G Tax Exemption');
+
+            doc.setFontSize(11);
+            doc.setTextColor(75, 85, 99);
+            const bodyText = doc.splitTextToSize(
+                'This certificate is generated from the Hope Foundation user dashboard for taxation and records.',
+                pageWidth - 144
+            );
+            doc.text(bodyText, 72, 392);
+
+            doc.setDrawColor(191, 219, 254);
+            doc.roundedRect(72, 452, pageWidth - 144, 120, 16, 16, 'S');
+            doc.setFontSize(12);
+            doc.setTextColor(30, 64, 175);
+            doc.text('Important note', 92, 482);
+            doc.setFontSize(11);
+            doc.setTextColor(75, 85, 99);
+            const noteText = doc.splitTextToSize(
+                'Please keep this PDF for your records. The donation details shown here are generated from the current dashboard data.',
+                pageWidth - 184
+            );
+            doc.text(noteText, 92, 508);
+
+            doc.save(`hope-foundation-80g-${data.financialYear}.pdf`);
+        }
+
+        function getDonationRows() {
+            return Array.from(document.querySelectorAll('#donations tbody tr')).map(row => {
+                const cells = row.querySelectorAll('td');
+                return {
+                    transactionId: cells[0]?.textContent.trim() || '',
+                    date: cells[1]?.textContent.trim() || '',
+                    amount: cells[2]?.textContent.trim() || '',
+                    method: cells[3]?.textContent.trim() || '',
+                    status: cells[4]?.textContent.trim() || ''
+                };
+            });
+        }
+
+        function exportDonationsCsv() {
+            const rows = getDonationRows();
+            const header = ['Transaction ID', 'Date', 'Amount', 'Method', 'Status'];
+            const csv = [header, ...rows.map(row => [row.transactionId, row.date, row.amount, row.method, row.status])]
+                .map(columns => columns.map(value => `"${String(value).replace(/"/g, '""')}"`).join(','))
+                .join('\n');
+
+            downloadFile(csv, `hope-foundation-donations-${new Date().toISOString().slice(0, 10)}.csv`, 'text/csv');
+            alert('Donation export downloaded.');
+        }
+
+        async function downloadReceiptFromButton(button) {
+            const transactionId = button.dataset.transactionId || 'TXN-' + Date.now();
+            const date = button.dataset.date || new Date().toLocaleDateString();
+            const amount = button.dataset.amount || '0';
+            const method = button.dataset.method || 'Donation';
+            const status = button.dataset.status || 'Completed';
+            const profile = getUserProfileData();
+
+            try {
+                await createReceiptPdf({
+                    transactionId,
+                    date,
+                    amount,
+                    method,
+                    status,
+                    profile
+                });
+            } catch (error) {
+                console.error('Receipt PDF generation failed:', error);
+                alert('Unable to generate PDF right now.');
+            }
+        }
+
+        async function downloadCertificateFromButton(button) {
+            const profile = getUserProfileData();
+            const financialYear = button.dataset.financialYear || '2025-26';
+            const totalDonated = button.dataset.totalDonated || '0';
+            const issuedOn = new Date().toLocaleDateString(undefined, {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            try {
+                await createCertificatePdf({
+                    profile,
+                    financialYear,
+                    totalDonated,
+                    issuedOn
+                });
+            } catch (error) {
+                console.error('Certificate PDF generation failed:', error);
+                alert('Unable to generate PDF right now.');
+            }
+        }
+
+        async function startDonationFlow(amount, purpose = 'Donation') {
+            const donorName = getUserProfileData().fullName || USER_CURRENT.displayName || 'Anonymous';
+            const donorEmail = USER_CURRENT.email || '';
+            const numericAmount = Number(amount);
+
+            if (!numericAmount || numericAmount <= 0) {
+                alert('Please enter a valid donation amount.');
+                return;
+            }
+
+            try {
+                await ensureRazorpayLoaded();
+                const order = await dashboardFetch('razorpay/create-order', {
+                    method: 'POST',
+                    body: JSON.stringify({ amount: numericAmount, donorName, donorEmail })
+                });
+
+                const options = {
+                    key: order.keyId,
+                    amount: order.amount,
+                    currency: order.currency,
+                    name: 'Hope Foundation',
+                    description: purpose,
+                    order_id: order.orderId,
+                    prefill: {
+                        name: donorName,
+                        email: donorEmail,
+                        contact: getUserProfileData().phone || ''
+                    },
+                    theme: { color: '#2ecc71' },
+                    handler: async function(response) {
+                        try {
+                            await dashboardFetch('donations', {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    donorName,
+                                    donorEmail,
+                                    donorPhone: getUserProfileData().phone || '',
+                                    amount: numericAmount,
+                                    method: 'Card (Razorpay)',
+                                    paymentId: response.razorpay_payment_id,
+                                    orderId: response.razorpay_order_id,
+                                    status: 'Completed',
+                                    notes: purpose
+                                })
+                            });
+                        } catch (error) {
+                            console.warn('Donation record save failed:', error.message);
+                        }
+
+                        const historyKey = 'ooc_user_donation_history_' + USER_CURRENT.userId;
+                        const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+                        history.unshift({
+                            transactionId: response.razorpay_payment_id || order.orderId,
+                            date: new Date().toLocaleDateString(),
+                            amount: formatMoney(numericAmount),
+                            method: 'Card (Razorpay)',
+                            status: 'Completed'
+                        });
+                        localStorage.setItem(historyKey, JSON.stringify(history));
+
+                        const firstRow = document.querySelector('#donations tbody tr');
+                        if (firstRow) {
+                            const tbody = firstRow.parentElement;
+                            const newRow = document.createElement('tr');
+                            newRow.innerHTML = `
+                                <td>${response.razorpay_payment_id || order.orderId}</td>
+                                <td>${new Date().toLocaleDateString()}</td>
+                                <td>${formatMoney(numericAmount)}</td>
+                                <td>Card</td>
+                                <td><span class="status status-success">Completed</span></td>
+                                <td><button type="button" class="btn btn-sm btn-secondary receipt-download-btn" data-transaction-id="${response.razorpay_payment_id || order.orderId}" data-date="${new Date().toLocaleDateString()}" data-amount="${numericAmount}" data-method="Card (Razorpay)" data-status="Completed"><i class="fas fa-download"></i></button></td>
+                            `;
+                            tbody.prepend(newRow);
+                            bindDashboardActionButtons();
+                        }
+
+                        alert(`Donation successful for ${formatMoney(numericAmount)}. Your receipt is ready to download.`);
+                    },
+                    modal: {
+                        ondismiss: () => {}
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+            } catch (error) {
+                alert(error.message || 'Unable to start donation right now.');
+            }
+        }
+
+        function bindDashboardActionButtons() {
+            const quickDonateBtn = document.getElementById('quick-donate-btn');
+            if (quickDonateBtn && !quickDonateBtn.dataset.bound) {
+                quickDonateBtn.dataset.bound = 'true';
+                quickDonateBtn.addEventListener('click', () => {
+                    const amount = Number(document.getElementById('custom-amount')?.value || 0);
+                    startDonationFlow(amount, 'Quick Donation');
+                });
+            }
+
+            const sponsorBtn = document.getElementById('sponsor-now-btn');
+            if (sponsorBtn && !sponsorBtn.dataset.bound) {
+                sponsorBtn.dataset.bound = 'true';
+                sponsorBtn.addEventListener('click', () => startDonationFlow(2000, 'Sponsor a Child'));
+            }
+
+            const exportBtn = document.getElementById('export-donations-btn');
+            if (exportBtn && !exportBtn.dataset.bound) {
+                exportBtn.dataset.bound = 'true';
+                exportBtn.addEventListener('click', exportDonationsCsv);
+            }
+
+            document.querySelectorAll('.receipt-download-btn').forEach(button => {
+                if (button.dataset.bound) return;
+                button.dataset.bound = 'true';
+                button.addEventListener('click', () => downloadReceiptFromButton(button));
+            });
+
+            document.querySelectorAll('.certificate-download-btn').forEach(button => {
+                if (button.dataset.bound) return;
+                button.dataset.bound = 'true';
+                button.addEventListener('click', () => downloadCertificateFromButton(button));
+            });
         }
         
         // Copy referral code
@@ -2717,6 +3093,7 @@
             registerUserInDirectory();
             updateProfileUI();
             renderUserInbox();
+            bindDashboardActionButtons();
             
             // Mobile sidebar toggle functionality
             const sidebarToggle = document.getElementById('mobileSidebarToggle');
