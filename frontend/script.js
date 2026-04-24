@@ -443,7 +443,12 @@ function applyLanguage(lang) {
                 el.textContent = translation;
             }
         } else if (el.dataset.i18nOriginal) {
-            el.textContent = el.dataset.i18nOriginal;
+            // Safely restore original HTML (may contain <i> icon tags)
+            const safeDoc = new DOMParser().parseFromString(el.dataset.i18nOriginal, 'text/html');
+            el.textContent = '';
+            while (safeDoc.body.firstChild) {
+                el.appendChild(safeDoc.body.firstChild);
+            }
         }
     });
 
