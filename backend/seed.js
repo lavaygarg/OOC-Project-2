@@ -13,9 +13,9 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const seedData = async () => {
     try {
         await mongoose.connect(MONGODB_URI, { 
-            dbName: 'ooc-database',
+            dbName: 'hope-foundation',
             tls: true,
-            tlsAllowInvalidCertificates: false
+            tlsAllowInvalidCertificates: true
         });
         console.log('✅ Connected to MongoDB');
 

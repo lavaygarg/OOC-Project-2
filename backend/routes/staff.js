@@ -6,7 +6,11 @@ const { loginLimiter, registerLimiter } = require('../middleware/rateLimiter');
 const { validateLogin, validateStaffRegistration } = require('../middleware/validation');
 const { verifyToken, isAdmin, generateToken, generateRefreshToken, refreshAccessToken } = require('../middleware/auth');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'ooc-secret-key-2026';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    console.error('FATAL: JWT_SECRET environment variable is not set.');
+    process.exit(1);
+}
 
 // GET all staff (admin only)
 router.get('/', verifyToken, isAdmin, async (req, res) => {
@@ -58,7 +62,7 @@ router.post('/login', loginLimiter, validateLogin, async (req, res) => {
         const token = jwt.sign(
             { id: staff._id, email: staff.email, role: staff.role },
             JWT_SECRET,
-            { expiresIn: '7d' }
+            { expiresIn: '24h' }
         );
         
         res.json({
@@ -76,8 +80,8 @@ router.post('/login', loginLimiter, validateLogin, async (req, res) => {
     }
 });
 
-// POST register new staff (admin only)
-router.post('/register', async (req, res) => {
+// POST register new staff (admin only - protected)
+router.post('/register', verifyToken, isAdmin, async (req, res) => {
     try {
         const { name, email, password, phone, role, department } = req.body;
         
@@ -112,8 +116,8 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// GET single staff
-router.get('/:id', async (req, res) => {
+// GET single staff (authenticated)
+router.get('/:id', verifyToken, async (req, res) => {
     try {
         const staff = await Staff.findById(req.params.id);
         if (!staff) {
@@ -125,8 +129,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// PUT update staff
-router.put('/:id', async (req, res) => {
+// PUT update staff (admin only)
+router.put('/:id', verifyToken, isAdmin, async (req, res) => {
     try {
         const { name, phone, role, department, status } = req.body;
         
@@ -146,8 +150,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// PUT change password
-router.put('/:id/password', async (req, res) => {
+// PUT change password (authenticated - own account only)
+router.put('/:id/password', verifyToken, async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
         
@@ -171,8 +175,8 @@ router.put('/:id/password', async (req, res) => {
     }
 });
 
-// DELETE staff
-router.delete('/:id', async (req, res) => {
+// DELETE staff (admin only)
+router.delete('/:id', verifyToken, isAdmin, async (req, res) => {
     try {
         const staff = await Staff.findByIdAndDelete(req.params.id);
         if (!staff) {

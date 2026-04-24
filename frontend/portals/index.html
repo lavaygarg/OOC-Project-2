@@ -5,158 +5,207 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Hope Foundation</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .bgimg{
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-image:url('/images/bg.jpeg');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            background-color: white;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, #0f172a, #1b4332, #14532d, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            padding: 20px;
         }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating orbs */
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.08;
+        }
+        body::before {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, #2ecc71, transparent);
+            top: -100px; right: -100px;
+            animation: float 8s ease-in-out infinite;
+        }
+        body::after {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, #fca311, transparent);
+            bottom: -80px; left: -80px;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
         .portal-container {
-            background: rgba(255, 255, 255,0.7);
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 3rem;
+            border-radius: 24px;
             text-align: center;
             max-width: 800px;
             width: 100%;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .portal-container h1 {
-            color: #14213d;
-            margin-bottom: 2rem;
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            font-weight: 700;
         }
+
+        .portal-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
         .portal-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
+            gap: 1.5rem;
         }
+
         .portal-card {
-             background: rgba(255, 255, 255, 0.534);
-            padding: 2rem;
-            border-radius: 0.5rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             text-decoration: none;
-            color: inherit;
+            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
         }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
         .portal-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .portal-card i {
-            font-size: 3rem;
-            color: #fca311;
-            margin-bottom: 1rem;
-        }
-        .portal-card h3 {
-            margin: 0;
-            color: #14213d;
+            transform: translateY(-8px) scale(1.03);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(46, 204, 113, 0.1);
         }
 
-        /* Mobile Responsive Styles */
+        .portal-card:hover::before { opacity: 1; }
+
+        .icon-halo {
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .portal-card:nth-child(1) .icon-halo { background: linear-gradient(135deg, rgba(252, 163, 17, 0.2), rgba(252, 163, 17, 0.05)); box-shadow: 0 0 20px rgba(252, 163, 17, 0.15); }
+        .portal-card:nth-child(2) .icon-halo { background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(46, 204, 113, 0.05)); box-shadow: 0 0 20px rgba(46, 204, 113, 0.15); }
+        .portal-card:nth-child(3) .icon-halo { background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.05)); box-shadow: 0 0 20px rgba(99, 102, 241, 0.15); }
+
+        .portal-card:hover .icon-halo { transform: scale(1.1); }
+
+        .portal-card i { font-size: 1.8rem; }
+        .portal-card:nth-child(1) i { color: #fca311; }
+        .portal-card:nth-child(2) i { color: #2ecc71; }
+        .portal-card:nth-child(3) i { color: #6366f1; }
+
+        .portal-card h3 { font-size: 1.1rem; font-weight: 600; }
+        .portal-card p { font-size: 0.8rem; color: rgba(255, 255, 255, 0.5); margin: 0; }
+
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            margin-top: 2rem; padding: 0.75rem 1.5rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none; font-size: 0.9rem; font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white; transform: translateX(-3px);
+        }
+
         @media (max-width: 768px) {
-            .bgimg {
-                padding: 15px;
-            }
-            .portal-container {
-                padding: 1.5rem;
-            }
-            .portal-container h1 {
-                font-size: 1.5rem;
-                margin-bottom: 1.5rem;
-            }
-            .portal-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            .portal-card {
-                padding: 1.5rem;
-            }
-            .portal-card i {
-                font-size: 2.5rem;
-            }
-            .portal-card h3 {
-                font-size: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .bgimg {
-                padding: 10px;
-            }
-            .portal-container {
-                padding: 1.25rem;
-                border-radius: 0.75rem;
-            }
-            .portal-container h1 {
-                font-size: 1.25rem;
-                margin-bottom: 1.25rem;
-            }
-            .portal-grid {
-                gap: 0.75rem;
-            }
-            .portal-card {
-                padding: 1.25rem;
-                flex-direction: row;
-                justify-content: flex-start;
-                gap: 1rem;
-            }
-            .portal-card i {
-                font-size: 2rem;
-                margin-bottom: 0;
-            }
-            .btn-secondary {
-                padding: 0.6rem 1rem;
-                font-size: 0.9rem;
-            }
+            .portal-container { padding: 2rem; }
+            .portal-container h1 { font-size: 1.4rem; }
+            .portal-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .portal-card { padding: 1.5rem; flex-direction: row; gap: 1rem; }
+            .portal-card h3 { font-size: 1rem; }
+            .icon-halo { width: 55px; height: 55px; }
+            .portal-card i { font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
-    <div class="bgimg">
-
     <div class="portal-container">
         <h1>Select Login Portal</h1>
+        <p class="portal-subtitle">Choose your role to access the dashboard</p>
         <div class="portal-grid">
             <a href="admin.html" class="portal-card">
-                <i class="fas fa-user-shield"></i>
-                <h3>Admin</h3>
+                <div class="icon-halo"><i class="fas fa-user-shield"></i></div>
+                <div>
+                    <h3>Admin</h3>
+                    <p>Full system access</p>
+                </div>
             </a>
             <a href="staff.html" class="portal-card">
-                <i class="fas fa-users-cog"></i>
-                <h3>Staff</h3>
+                <div class="icon-halo"><i class="fas fa-users-cog"></i></div>
+                <div>
+                    <h3>Staff</h3>
+                    <p>Manage operations</p>
+                </div>
             </a>
             <a href="user.html" class="portal-card">
-                <i class="fas fa-user"></i>
-                <h3>User</h3>
+                <div class="icon-halo"><i class="fas fa-user"></i></div>
+                <div>
+                    <h3>User</h3>
+                    <p>Donate & volunteer</p>
+                </div>
             </a>
         </div>
-        <div style="margin-top: 2rem;">
-            <a href="../index.html" class="btn btn-secondary" style="text-decoration: none; color: #14213d;">&larr; Back to Home</a>
-        </div>
-    </div>
+        <a href="../index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
     </div>
 </body>
 </html>

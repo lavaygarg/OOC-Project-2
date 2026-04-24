@@ -3,9 +3,10 @@ const router = express.Router();
 const Donation = require('../models/Donation');
 const { donationLimiter } = require('../middleware/rateLimiter');
 const { validateDonation } = require('../middleware/validation');
+const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
-// GET all donations
-router.get('/', async (req, res) => {
+// GET all donations (staff/admin only)
+router.get('/', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const { status, method, startDate, endDate } = req.query;
         const filter = {};
@@ -86,8 +87,8 @@ router.post('/', donationLimiter, validateDonation, async (req, res) => {
     }
 });
 
-// PUT update donation
-router.put('/:id', async (req, res) => {
+// PUT update donation (staff/admin only)
+router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const donation = await Donation.findByIdAndUpdate(
             req.params.id,
@@ -105,8 +106,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE donation
-router.delete('/:id', async (req, res) => {
+// DELETE donation (staff/admin only)
+router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const donation = await Donation.findByIdAndDelete(req.params.id);
         if (!donation) {

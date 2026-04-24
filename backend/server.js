@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const cors = require('cors');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
 const hpp = require('hpp');
 const connectDB = require('./config/database');
 
@@ -41,6 +42,9 @@ app.use('/api/', apiLimiter);
 // Data sanitization against NoSQL injection
 app.use(mongoSanitize());
 
+// Data sanitization against XSS
+app.use(xssClean());
+
 // Prevent HTTP Parameter Pollution
 app.use(hpp());
 
@@ -75,8 +79,7 @@ app.use(cors({
         if (allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            // For development, allow all origins
-            callback(null, true);
+            callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true
@@ -200,7 +203,11 @@ app.use('/api/institutions', institutionRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Server Error:', err);
-    res.status(500).json({ error: 'Internal server error', detail: err.message });
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.status(err.status || 500).json({
+        error: err.message === 'Not allowed by CORS' ? 'Origin not allowed' : 'Internal server error',
+        ...(isProduction ? {} : { detail: err.message })
+    });
 });
 
 const PORT = process.env.PORT || 3000;

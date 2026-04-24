@@ -435,12 +435,15 @@ function applyLanguage(lang) {
         if (translation) {
             const icon = el.querySelector('i');
             if (icon) {
-                el.innerHTML = `${icon.outerHTML} ${translation}`;
+                const clonedIcon = icon.cloneNode(true);
+                el.textContent = '';
+                el.appendChild(clonedIcon);
+                el.appendChild(document.createTextNode(' ' + translation));
             } else {
                 el.textContent = translation;
             }
         } else if (el.dataset.i18nOriginal) {
-            el.innerHTML = el.dataset.i18nOriginal;
+            el.textContent = el.dataset.i18nOriginal;
         }
     });
 
@@ -697,7 +700,13 @@ async function showSection(sectionId) {
     const target = document.getElementById(sectionId);
     if (target) {
         target.style.display = 'block';
-        setTimeout(() => target.classList.add('active'), 10);
+        setTimeout(() => {
+            target.classList.add('active');
+            // Trigger scroll-reveal animations for newly visible sections
+            target.querySelectorAll('.reveal, .reveal-left, .reveal-right, .stagger-children').forEach(el => {
+                el.classList.add('visible');
+            });
+        }, 10);
     }
 
     // Scroll to top
@@ -3154,4 +3163,45 @@ document.addEventListener('DOMContentLoaded', function() {
             if (badge) badge.style.display = 'flex';
         }
     }, 5000);
-})
+
+    // --- Scroll Reveal Observer ---
+    const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .stagger-children');
+    if (revealElements.length > 0) {
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+    }
+
+    // --- Scroll Progress Bar ---
+    const progressBar = document.createElement('div');
+    progressBar.className = 'scroll-progress';
+    progressBar.style.width = '0%';
+    document.body.prepend(progressBar);
+
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        progressBar.style.width = scrollPercent + '%';
+    }, { passive: true });
+
+    // --- Add reveal classes to key sections ---
+    document.querySelectorAll('.page-section .section-header').forEach(el => {
+        if (!el.classList.contains('reveal')) el.classList.add('reveal');
+    });
+    document.querySelectorAll('.impact-grid, .programs-grid, .reports-grid, .gallery-grid').forEach(el => {
+        if (!el.classList.contains('stagger-children')) el.classList.add('stagger-children');
+    });
+
+    // Re-observe dynamically added classes
+    const newReveals = document.querySelectorAll('.reveal:not(.visible), .stagger-children:not(.visible)');
+    if (newReveals.length > 0 && typeof revealObserver !== 'undefined') {
+        newReveals.forEach(el => revealObserver.observe(el));
+    }
+});

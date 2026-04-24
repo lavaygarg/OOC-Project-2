@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Institution = require('../models/Institution');
+const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
 // GET all institutions
 router.get('/', async (req, res) => {
@@ -10,7 +11,11 @@ router.get('/', async (req, res) => {
         
         if (sector) filter.sector = sector;
         if (status) filter.status = status;
-        if (city) filter.city = { $regex: city, $options: 'i' };
+        if (city) {
+            // Escape regex special chars to prevent ReDoS
+            const escaped = city.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            filter.city = { $regex: escaped, $options: 'i' };
+        }
         
         const institutions = await Institution.find(filter).sort({ name: 1 });
         res.json(institutions);
@@ -47,8 +52,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// POST create institution
-router.post('/', async (req, res) => {
+// POST create institution (staff/admin only)
+router.post('/', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const institution = new Institution(req.body);
         await institution.save();
@@ -58,8 +63,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT update institution
-router.put('/:id', async (req, res) => {
+// PUT update institution (staff/admin only)
+router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const institution = await Institution.findByIdAndUpdate(
             req.params.id,
@@ -77,8 +82,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE institution
-router.delete('/:id', async (req, res) => {
+// DELETE institution (staff/admin only)
+router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const institution = await Institution.findByIdAndDelete(req.params.id);
         if (!institution) {

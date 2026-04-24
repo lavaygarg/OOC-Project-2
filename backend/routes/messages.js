@@ -3,9 +3,10 @@ const router = express.Router();
 const Message = require('../models/Message');
 const { contactLimiter } = require('../middleware/rateLimiter');
 const { validateMessage } = require('../middleware/validation');
+const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
-// GET all messages
-router.get('/', async (req, res) => {
+// GET all messages (staff/admin only)
+router.get('/', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const { status } = req.query;
         const filter = {};
@@ -21,8 +22,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-// GET message stats
-router.get('/stats', async (req, res) => {
+// GET message stats (staff/admin only)
+router.get('/stats', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const total = await Message.countDocuments();
         const unread = await Message.countDocuments({ status: 'Unread' });
@@ -69,8 +70,8 @@ router.post('/', contactLimiter, validateMessage, async (req, res) => {
     }
 });
 
-// PUT update message status
-router.put('/:id', async (req, res) => {
+// PUT update message status (staff/admin only)
+router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const { status, replyMessage, repliedBy } = req.body;
         
@@ -90,8 +91,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// PUT mark as read
-router.put('/:id/read', async (req, res) => {
+// PUT mark as read (staff/admin only)
+router.put('/:id/read', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const message = await Message.findByIdAndUpdate(
             req.params.id,
@@ -109,8 +110,8 @@ router.put('/:id/read', async (req, res) => {
     }
 });
 
-// DELETE message
-router.delete('/:id', async (req, res) => {
+// DELETE message (staff/admin only)
+router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const message = await Message.findByIdAndDelete(req.params.id);
         if (!message) {

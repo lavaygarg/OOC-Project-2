@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Disbursement = require('../models/Disbursement');
+const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
-// GET all disbursements
-router.get('/', async (req, res) => {
+// GET all disbursements (staff/admin only)
+router.get('/', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const { category, status, startDate, endDate } = req.query;
         const filter = {};
@@ -63,8 +64,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// POST create disbursement
-router.post('/', async (req, res) => {
+// POST create disbursement (staff/admin only)
+router.post('/', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const { recipient, amount, category, description, date, approvedBy } = req.body;
         
@@ -85,8 +86,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT update disbursement
-router.put('/:id', async (req, res) => {
+// PUT update disbursement (staff/admin only)
+router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const disbursement = await Disbursement.findByIdAndUpdate(
             req.params.id,
@@ -104,8 +105,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE disbursement
-router.delete('/:id', async (req, res) => {
+// DELETE disbursement (staff/admin only)
+router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const disbursement = await Disbursement.findByIdAndDelete(req.params.id);
         if (!disbursement) {

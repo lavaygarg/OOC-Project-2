@@ -1,7 +1,11 @@
 const jwt = require('jsonwebtoken');
 const Staff = require('../models/Staff');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'ooc-secret-key-2026';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    console.error('FATAL: JWT_SECRET environment variable is not set.');
+    process.exit(1);
+}
 
 // Verify JWT Token Middleware
 const verifyToken = async (req, res, next) => {

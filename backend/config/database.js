@@ -10,9 +10,9 @@ const connectDB = async () => {
         }
 
         const conn = await mongoose.connect(mongoURI, {
-            dbName: 'ooc-database',
+            dbName: 'hope-foundation',
             tls: true,
-            tlsAllowInvalidCertificates: false
+            tlsAllowInvalidCertificates: true
         });
 
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);

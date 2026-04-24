@@ -6,7 +6,7 @@ const { validateVolunteer } = require('../middleware/validation');
 const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
 // GET all volunteers (staff/admin only)
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const { status, interest } = req.query;
         const filter = {};
@@ -61,8 +61,8 @@ router.post('/', volunteerLimiter, validateVolunteer, async (req, res) => {
     }
 });
 
-// PUT update volunteer status (admin)
-router.put('/:id', async (req, res) => {
+// PUT update volunteer status (staff/admin only)
+router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const { status, interest } = req.body;
         const volunteer = await Volunteer.findByIdAndUpdate(
@@ -81,8 +81,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE volunteer
-router.delete('/:id', async (req, res) => {
+// DELETE volunteer (staff/admin only)
+router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const volunteer = await Volunteer.findByIdAndDelete(req.params.id);
         if (!volunteer) {

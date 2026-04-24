@@ -473,29 +473,40 @@
             }
         }
         
-        // Get registered users from localStorage
+        // Get registered users from localStorage (no passwords stored)
         function getUsers() {
             return JSON.parse(localStorage.getItem('registeredUsers') || '[]');
         }
         
-        // Save users to localStorage
+        // Save users to localStorage (never store passwords)
         function saveUsers(users) {
             localStorage.setItem('registeredUsers', JSON.stringify(users));
         }
+
+        // Simple hash function for client-side comparison only
+        // NOTE: In production, authentication should be server-side
+        async function simpleHash(str) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(str);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
         
         // Handle Login
-        function handleUserLogin(e) {
+        async function handleUserLogin(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
             const users = getUsers();
-            const user = users.find(u => u.email === email && u.password === password);
+            const hashedPass = await simpleHash(password);
+            const user = users.find(u => u.email === email && u.passwordHash === hashedPass);
             
-            if (user || (email && password)) {
-                localStorage.setItem('userLoggedIn', 'true');
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userName', user ? `${user.firstName} ${user.lastName}` : 'User');
+            if (user) {
+                sessionStorage.setItem('userLoggedIn', 'true');
+                sessionStorage.setItem('userEmail', email);
+                sessionStorage.setItem('userName', `${user.firstName} ${user.lastName}`);
                 window.location.href = 'user-dashboard.html';
             } else {
                 alert('Invalid email or password');
@@ -503,7 +514,7 @@
         }
         
         // Handle Signup
-        function handleUserSignup(e) {
+        async function handleUserSignup(e) {
             e.preventDefault();
             
             const firstName = document.getElementById('signup-fname').value;
@@ -536,14 +547,15 @@
                 return;
             }
             
-            // Save new user
+            // Save new user (password stored as hash, never plaintext)
+            const hashedPass = await simpleHash(password);
             const newUser = {
                 id: Date.now(),
                 firstName,
                 lastName,
                 email,
                 phone,
-                password,
+                passwordHash: hashedPass,
                 createdAt: new Date().toISOString()
             };
             

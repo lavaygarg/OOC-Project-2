@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
+const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
 // GET all events
 router.get('/', async (req, res) => {
@@ -33,8 +34,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// POST create event
-router.post('/', async (req, res) => {
+// POST create event (staff/admin only)
+router.post('/', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const { title, description, date, location, organizer, maxParticipants } = req.body;
         
@@ -55,8 +56,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT update event
-router.put('/:id', async (req, res) => {
+// PUT update event (staff/admin only)
+router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const event = await Event.findByIdAndUpdate(
             req.params.id,
@@ -96,8 +97,8 @@ router.post('/:id/register', async (req, res) => {
     }
 });
 
-// DELETE event
-router.delete('/:id', async (req, res) => {
+// DELETE event (staff/admin only)
+router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
         const event = await Event.findByIdAndDelete(req.params.id);
         if (!event) {
