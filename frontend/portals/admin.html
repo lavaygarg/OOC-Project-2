@@ -289,6 +289,25 @@
         sessionStorage.removeItem('adminToken');
         sessionStorage.removeItem('adminLoggedIn');
         localStorage.removeItem('adminLoggedIn');
+        sessionStorage.removeItem('pendingAdmin2faToken');
+        sessionStorage.removeItem('pendingAdmin2faEmail');
+        sessionStorage.removeItem('pendingAdmin2faSetup');
+
+        function resetAdminPortalState() {
+            pendingAdminTempToken = '';
+
+            const loginForm = document.querySelector('form[onsubmit="handlePortalLogin(event)"]');
+            if (loginForm) loginForm.reset();
+
+            const twoFaForm = document.getElementById('admin-2fa-form');
+            if (twoFaForm) {
+                twoFaForm.classList.remove('active');
+                twoFaForm.reset();
+            }
+
+            const setup = document.getElementById('admin-2fa-setup');
+            if (setup) setup.innerHTML = '';
+        }
 
         async function handlePortalLogin(e) {
             e.preventDefault();
@@ -342,24 +361,6 @@
                 alert(err.message || 'Login failed. Please check your credentials.');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Dashboard';
-            }
-        }
-
-        function restorePendingAdminTwoFactor() {
-            const storedToken = sessionStorage.getItem('pendingAdmin2faToken');
-            const storedSetup = sessionStorage.getItem('pendingAdmin2faSetup');
-
-            if (!storedToken) return;
-
-            pendingAdminTempToken = storedToken;
-            showAdminTwoFactorForm();
-
-            if (storedSetup) {
-                try {
-                    showAdminTwoFactorSetup(JSON.parse(storedSetup));
-                } catch (error) {
-                    console.warn('Unable to restore pending admin 2FA setup:', error);
-                }
             }
         }
 
@@ -438,7 +439,7 @@
             }
         }
 
-        restorePendingAdminTwoFactor();
+        resetAdminPortalState();
     </script>
 </body>
 </html>
