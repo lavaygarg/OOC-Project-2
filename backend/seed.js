@@ -20,6 +20,62 @@ const MANAGER_PASSWORD = process.env.MANAGER_PASSWORD || 'Manager@123';
 const HR_EMAIL = process.env.HR_EMAIL || 'hr@hopefoundation.org';
 const HR_PASSWORD = process.env.HR_PASSWORD || 'Human@123';
 
+const ensureStaffAccount = async ({ name, email, password, role, department, label }) => {
+    const existingStaff = await Staff.findOne({ email }).select('+password');
+
+    if (!existingStaff) {
+        await Staff.create({
+            name,
+            email,
+            password,
+            role,
+            department,
+            status: 'Active'
+        });
+        console.log(`👤 Created ${label} user`);
+        console.log(`   Email: ${email}`);
+        console.log('   Password: [Set in environment variables]');
+        return;
+    }
+
+    let updated = false;
+
+    const hasPassword = typeof existingStaff.password === 'string' && existingStaff.password.length > 0;
+    const passwordMatches = hasPassword ? await existingStaff.comparePassword(password) : false;
+    if (!passwordMatches) {
+        existingStaff.password = password;
+        updated = true;
+    }
+
+    if (existingStaff.name !== name) {
+        existingStaff.name = name;
+        updated = true;
+    }
+
+    if (existingStaff.role !== role) {
+        existingStaff.role = role;
+        updated = true;
+    }
+
+    if (existingStaff.department !== department) {
+        existingStaff.department = department;
+        updated = true;
+    }
+
+    if (existingStaff.status !== 'Active') {
+        existingStaff.status = 'Active';
+        updated = true;
+    }
+
+    if (updated) {
+        await existingStaff.save();
+        console.log(`🔄 Updated ${label} user from environment variables`);
+        console.log(`   Email: ${email}`);
+    } else {
+        console.log(`👤 ${label} user already exists`);
+    }
+};
+
 const seedData = async () => {
     try {
         await mongoose.connect(MONGODB_URI, { 
@@ -41,71 +97,42 @@ const seedData = async () => {
         // ]);
         // console.log('🗑️  Cleared existing data');
 
-        // Create default admin user
-        const existingAdmin = await Staff.findOne({ email: ADMIN_EMAIL });
-        if (!existingAdmin) {
-            await Staff.create({
-                name: 'Admin User',
-                email: ADMIN_EMAIL,
-                password: ADMIN_PASSWORD,  // Will be hashed automatically
-                role: 'admin',
-                department: 'Administration',
-                status: 'Active'
-            });
-            console.log('👤 Created default admin user');
-            console.log(`   Email: ${ADMIN_EMAIL}`);
-            console.log('   Password: [Set in environment variables]');
-        } else {
-            console.log('👤 Admin user already exists');
-        }
+        // Ensure default staff accounts exist and are synced with environment variables
+        await ensureStaffAccount({
+            name: 'Admin User',
+            email: ADMIN_EMAIL,
+            password: ADMIN_PASSWORD,
+            role: 'admin',
+            department: 'Administration',
+            label: 'admin'
+        });
 
-        // Create default staff user
-        const existingStaff = await Staff.findOne({ email: STAFF_EMAIL });
-        if (!existingStaff) {
-            await Staff.create({
-                name: 'Staff User',
-                email: STAFF_EMAIL,
-                password: STAFF_PASSWORD,
-                role: 'staff',
-                department: 'Operations',
-                status: 'Active'
-            });
-            console.log('👤 Created default staff user');
-            console.log(`   Email: ${STAFF_EMAIL}`);
-            console.log('   Password: [Set in environment variables]');
-        }
+        await ensureStaffAccount({
+            name: 'Staff User',
+            email: STAFF_EMAIL,
+            password: STAFF_PASSWORD,
+            role: 'staff',
+            department: 'Operations',
+            label: 'staff'
+        });
 
-        // Create manager user
-        const existingManager = await Staff.findOne({ email: MANAGER_EMAIL });
-        if (!existingManager) {
-            await Staff.create({
-                name: 'Programs Manager',
-                email: MANAGER_EMAIL,
-                password: MANAGER_PASSWORD,
-                role: 'manager',
-                department: 'Programs',
-                status: 'Active'
-            });
-            console.log('👤 Created manager user');
-            console.log(`   Email: ${MANAGER_EMAIL}`);
-            console.log('   Password: [Set in environment variables]');
-        }
+        await ensureStaffAccount({
+            name: 'Programs Manager',
+            email: MANAGER_EMAIL,
+            password: MANAGER_PASSWORD,
+            role: 'manager',
+            department: 'Programs',
+            label: 'manager'
+        });
 
-        // Create hr user
-        const existingHR = await Staff.findOne({ email: HR_EMAIL });
-        if (!existingHR) {
-            await Staff.create({
-                name: 'HR Coordinator',
-                email: HR_EMAIL,
-                password: HR_PASSWORD,
-                role: 'staff',
-                department: 'Human Resources',
-                status: 'Active'
-            });
-            console.log('👤 Created HR staff user');
-            console.log(`   Email: ${HR_EMAIL}`);
-            console.log('   Password: [Set in environment variables]');
-        }
+        await ensureStaffAccount({
+            name: 'HR Coordinator',
+            email: HR_EMAIL,
+            password: HR_PASSWORD,
+            role: 'staff',
+            department: 'Human Resources',
+            label: 'hr staff'
+        });
 
         // Seed sample volunteers
         const volunteerCount = await Volunteer.countDocuments();
