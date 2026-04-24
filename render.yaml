@@ -29,7 +29,7 @@ services:
   # FRONTEND STATIC SITE
   # =====================
   - type: web
-    name: ooc-frontend
+    name: HopeFoundation
     runtime: static
     rootDir: frontend
     buildCommand: echo "No build step needed"
