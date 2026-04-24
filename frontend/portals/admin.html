@@ -4,276 +4,221 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - Hope Foundation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
         body {
+            background-color: #fafbfc;
+            color: #111827;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Top soft gradient glow */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -150px; left: 50%;
+            transform: translateX(-50%);
+            width: 800px; height: 400px;
+            background: radial-gradient(ellipse at center, rgba(46, 204, 113, 0.1) 0%, rgba(250, 251, 252, 0) 70%);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* Main Container */
+        .main-content {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(-45deg, #0f172a, #1b4332, #14532d, #0f172a);
-            background-size: 400% 400%;
-            animation: gradientBG 12s ease infinite;
-            padding: 20px;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            width: 350px; height: 350px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(252, 163, 17, 0.15), transparent);
-            top: -80px; right: -80px;
-            pointer-events: none;
-            animation: floatOrb 8s ease-in-out infinite;
-        }
-
-        @keyframes floatOrb {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-20px, 20px); }
-        }
-
-        .login-container {
-            background: rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 2.5rem;
-            border-radius: 24px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 2rem;
+            z-index: 1;
             position: relative;
-            overflow: hidden;
         }
 
-        .login-container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #fca311, #e63946, #fca311);
-            background-size: 200% auto;
-            animation: gradientLine 3s linear infinite;
-        }
-
-        @keyframes gradientLine {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .login-board {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            max-width: 440px;
+            width: 100%;
+            border: 1px solid #e5e7eb;
         }
 
         .back-link {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 2rem;
+            color: #6b7280;
             text-decoration: none;
             font-size: 0.9rem;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         .back-link:hover {
-            color: #fca311;
+            color: #111827;
             transform: translateX(-3px);
         }
 
-        .login-icon {
-            width: 70px; height: 70px;
-            background: linear-gradient(135deg, rgba(252, 163, 17, 0.3), rgba(230, 57, 70, 0.2));
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            background: #e6f9f1;
             border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 0 auto 1.5rem;
-            box-shadow: 0 0 30px rgba(252, 163, 17, 0.2);
         }
 
-        .login-icon i {
+        .icon-circle i {
+            color: #047857;
+            font-size: 1.6rem;
+        }
+
+        .login-board h1 {
+            text-align: center;
             font-size: 1.8rem;
-            color: #fca311;
-        }
-
-        .login-title {
-            text-align: center;
-            color: white;
-            margin-bottom: 0.5rem;
-            font-size: 1.5rem;
             font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #111827;
         }
 
-        .login-subtitle {
+        .login-board p.subtitle {
             text-align: center;
-            color: rgba(255, 255, 255, 0.5);
+            color: #4b5563;
+            font-size: 0.95rem;
             margin-bottom: 2rem;
-            font-size: 0.9rem;
         }
 
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
+        .form-group { margin-bottom: 1.25rem; }
 
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.8);
+            color: #374151;
             font-size: 0.9rem;
         }
 
-        .input-wrapper {
-            position: relative;
-        }
+        .input-wrapper { position: relative; }
 
         .input-wrapper i {
             position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.3);
-            transition: color 0.3s;
+            left: 14px; top: 50%; transform: translateY(-50%);
+            color: #9ca3af;
+            transition: color 0.2s;
             pointer-events: none;
-            font-size: 0.9rem;
-            z-index: 1;
         }
 
         .form-control {
             width: 100%;
-            padding: 0.9rem 1rem 0.9rem 42px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 12px;
+            padding: 0.85rem 1rem 0.85rem 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.06);
-            color: white;
-            font-family: inherit;
+            transition: all 0.2s ease;
+            background: #fff;
+            color: #111827;
         }
 
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
+        .form-control::placeholder { color: #9ca3af; }
 
         .form-control:focus {
             outline: none;
-            border-color: rgba(252, 163, 17, 0.5);
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 0 4px rgba(252, 163, 17, 0.1);
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
 
-        .input-wrapper:focus-within i {
-            color: #fca311;
-        }
+        .input-wrapper:focus-within i { color: #10b981; }
 
         .btn-login {
             width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #fca311 0%, #e5940a 100%);
+            padding: 0.9rem;
+            background: #10b981;
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            margin-top: 0.5rem;
-            font-family: inherit;
-            position: relative;
-            overflow: hidden;
+            margin-top: 1rem;
         }
 
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(252, 163, 17, 0.4);
-        }
-
-        .btn-login:active {
-            transform: translateY(0);
+            background: #059669;
+            transform: translateY(-1px);
         }
 
         .btn-login:disabled {
             opacity: 0.7;
             cursor: not-allowed;
-            transform: none;
         }
 
         .security-note {
             text-align: center;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.8rem;
+            color: #6b7280;
+            font-size: 0.85rem;
             margin-top: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.4rem;
         }
-
-        .security-note i {
-            color: #2ecc71;
-        }
-
-        @media (max-width: 480px) {
-            body { padding: 15px; }
-            .login-container { padding: 2rem; border-radius: 16px; }
-            .login-icon { width: 60px; height: 60px; }
-            .login-icon i { font-size: 1.5rem; }
-            .login-title { font-size: 1.25rem; }
-            .btn-login { padding: 0.85rem; }
-        }
+        .security-note i { color: #10b981; }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Portals</a>
 
-        <div class="login-icon">
-            <i class="fas fa-user-shield"></i>
+    <main class="main-content">
+        <div class="login-board">
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Portals</a>
+
+            <div class="icon-circle">
+                <i class="fas fa-user-shield"></i>
+            </div>
+
+            <h1>Admin Login</h1>
+            <p class="subtitle">Access the admin dashboard</p>
+
+            <form onsubmit="handlePortalLogin(event)">
+                <div class="form-group">
+                    <label for="admin-user">Email</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="admin-user" class="form-control" placeholder="Enter your email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="admin-pass">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="admin-pass" class="form-control" placeholder="Enter your password" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+                </button>
+            </form>
+
+            <p class="security-note">
+                <i class="fas fa-shield-alt"></i> Secure admin access
+            </p>
         </div>
-
-        <h2 class="login-title">Admin Login</h2>
-        <p class="login-subtitle">Access the admin dashboard</p>
-
-        <form onsubmit="handlePortalLogin(event)">
-            <div class="form-group">
-                <label for="admin-user">Email</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="admin-user" class="form-control" placeholder="Enter your email" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="admin-pass">Password</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="admin-pass" class="form-control" placeholder="Enter your password" required>
-                </div>
-            </div>
-            <button type="submit" class="btn-login">
-                <i class="fas fa-sign-in-alt"></i> Login to Dashboard
-            </button>
-        </form>
-
-        <p class="security-note">
-            <i class="fas fa-shield-alt"></i> Secure admin access
-        </p>
-    </div>
+    </main>
 
     <script>
         const API_BASE = 'https://ooc-backend.onrender.com/api';
@@ -298,25 +243,30 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: user, password: pass })
                 });
-                const data = await res.json();
 
-                if (res.ok && data.token) {
-                    // Role Based Access Control enforcement
-                    if (data.staff.role !== 'admin') {
-                        alert('Access Denied. Only administrators can use this portal.');
-                        return;
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    if (data.role !== 'admin') {
+                        throw new Error('Unauthorized access. This portal is for Administrators only.');
                     }
-
+                    
                     sessionStorage.setItem('adminToken', data.token);
                     sessionStorage.setItem('adminLoggedIn', 'true');
-                    sessionStorage.setItem('adminRole', data.staff?.role || 'admin');
-                    window.location.href = '../index.html#admin-dashboard';
+                    sessionStorage.setItem('staffRole', data.role);
+                    
+                    btn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                    btn.style.background = '#059669';
+                    
+                    setTimeout(() => {
+                        window.location.href = '../admin-dashboard/index.html';
+                    }, 800);
                 } else {
-                    alert(data.error || 'Invalid credentials. Please try again.');
+                    const error = await res.json();
+                    throw new Error(error.message || 'Invalid credentials');
                 }
             } catch (err) {
-                alert('Unable to connect to server. Please try again later.');
-            } finally {
+                alert(err.message || 'Login failed. Please check your credentials.');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Dashboard';
             }

@@ -20,12 +20,15 @@
         </div>
 
         <div class="portal-main">
-            <section class="portal-card login-card" aria-label="Login" id="loginCard">
+            <section class="portal-card login-card" aria-label="Login" id="loginCard" style="text-align: center;">
                 <div class="card-head">
-                    <div class="card-title">Login</div>
-                    <div class="card-subtitle">Sign in to access your dashboard and messages.</div>
+                    <div style="width: 60px; height: 60px; background: #e6f9f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                        <i class="fas fa-id-badge" style="color: #047857; font-size: 1.6rem;"></i>
+                    </div>
+                    <div class="card-title" style="font-size: 1.8rem;">Staff Login</div>
+                    <div class="card-subtitle" style="margin-bottom: 2rem;">Sign in to access your dashboard and messages.</div>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="text-align: left; padding-top: 0;">
                     <form id="loginForm">
                         <div>
                             <label for="email">Email</label>
@@ -95,7 +98,6 @@
             </div>
         </div>
     </div>
-
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="./staff-portal.js"></script>
 </body>

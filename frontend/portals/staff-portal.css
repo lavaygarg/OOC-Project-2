@@ -11,10 +11,22 @@
 }
 
 body.staff-portal {
-  background: url('https://img.freepik.com/free-photo/paper-clips-keyboard-laptop-spiral-notepad-sticky-notes-white-desk-with-space-writing-text_23-2148041896.jpg?semt=ais_hybrid&w=740&q=80') no-repeat center center fixed !important;
-  background-size: cover !important;
+  background-color: #fafbfc;
   color: var(--sp-text);
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Light theme glowing orb */
+body.staff-portal::before {
+  content: '';
+  position: absolute;
+  top: -150px; left: 50%;
+  transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse at center, rgba(46, 204, 113, 0.1) 0%, rgba(250, 251, 252, 0) 70%);
+  pointer-events: none; z-index: -1;
 }
 
 /* Logged-out: show ONLY a simple centered login window */
@@ -32,8 +44,7 @@ body.staff-portal.is-logged-out .login-card {
 }
 
 body.staff-portal.is-logged-out {
-  background: url('https://img.freepik.com/free-photo/paper-clips-keyboard-laptop-spiral-notepad-sticky-notes-white-desk-with-space-writing-text_23-2148041896.jpg?semt=ais_hybrid&w=740&q=80') no-repeat center center fixed !important;
-  background-size: cover !important;
+  background-color: #fafbfc;
 }
 
 body.staff-portal.is-logged-out .portal-shell {
@@ -46,8 +57,9 @@ body.staff-portal.is-logged-out .portal-topbar {
 }
 
 body.staff-portal.is-logged-out .login-card {
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+  border: 1px solid #e5e7eb;
 }
 
 body.staff-portal.is-logged-out .login-card .card-head {
