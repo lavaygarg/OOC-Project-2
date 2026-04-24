@@ -1910,7 +1910,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hash = window.location.hash;
     if (hash === '#admin-dashboard') {
         // Verify admin is logged in
-        if (localStorage.getItem('adminLoggedIn') === 'true') {
+        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
             showSection('admin-dashboard');
         } else {
             // Not logged in, redirect to login page
@@ -1971,7 +1971,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     
     // Initialize admin messaging if on admin dashboard
-    if (localStorage.getItem('adminLoggedIn') === 'true') {
+    if (sessionStorage.getItem('adminLoggedIn') === 'true') {
         initAdminMessaging();
     }
 });
