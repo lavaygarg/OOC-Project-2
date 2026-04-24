@@ -2392,22 +2392,17 @@
             document.getElementById('custom-amount').value = amount;
         }
 
-        const DASHBOARD_API_BASE_URL = window.location.hostname.includes('localhost')
+        const DASHBOARD_API_BASE_URL = ['localhost', '127.0.0.1', '0.0.0.0'].includes(window.location.hostname)
             ? 'http://localhost:3000'
             : 'https://ooc-backend.onrender.com';
-        const USER_AUTH_TOKEN = sessionStorage.getItem('userAuthToken');
-
-        if (!USER_AUTH_TOKEN) {
-            window.location.replace('./user.html');
-        }
 
         function dashboardFetch(endpoint, options = {}) {
             return fetch(`${DASHBOARD_API_BASE_URL}/api/${endpoint}`, {
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(USER_AUTH_TOKEN ? { Authorization: `Bearer ${USER_AUTH_TOKEN}` } : {}),
                     ...(options.headers || {})
                 },
+                credentials: 'include',
                 ...options
             }).then(async response => {
                 const payload = await response.json().catch(() => ({}));
@@ -2691,17 +2686,6 @@
                             console.warn('Donation record save failed:', error.message);
                         }
 
-                        const historyKey = 'ooc_user_donation_history_' + USER_CURRENT.userId;
-                        const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
-                        history.unshift({
-                            transactionId: response.razorpay_payment_id || order.orderId,
-                            date: new Date().toLocaleDateString(),
-                            amount: formatMoney(numericAmount),
-                            method: 'Card (Razorpay)',
-                            status: 'Completed'
-                        });
-                        localStorage.setItem(historyKey, JSON.stringify(history));
-
                         const firstRow = document.querySelector('#donations tbody tr');
                         if (firstRow) {
                             const tbody = firstRow.parentElement;
@@ -2780,11 +2764,41 @@
         /* ========================= */
         const USER_MSG_STORAGE = 'ooc_portal_messages_v1';
         const USER_CURRENT = {
-            userId: 'USER-' + (sessionStorage.getItem('userEmail') || 'guest').replace(/[^a-zA-Z0-9]/g, '').toUpperCase(),
-            displayName: sessionStorage.getItem('userName') || 'User',
+            userId: 'USER-GUEST',
+            displayName: 'User',
             role: 'user',
-            email: sessionStorage.getItem('userEmail') || ''
+            email: ''
         };
+        let USER_PROFILE = {
+            phone: '',
+            createdAt: '',
+            address: '',
+            pan: '',
+            dob: ''
+        };
+
+        async function initializeUserSession() {
+            try {
+                const profileResponse = await dashboardFetch('users/me');
+                const user = profileResponse?.user;
+                if (!user?.id) throw new Error('No active user session');
+
+                USER_CURRENT.userId = 'USER-' + String(user.id).replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                USER_CURRENT.displayName = user.name || 'User';
+                USER_CURRENT.email = user.email || '';
+
+                USER_PROFILE = {
+                    phone: user.phone || '',
+                    createdAt: user.createdAt || '',
+                    address: '',
+                    pan: '',
+                    dob: ''
+                };
+            } catch (error) {
+                window.location.replace('./user.html');
+                throw error;
+            }
+        }
 
         function getUserProfileData() {
             const fullName = USER_CURRENT.displayName || 'User';
@@ -2794,11 +2808,11 @@
                 firstName: nameParts[0] || '',
                 lastName: nameParts.slice(1).join(' ') || '',
                 email: USER_CURRENT.email || '',
-                phone: sessionStorage.getItem('userPhone') || '',
-                createdAt: sessionStorage.getItem('userCreatedAt') || '',
-                address: sessionStorage.getItem('userAddress') || '',
-                pan: sessionStorage.getItem('userPAN') || '',
-                dob: sessionStorage.getItem('userDOB') || ''
+                phone: USER_PROFILE.phone || '',
+                createdAt: USER_PROFILE.createdAt || '',
+                address: USER_PROFILE.address || '',
+                pan: USER_PROFILE.pan || '',
+                dob: USER_PROFILE.dob || ''
             };
         }
 
@@ -2847,7 +2861,7 @@
         
         function loadUserMessages() {
             try {
-                const raw = localStorage.getItem(USER_MSG_STORAGE);
+                const raw = sessionStorage.getItem(USER_MSG_STORAGE);
                 return raw ? JSON.parse(raw) : [];
             } catch {
                 return [];
@@ -2855,7 +2869,7 @@
         }
         
         function saveUserMessages(messages) {
-            localStorage.setItem(USER_MSG_STORAGE, JSON.stringify(messages));
+            sessionStorage.setItem(USER_MSG_STORAGE, JSON.stringify(messages));
         }
         
         function getUserInbox() {
@@ -2912,7 +2926,7 @@
             const badge = document.getElementById('userUnreadBadge');
             
             const readKey = 'ooc_user_read_' + USER_CURRENT.userId;
-            const readIds = JSON.parse(localStorage.getItem(readKey) || '[]');
+            const readIds = JSON.parse(sessionStorage.getItem(readKey) || '[]');
             const unreadCount = inbox.filter(m => !readIds.includes(m.id)).length;
             
             if (unreadCount > 0) {
@@ -2996,10 +3010,10 @@
             // Mark as read
             if (context === 'inbox') {
                 const readKey = 'ooc_user_read_' + USER_CURRENT.userId;
-                const readIds = JSON.parse(localStorage.getItem(readKey) || '[]');
+                const readIds = JSON.parse(sessionStorage.getItem(readKey) || '[]');
                 if (!readIds.includes(msgId)) {
                     readIds.push(msgId);
-                    localStorage.setItem(readKey, JSON.stringify(readIds));
+                    sessionStorage.setItem(readKey, JSON.stringify(readIds));
                 }
             }
             
@@ -3071,7 +3085,7 @@
         function registerUserInDirectory() {
             const DIRECTORY_KEY = 'ooc_portal_directory_v1';
             try {
-                let directory = JSON.parse(localStorage.getItem(DIRECTORY_KEY) || '[]');
+                let directory = JSON.parse(sessionStorage.getItem(DIRECTORY_KEY) || '[]');
                 const existing = directory.find(d => d.userId === USER_CURRENT.userId);
                 if (!existing) {
                     directory.push({
@@ -3079,17 +3093,41 @@
                         displayName: USER_CURRENT.displayName,
                         role: 'user',
                         department: 'donors',
-                        email: USER_CURRENT.email
+                        email: ''
                     });
-                    localStorage.setItem(DIRECTORY_KEY, JSON.stringify(directory));
+                    sessionStorage.setItem(DIRECTORY_KEY, JSON.stringify(directory));
                 }
             } catch (e) {
                 console.error('Error registering user:', e);
             }
         }
         
+        async function logoutUserAndRedirect() {
+            try {
+                await dashboardFetch('users/logout', { method: 'POST' });
+            } catch {
+                // Ignore logout API errors and continue redirecting.
+            } finally {
+                window.location.href = './user.html';
+            }
+        }
+
         // Initialize messaging on page load
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initializeUserSession();
+            } catch {
+                return;
+            }
+
+            const logoutLink = document.querySelector('.logout-link');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    logoutUserAndRedirect();
+                });
+            }
+
             registerUserInDirectory();
             updateProfileUI();
             renderUserInbox();

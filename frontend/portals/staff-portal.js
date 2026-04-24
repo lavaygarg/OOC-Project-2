@@ -1,9 +1,13 @@
 /* Staff Portal Messaging (client-side demo)
    Notes:
-   - Works within the same browser (localStorage).
+  - Works within the same browser tab session (sessionStorage).
    - Cross-device / real-time “background” delivery requires a backend (Firebase/Supabase/WebSocket). */
 
 (() => {
+  const API_BASE_URL = ['localhost', '127.0.0.1', '0.0.0.0'].includes(window.location.hostname)
+    ? 'http://localhost:3000'
+    : 'https://ooc-backend.onrender.com';
+
   const STORAGE = {
     currentUser: 'ooc_portal_current_user',
     directory: 'ooc_portal_directory_v1',
@@ -73,7 +77,7 @@
 
   function loadJson(key, fallback) {
     try {
-      const raw = localStorage.getItem(key);
+      const raw = sessionStorage.getItem(key);
       if (!raw) return fallback;
       return JSON.parse(raw);
     } catch {
@@ -82,7 +86,7 @@
   }
 
   function saveJson(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+    sessionStorage.setItem(key, JSON.stringify(value));
   }
 
   function ensureDirectory() {
@@ -108,7 +112,7 @@
   }
 
   function clearCurrentUser() {
-    localStorage.removeItem(STORAGE.currentUser);
+    sessionStorage.removeItem(STORAGE.currentUser);
   }
 
   function upsertDirectoryUser(user) {
@@ -1025,7 +1029,7 @@
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
 
       try {
-        const res = await fetch('https://ooc-backend.onrender.com/api/staff/login', {
+        const res = await fetch(`${API_BASE_URL}/api/staff/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -1049,9 +1053,6 @@
           upsertDirectoryUser(user);
           setCurrentUser(user);
           
-          // Save Token securely
-          sessionStorage.setItem('staffToken', data.token);
-
           toast('Login successful');
           renderLoggedInPanels(user);
           setTabs('inbox');

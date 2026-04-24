@@ -10,13 +10,17 @@ if (!JWT_SECRET) {
 // Verify JWT Token Middleware
 const verifyToken = async (req, res, next) => {
     try {
+        const cookieToken = req.cookies?.staffAuthToken;
         const authHeader = req.headers.authorization;
-        
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        const headerToken = authHeader && authHeader.startsWith('Bearer ')
+            ? authHeader.split(' ')[1]
+            : null;
+
+        const token = cookieToken || headerToken;
+
+        if (!token) {
             return res.status(401).json({ error: 'Access denied. No token provided.' });
         }
-
-        const token = authHeader.split(' ')[1];
         
         const decoded = jwt.verify(token, JWT_SECRET);
 
@@ -50,10 +54,14 @@ const verifyToken = async (req, res, next) => {
 // Optional token verification (doesn't block if no token)
 const optionalAuth = async (req, res, next) => {
     try {
+        const cookieToken = req.cookies?.staffAuthToken;
         const authHeader = req.headers.authorization;
-        
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-            const token = authHeader.split(' ')[1];
+        const headerToken = authHeader && authHeader.startsWith('Bearer ')
+            ? authHeader.split(' ')[1]
+            : null;
+        const token = cookieToken || headerToken;
+
+        if (token) {
             const decoded = jwt.verify(token, JWT_SECRET);
             req.user = decoded;
             req.userId = decoded.id;

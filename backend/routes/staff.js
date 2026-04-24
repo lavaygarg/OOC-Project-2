@@ -33,6 +33,14 @@ const signStaffAuthToken = (staff, options = {}) => jwt.sign(
     { expiresIn: '24h' }
 );
 
+const getAuthCookieOptions = () => ({
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    path: '/',
+    maxAge: 24 * 60 * 60 * 1000
+});
+
 const MAX_FAILED_ATTEMPTS = Number(process.env.ADMIN_MAX_FAILED_ATTEMPTS || 5);
 const LOCKOUT_MINUTES = Number(process.env.ADMIN_LOCKOUT_MINUTES || 30);
 
@@ -281,6 +289,8 @@ router.post('/login', loginLimiter, validateLogin, async (req, res) => {
         // Generate JWT token
         const token = signStaffAuthToken(staff);
 
+        res.cookie('staffAuthToken', token, getAuthCookieOptions());
+
         res.json({
             message: 'Login successful',
             token,
@@ -433,6 +443,8 @@ router.post('/verify-2fa', loginLimiter, async (req, res) => {
 
         const token = signStaffAuthToken(staff, { twoFactorVerified: true });
 
+        res.cookie('staffAuthToken', token, getAuthCookieOptions());
+
         res.json({
             message: 'Login successful',
             token,
@@ -448,6 +460,17 @@ router.post('/verify-2fa', loginLimiter, async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Two-factor verification failed', detail: error.message });
     }
+});
+
+router.post('/logout', (req, res) => {
+    res.clearCookie('staffAuthToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        path: '/'
+    });
+
+    return res.json({ message: 'Logged out successfully' });
 });
 
 // POST register new staff (admin only - protected)

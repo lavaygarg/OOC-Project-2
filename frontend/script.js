@@ -1,6 +1,9 @@
 // --- API CONFIGURATION ---
-// Backend hosted on Render.com
-const API_BASE_URL = 'https://ooc-backend.onrender.com';
+const LOCAL_HOSTNAMES = ['localhost', '127.0.0.1', '0.0.0.0'];
+const isLocalFrontend = LOCAL_HOSTNAMES.includes(window.location.hostname);
+const API_BASE_URL = isLocalFrontend
+    ? 'http://localhost:3000'
+    : 'https://ooc-backend.onrender.com';
 
 // --- XSS SECURITY ---
 // Escape HTML special characters to prevent XSS attacks
@@ -350,25 +353,25 @@ const translations = {
     }
 };
 
-// Initialize LocalStorage from seed file and merge missing data
+// Initialize session-scoped app data from seed file and merge missing data
 async function initData() {
-    const existing = localStorage.getItem('ngoData');
+    const existing = sessionStorage.getItem('ngoData');
     try {
         const response = await fetch('data/ngo-data.json');
         if (!response.ok) throw new Error('Seed load failed');
         const seed = await response.json();
 
         if (!existing) {
-            localStorage.setItem('ngoData', JSON.stringify(seed));
+            sessionStorage.setItem('ngoData', JSON.stringify(seed));
             return;
         }
 
         const current = JSON.parse(existing);
         const merged = mergeSeedData(current, seed);
-        localStorage.setItem('ngoData', JSON.stringify(merged));
+        sessionStorage.setItem('ngoData', JSON.stringify(merged));
     } catch (error) {
         if (!existing) {
-            localStorage.setItem('ngoData', JSON.stringify(initialData));
+            sessionStorage.setItem('ngoData', JSON.stringify(initialData));
         }
     }
 }
@@ -488,13 +491,13 @@ function initLanguage() {
     applyLanguage(saved);
 }
 
-// Helper to get/set data (legacy localStorage for offline fallback)
+// Helper to get/set data (session-scoped to reduce persistence of sensitive data)
 function getData() {
-    return JSON.parse(localStorage.getItem('ngoData'));
+    return JSON.parse(sessionStorage.getItem('ngoData'));
 }
 
 function saveData(data) {
-    localStorage.setItem('ngoData', JSON.stringify(data));
+    sessionStorage.setItem('ngoData', JSON.stringify(data));
 }
 
 // --- DATABASE API FUNCTIONS ---
@@ -504,7 +507,8 @@ async function apiGet(endpoint) {
     try {
         const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
         });
         if (!res.ok) throw new Error(`API error: ${res.status}`);
         return await res.json();
@@ -519,6 +523,7 @@ async function apiPost(endpoint, data) {
         const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(data)
         });
         if (!res.ok) throw new Error(`API error: ${res.status}`);
@@ -534,6 +539,7 @@ async function apiPut(endpoint, data) {
         const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify(data)
         });
         if (!res.ok) throw new Error(`API error: ${res.status}`);
@@ -548,7 +554,8 @@ async function apiDelete(endpoint) {
     try {
         const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
         });
         if (!res.ok) throw new Error(`API error: ${res.status}`);
         return await res.json();
@@ -569,19 +576,19 @@ function decodeJwtPayload(token) {
     }
 }
 
-function hasValidAdminSession() {
-    const token = sessionStorage.getItem('adminToken');
-    if (!token) return false;
+async function hasValidAdminSession() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/staff/session-check`, {
+            method: 'GET',
+            credentials: 'include'
+        });
 
-    const payload = decodeJwtPayload(token);
-    if (!payload) return false;
-    if (payload.role !== 'admin') return false;
-    if (payload.twoFactorVerified !== true) return false;
-
-    const now = Math.floor(Date.now() / 1000);
-    if (!payload.exp || payload.exp <= now) return false;
-
-    return true;
+        if (!response.ok) return false;
+        const payload = await response.json();
+        return payload?.valid === true && payload?.user?.role === 'admin' && payload?.user?.twoFactorVerified === true;
+    } catch {
+        return false;
+    }
 }
 
 function getTotalFunds(data) {
@@ -745,7 +752,7 @@ async function showSection(sectionId) {
 
     // Dynamic Rendering
     if (sectionId === 'admin-dashboard') {
-        if (!hasValidAdminSession()) {
+        if (!(await hasValidAdminSession())) {
             alert('Please login through the Admin Portal with 2FA.');
             window.location.href = 'portals/admin.html';
             return;
@@ -897,8 +904,7 @@ async function handleVolunteerSubmit(e) {
         if (data && data.volunteers) {
             data.volunteers.push({
                 id: result.volunteer?._id || 'V' + Date.now(),
-                name,
-                email,
+                name: 'Volunteer',
                 interest,
                 status: 'Pending'
             });
@@ -1074,13 +1080,11 @@ async function recordDonationSuccess({ name, amount, method, paymentId, orderId 
     const data = getData();
     const newDonation = {
         id: paymentId || orderId || 'D' + Date.now(),
-        name,
+        name: 'Donor',
         amount: Number(amount),
         method,
         date,
-        timestamp,
-        paymentId: paymentId || '',
-        orderId: orderId || ''
+        timestamp
     };
 
     data.donations.push(newDonation);
@@ -1151,7 +1155,6 @@ async function handleAdminLogin(e) {
             alert('Admin 2FA verification is required. Please use the Admin Portal.');
             window.location.href = 'portals/admin.html';
         } else {
-            sessionStorage.setItem('adminToken', result.token);
             sessionStorage.setItem('adminLoggedIn', 'true');
             alert('Login Successful!');
             showSection('admin-dashboard');
@@ -1181,8 +1184,6 @@ async function handleStaffLogin(e) {
     const result = await apiPost('staff/login', { email, password: pass });
 
     if (result && result.token) {
-        localStorage.setItem('staffToken', result.token);
-        localStorage.setItem('staffUser', JSON.stringify(result.staff));
         alert('Staff login successful!');
         showSection('home');
     } else {
@@ -1197,12 +1198,16 @@ async function handleStaffLogin(e) {
 
 function logout() {
     if(confirm('Are you sure you want to log out?')) {
-        // Clear admin login state
-        sessionStorage.removeItem('adminLoggedIn');
-        sessionStorage.removeItem('adminToken');
-        // Clear hash from URL
-        history.replaceState(null, '', window.location.pathname);
-        showSection('home');
+        fetch(`${API_BASE_URL}/api/staff/logout`, {
+            method: 'POST',
+            credentials: 'include'
+        }).finally(() => {
+            // Clear admin login state
+            sessionStorage.removeItem('adminLoggedIn');
+            // Clear hash from URL
+            history.replaceState(null, '', window.location.pathname);
+            showSection('home');
+        });
     }
 }
 
@@ -1948,8 +1953,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hash = window.location.hash;
     if (hash === '#admin-dashboard') {
         // Verify admin is logged in
-        if (hasValidAdminSession()) {
-            showSection('admin-dashboard');
+        if (await hasValidAdminSession()) {
+            await showSection('admin-dashboard');
         } else {
             // Not logged in, redirect to login page
             window.location.href = 'portals/admin.html';
@@ -2030,7 +2035,7 @@ const ADMIN_USER = {
 
 function loadUnifiedMessages() {
     try {
-        const raw = localStorage.getItem(UNIFIED_MSG_STORAGE);
+        const raw = sessionStorage.getItem(UNIFIED_MSG_STORAGE);
         return raw ? JSON.parse(raw) : [];
     } catch {
         return [];
@@ -2038,12 +2043,12 @@ function loadUnifiedMessages() {
 }
 
 function saveUnifiedMessages(messages) {
-    localStorage.setItem(UNIFIED_MSG_STORAGE, JSON.stringify(messages));
+    sessionStorage.setItem(UNIFIED_MSG_STORAGE, JSON.stringify(messages));
 }
 
 function loadUnifiedDirectory() {
     try {
-        const raw = localStorage.getItem(UNIFIED_DIRECTORY_STORAGE);
+        const raw = sessionStorage.getItem(UNIFIED_DIRECTORY_STORAGE);
         if (raw) return JSON.parse(raw);
     } catch {}
     
@@ -2055,7 +2060,7 @@ function loadUnifiedDirectory() {
         { userId: 'MGT-401', displayName: 'Management', role: 'management', department: 'management', email: 'management@hope.org' },
         { userId: 'FND-301', displayName: 'Fundraising', role: 'fundraiser', department: 'fundraising', email: 'fundraise@hope.org' }
     ];
-    localStorage.setItem(UNIFIED_DIRECTORY_STORAGE, JSON.stringify(defaultDir));
+    sessionStorage.setItem(UNIFIED_DIRECTORY_STORAGE, JSON.stringify(defaultDir));
     return defaultDir;
 }
 
@@ -2118,7 +2123,7 @@ function renderAdminInbox() {
     const badge = document.getElementById('adminUnreadBadge');
     
     const readKey = 'ooc_admin_read_messages';
-    const readIds = JSON.parse(localStorage.getItem(readKey) || '[]');
+    const readIds = JSON.parse(sessionStorage.getItem(readKey) || '[]');
     const unreadCount = inbox.filter(m => !readIds.includes(m.id)).length;
     
     if (badge) {
@@ -2254,10 +2259,10 @@ function openAdminMessage(msgId, context = 'inbox') {
     // Mark as read if inbox
     if (context === 'inbox') {
         const readKey = 'ooc_admin_read_messages';
-        const readIds = JSON.parse(localStorage.getItem(readKey) || '[]');
+        const readIds = JSON.parse(sessionStorage.getItem(readKey) || '[]');
         if (!readIds.includes(msgId)) {
             readIds.push(msgId);
-            localStorage.setItem(readKey, JSON.stringify(readIds));
+            sessionStorage.setItem(readKey, JSON.stringify(readIds));
         }
     }
     
@@ -2340,7 +2345,7 @@ function handleAdminSendMessage(event) {
                 role: 'user',
                 email: ''
             });
-            localStorage.setItem(UNIFIED_DIRECTORY_STORAGE, JSON.stringify(directory));
+            sessionStorage.setItem(UNIFIED_DIRECTORY_STORAGE, JSON.stringify(directory));
         }
     }
     
@@ -2376,32 +2381,32 @@ function initAdminMessaging() {
 const TASKS_STORAGE = 'ooc_admin_tasks';
 const SHIFTS_STORAGE = 'ooc_admin_shifts';
 
-// Load tasks from localStorage
+// Load tasks from sessionStorage
 function loadTasks() {
     try {
-        return JSON.parse(localStorage.getItem(TASKS_STORAGE)) || [];
+        return JSON.parse(sessionStorage.getItem(TASKS_STORAGE)) || [];
     } catch {
         return [];
     }
 }
 
-// Save tasks to localStorage
+// Save tasks to sessionStorage
 function saveTasks(tasks) {
-    localStorage.setItem(TASKS_STORAGE, JSON.stringify(tasks));
+    sessionStorage.setItem(TASKS_STORAGE, JSON.stringify(tasks));
 }
 
-// Load shifts from localStorage
+// Load shifts from sessionStorage
 function loadShifts() {
     try {
-        return JSON.parse(localStorage.getItem(SHIFTS_STORAGE)) || [];
+        return JSON.parse(sessionStorage.getItem(SHIFTS_STORAGE)) || [];
     } catch {
         return [];
     }
 }
 
-// Save shifts to localStorage
+// Save shifts to sessionStorage
 function saveShifts(shifts) {
-    localStorage.setItem(SHIFTS_STORAGE, JSON.stringify(shifts));
+    sessionStorage.setItem(SHIFTS_STORAGE, JSON.stringify(shifts));
 }
 
 // Get role label
@@ -2807,8 +2812,8 @@ function renderTestimonials() {
     const grid = document.getElementById('testimonials-grid');
     if (!grid) return;
     
-    // Get user feedbacks from localStorage
-    const userFeedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
+    // Get user feedbacks from session storage
+    const userFeedbacks = JSON.parse(sessionStorage.getItem('feedbacks') || '[]');
     
     // Combine default testimonials with user feedbacks
     const allTestimonials = [...defaultTestimonials, ...userFeedbacks];
@@ -2888,8 +2893,8 @@ function handleNewsletterSubscribe(e) {
         return;
     }
     
-    // Store subscription (in localStorage for demo)
-    const subscriptions = JSON.parse(localStorage.getItem('newsletter_subscriptions') || '[]');
+    // Store subscription (session-scoped)
+    const subscriptions = JSON.parse(sessionStorage.getItem('newsletter_subscriptions') || '[]');
     
     if (subscriptions.includes(email)) {
         alert('You are already subscribed to our newsletter!');
@@ -2897,7 +2902,7 @@ function handleNewsletterSubscribe(e) {
     }
     
     subscriptions.push(email);
-    localStorage.setItem('newsletter_subscriptions', JSON.stringify(subscriptions));
+    sessionStorage.setItem('newsletter_subscriptions', JSON.stringify(subscriptions));
     
     // Show success message
     alert('🎉 Thank you for subscribing!\n\nYou will receive our monthly newsletter with updates on our programs, events, and impact stories.');
@@ -2944,8 +2949,8 @@ function submitFeedback(e) {
         return;
     }
     
-    // Save feedback to localStorage
-    const feedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
+    // Save feedback to session storage
+    const feedbacks = JSON.parse(sessionStorage.getItem('feedbacks') || '[]');
     feedbacks.push({
         id: Date.now(),
         name,
@@ -2956,7 +2961,7 @@ function submitFeedback(e) {
         image: getRandomAvatar(),
         date: new Date().toISOString()
     });
-    localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+    sessionStorage.setItem('feedbacks', JSON.stringify(feedbacks));
     
     // Reset form
     e.target.reset();

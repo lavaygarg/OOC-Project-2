@@ -503,7 +503,7 @@
     </div>
 
     <script>
-        const API_BASE_URL = window.location.hostname.includes('localhost')
+        const API_BASE_URL = ['localhost', '127.0.0.1', '0.0.0.0'].includes(window.location.hostname)
             ? 'http://localhost:3000'
             : 'https://ooc-backend.onrender.com';
 
@@ -546,14 +546,14 @@
             }
         }
         
-        // Get registered users from localStorage (no passwords stored)
+        // Get registered users from sessionStorage (no passwords stored)
         function getUsers() {
-            return JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            return JSON.parse(sessionStorage.getItem('registeredUsers') || '[]');
         }
         
-        // Save users to localStorage (never store passwords)
+        // Save users to sessionStorage (never store passwords)
         function saveUsers(users) {
-            localStorage.setItem('registeredUsers', JSON.stringify(users));
+            sessionStorage.setItem('registeredUsers', JSON.stringify(users));
         }
 
         async function apiRequest(endpoint, options = {}) {
@@ -562,6 +562,7 @@
                     'Content-Type': 'application/json',
                     ...(options.headers || {})
                 },
+                credentials: 'include',
                 ...options
             });
 
@@ -799,11 +800,6 @@
                 sessionStorage.removeItem('pending2faToken');
                 sessionStorage.removeItem('pending2faEmail');
                 sessionStorage.removeItem('pending2faName');
-                sessionStorage.setItem('userAuthToken', result.token);
-                sessionStorage.setItem('userLoggedIn', 'true');
-                sessionStorage.setItem('user2FAVerified', 'true');
-                sessionStorage.setItem('userEmail', result.user.email);
-                sessionStorage.setItem('userName', result.user.name);
                 window.location.href = 'user-dashboard.html';
             } catch (error) {
                 alert(error.message || 'Invalid verification code. Please try again.');

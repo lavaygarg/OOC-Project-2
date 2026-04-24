@@ -26,14 +26,24 @@ const signTwoFactorToken = (userId) => jwt.sign(
     { expiresIn: '10m' }
 );
 
+const getAuthCookieOptions = () => ({
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000
+});
+
 const authenticateUser = (req, res, next) => {
     try {
+        const cookieToken = req.cookies?.userAuthToken;
         const authHeader = req.headers.authorization || '';
-        if (!authHeader.startsWith('Bearer ')) {
+        const headerToken = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+        const token = cookieToken || headerToken;
+
+        if (!token) {
             return res.status(401).json({ error: 'Access denied. No token provided.' });
         }
-
-        const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, JWT_SECRET);
 
         if (decoded.role !== 'user') {
@@ -183,6 +193,8 @@ router.post('/verify-2fa', loginLimiter, async (req, res) => {
 
         const token = signAuthToken(user);
 
+        res.cookie('userAuthToken', token, getAuthCookieOptions());
+
         res.json({
             message: 'Login successful',
             token,
@@ -196,6 +208,17 @@ router.post('/verify-2fa', loginLimiter, async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Two-factor verification failed', detail: error.message });
     }
+});
+
+router.post('/logout', (req, res) => {
+    res.clearCookie('userAuthToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        path: '/'
+    });
+
+    return res.json({ message: 'Logged out successfully' });
 });
 
 router.get('/me', authenticateUser, async (req, res) => {

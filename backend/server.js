@@ -3,6 +3,7 @@ const express = require('express');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
@@ -82,6 +83,8 @@ app.use(cors({
     },
     credentials: true
 }));
+
+app.use(cookieParser());
 
 // Body parser with size limits
 app.use(express.json({ limit: '10kb' })); // Limit body size to prevent large payload attacks
