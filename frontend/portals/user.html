@@ -242,6 +242,50 @@
             display: none;
             font-weight: 500;
         }
+        .twofa-card {
+            border: 1px solid #e9ecef;
+            border-radius: 0.9rem;
+            padding: 1rem;
+            background: #f9fffb;
+            margin-bottom: 1rem;
+        }
+        .twofa-card h4 {
+            color: #14213d;
+            margin-bottom: 0.4rem;
+            font-size: 1rem;
+        }
+        .twofa-card p {
+            color: #667085;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        .twofa-secret {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 0.7rem;
+            background: #eefbf3;
+            color: #14532d;
+            font-weight: 600;
+            word-break: break-all;
+            font-size: 0.9rem;
+        }
+        .twofa-note {
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        .twofa-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .twofa-actions .btn {
+            width: auto;
+            flex: 1;
+            min-width: 140px;
+        }
         .security-note {
             text-align: center;
             color: #aaa;
@@ -322,6 +366,7 @@
         </div>
         
         <div id="success-message" class="success-msg"></div>
+        <div id="twofa-setup" class="success-msg" style="display:none; text-align:left;"></div>
         
         <!-- Login Form -->
         <div id="login-tab" class="tab-content active">
@@ -358,8 +403,30 @@
             </div>
             
             <p class="security-note">
-                <i class="fas fa-shield-alt"></i> Secure user login
+                <i class="fas fa-shield-alt"></i> Secure user login with 2FA
             </p>
+        </div>
+
+        <!-- Two-Factor Authentication -->
+        <div id="twofa-tab" class="tab-content">
+            <div class="twofa-card">
+                <h4><i class="fas fa-key"></i> Two-Factor Authentication</h4>
+                <p>Enter the 6-digit code from your authenticator app to finish signing in. During account creation, keep your secret key safe and add it to Google Authenticator, Microsoft Authenticator, or any compatible app.</p>
+                <div id="twofa-status" class="twofa-note"></div>
+            </div>
+            <form onsubmit="handleTwoFactorVerify(event)">
+                <div class="form-group">
+                    <label for="twofa-code">Verification Code</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock-keyhole"></i>
+                        <input type="text" id="twofa-code" class="form-control" placeholder="Enter 6-digit code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+                    </div>
+                </div>
+                <div class="twofa-actions">
+                    <button type="button" class="btn" onclick="switchTab('login')" style="border:1px solid #e5e7eb;background:#fff;color:#14213d;">Back</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-shield-check"></i> Verify & Continue</button>
+                </div>
+            </form>
         </div>
         
         <!-- Signup Form -->
@@ -436,12 +503,18 @@
     </div>
 
     <script>
+        const API_BASE_URL = window.location.hostname.includes('localhost')
+            ? 'http://localhost:3000'
+            : 'https://ooc-backend.onrender.com';
+
         // Tab switching
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            document.querySelector(`.tab:${tab === 'login' ? 'first-child' : 'last-child'}`).classList.add('active');
+
+            if (tab === 'login' || tab === 'signup') {
+                document.querySelector(`.tab:${tab === 'login' ? 'first-child' : 'last-child'}`).classList.add('active');
+            }
             document.getElementById(`${tab}-tab`).classList.add('active');
             
             // Hide success message when switching tabs
@@ -483,14 +556,113 @@
             localStorage.setItem('registeredUsers', JSON.stringify(users));
         }
 
-        // Simple hash function for client-side comparison only
-        // NOTE: In production, authentication should be server-side
-        async function simpleHash(str) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(str);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        async function apiRequest(endpoint, options = {}) {
+            const response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {})
+                },
+                ...options
+            });
+
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(payload.error || payload.message || 'Request failed');
+            }
+            return payload;
+        }
+
+        function base32ToBytes(base32) {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+            const clean = String(base32 || '').replace(/=+$/g, '').toUpperCase().replace(/[^A-Z2-7]/g, '');
+            let bits = '';
+            for (const char of clean) {
+                const index = alphabet.indexOf(char);
+                if (index < 0) continue;
+                bits += index.toString(2).padStart(5, '0');
+            }
+            const bytes = [];
+            for (let i = 0; i + 8 <= bits.length; i += 8) {
+                bytes.push(parseInt(bits.slice(i, i + 8), 2));
+            }
+            return new Uint8Array(bytes);
+        }
+
+        function bytesToBase32(bytes) {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+            let bits = '';
+            for (const byte of bytes) {
+                bits += byte.toString(2).padStart(8, '0');
+            }
+            let output = '';
+            for (let i = 0; i + 5 <= bits.length; i += 5) {
+                output += alphabet[parseInt(bits.slice(i, i + 5), 2)];
+            }
+            return output;
+        }
+
+        function generateTwoFactorSecret() {
+            const buffer = new Uint8Array(10);
+            crypto.getRandomValues(buffer);
+            return bytesToBase32(buffer);
+        }
+
+        function formatTwoFactorSecret(secret) {
+            return secret.match(/.{1,4}/g)?.join(' ') || secret;
+        }
+
+        async function hmacSha1(keyBytes, messageBytes) {
+            const key = await crypto.subtle.importKey(
+                'raw',
+                keyBytes,
+                { name: 'HMAC', hash: 'SHA-1' },
+                false,
+                ['sign']
+            );
+            return new Uint8Array(await crypto.subtle.sign('HMAC', key, messageBytes));
+        }
+
+        async function verifyTotp(secret, code) {
+            const normalizedCode = String(code || '').replace(/\s+/g, '');
+            const keyBytes = base32ToBytes(secret);
+            for (const offset of [-1, 0, 1]) {
+                const counter = Math.floor(Date.now() / 1000 / 30) + offset;
+                const message = new ArrayBuffer(8);
+                const view = new DataView(message);
+                view.setUint32(4, counter, false);
+                const hash = await hmacSha1(keyBytes, new Uint8Array(message));
+                const idx = hash[hash.length - 1] & 0x0f;
+                const codeInt = ((hash[idx] & 0x7f) << 24) |
+                    ((hash[idx + 1] & 0xff) << 16) |
+                    ((hash[idx + 2] & 0xff) << 8) |
+                    (hash[idx + 3] & 0xff);
+                const expected = String(codeInt % 1000000).padStart(6, '0');
+                if (expected === normalizedCode) return true;
+            }
+            return false;
+        }
+
+        function buildOtpUri(email, secret) {
+            const issuer = encodeURIComponent('Hope Foundation');
+            const account = encodeURIComponent(email);
+            return `otpauth://totp/${issuer}:${account}?secret=${secret}&issuer=${issuer}&algorithm=SHA1&digits=6&period=30`;
+        }
+
+        function showTwoFactorSetup(twoFactor) {
+            const setupBox = document.getElementById('twofa-setup');
+            if (!setupBox || !twoFactor?.secret) return;
+
+            setupBox.style.display = 'block';
+            setupBox.innerHTML = `
+                <div class="twofa-card" style="background:#f0fdf4; border-color:#bbf7d0; text-align:left;">
+                    <h4><i class="fas fa-mobile-screen-button"></i> 2FA setup complete</h4>
+                    <p>Scan this secret in your authenticator app and keep it safe. You will need the 6-digit code during every login.</p>
+                    ${twoFactor.qrCodeDataUrl ? `<div style="margin-top:0.75rem;text-align:center;"><img src="${twoFactor.qrCodeDataUrl}" alt="2FA QR code" style="width:180px;height:180px;border-radius:12px;border:1px solid #d1fae5;background:#fff;padding:8px;"></div>` : ''}
+                    <div class="twofa-secret">Secret key: ${formatTwoFactorSecret(twoFactor.secret)}</div>
+                    ${twoFactor.otpauthUrl ? `<div class="twofa-note">Manual entry URI: ${twoFactor.otpauthUrl}</div>` : ''}
+                    <div class="twofa-note">Recommended apps: Google Authenticator, Microsoft Authenticator, Authy.</div>
+                </div>
+            `;
         }
         
         // Handle Login
@@ -498,18 +670,34 @@
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-            
-            const users = getUsers();
-            const hashedPass = await simpleHash(password);
-            const user = users.find(u => u.email === email && u.passwordHash === hashedPass);
-            
-            if (user) {
-                sessionStorage.setItem('userLoggedIn', 'true');
-                sessionStorage.setItem('userEmail', email);
-                sessionStorage.setItem('userName', `${user.firstName} ${user.lastName}`);
-                window.location.href = 'user-dashboard.html';
-            } else {
-                alert('Invalid email or password');
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+            }
+
+            try {
+                const result = await apiRequest('users/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (result.requiresTwoFactor) {
+                    sessionStorage.setItem('pending2faToken', result.tempToken);
+                    sessionStorage.setItem('pending2faEmail', result.user.email);
+                    sessionStorage.setItem('pending2faName', result.user.name);
+                    document.getElementById('twofa-status').innerHTML = `We verified the password for <strong>${result.user.email}</strong>. Enter the 6-digit code from your authenticator app to continue.`;
+                    document.getElementById('twofa-code').value = '';
+                    switchTab('twofa');
+                }
+            } catch (error) {
+                alert(error.message || 'Invalid email or password');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                }
             }
         }
         
@@ -547,33 +735,84 @@
                 return;
             }
             
-            // Save new user (password stored as hash, never plaintext)
-            const hashedPass = await simpleHash(password);
-            const newUser = {
-                id: Date.now(),
-                firstName,
-                lastName,
-                email,
-                phone,
-                passwordHash: hashedPass,
-                createdAt: new Date().toISOString()
-            };
-            
-            users.push(newUser);
-            saveUsers(users);
-            
-            // Show success message and switch to login
-            const successMsg = document.getElementById('success-message');
-            successMsg.textContent = 'Account created successfully! Please login.';
-            successMsg.style.display = 'block';
-            
-            // Clear form
-            e.target.reset();
-            document.getElementById('strength-bar').className = '';
-            document.getElementById('strength-bar').style.width = '0%';
-            
-            // Switch to login tab
-            switchTab('login');
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+            }
+
+            try {
+                const result = await apiRequest('users/register', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: `${firstName} ${lastName}`.trim(),
+                        email,
+                        phone,
+                        password
+                    })
+                });
+
+                const successMsg = document.getElementById('success-message');
+                successMsg.textContent = 'Account created successfully. Complete 2FA setup before signing in.';
+                successMsg.style.display = 'block';
+                showTwoFactorSetup(result.twoFactor);
+
+                e.target.reset();
+                document.getElementById('strength-bar').className = '';
+                document.getElementById('strength-bar').style.width = '0%';
+                switchTab('login');
+            } catch (error) {
+                alert(error.message || 'Failed to create account');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+                }
+            }
+        }
+
+        async function handleTwoFactorVerify(e) {
+            e.preventDefault();
+
+            const tempToken = sessionStorage.getItem('pending2faToken');
+            const pendingEmail = sessionStorage.getItem('pending2faEmail');
+            if (!tempToken || !pendingEmail) {
+                alert('Your login session expired. Please sign in again.');
+                switchTab('login');
+                return;
+            }
+
+            const code = document.getElementById('twofa-code').value.trim();
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            }
+
+            try {
+                const result = await apiRequest('users/verify-2fa', {
+                    method: 'POST',
+                    body: JSON.stringify({ tempToken, code })
+                });
+
+                sessionStorage.removeItem('pending2faToken');
+                sessionStorage.removeItem('pending2faEmail');
+                sessionStorage.removeItem('pending2faName');
+                sessionStorage.setItem('userAuthToken', result.token);
+                sessionStorage.setItem('userLoggedIn', 'true');
+                sessionStorage.setItem('user2FAVerified', 'true');
+                sessionStorage.setItem('userEmail', result.user.email);
+                sessionStorage.setItem('userName', result.user.name);
+                window.location.href = 'user-dashboard.html';
+            } catch (error) {
+                alert(error.message || 'Invalid verification code. Please try again.');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-shield-check"></i> Verify & Continue';
+                }
+            }
         }
         
         // Social login (mock)

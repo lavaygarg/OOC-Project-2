@@ -2404,10 +2404,10 @@
         /* ========================= */
         const USER_MSG_STORAGE = 'ooc_portal_messages_v1';
         const USER_CURRENT = {
-            userId: 'USER-' + (localStorage.getItem('userEmail') || 'guest').replace(/[^a-zA-Z0-9]/g, '').toUpperCase(),
-            displayName: localStorage.getItem('userName') || 'User',
+            userId: 'USER-' + (sessionStorage.getItem('userEmail') || localStorage.getItem('userEmail') || 'guest').replace(/[^a-zA-Z0-9]/g, '').toUpperCase(),
+            displayName: sessionStorage.getItem('userName') || localStorage.getItem('userName') || 'User',
             role: 'user',
-            email: localStorage.getItem('userEmail') || ''
+            email: sessionStorage.getItem('userEmail') || localStorage.getItem('userEmail') || ''
         };
         
         function loadUserMessages() {
