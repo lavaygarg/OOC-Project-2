@@ -23,6 +23,7 @@ const institutionRoutes = require('./routes/institutions');
 const { apiLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
+app.set('trust proxy', 1);
 
 // Connect to MongoDB
 connectDB();
@@ -58,7 +59,8 @@ const allowedOrigins = [
     'http://127.0.0.1:5173',
     'http://localhost:8080',
     'http://127.0.0.1:8080',
-    process.env.FRONTEND_URL // Add your Netlify URL in Render env variables
+    process.env.FRONTEND_URL,
+    ...(process.env.FRONTEND_URLS ? process.env.FRONTEND_URLS.split(',').map(url => url.trim()) : [])
 ].filter(Boolean);
 
 app.use(cors({
@@ -68,11 +70,6 @@ app.use(cors({
         
         // Allow localhost with any port
         if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-            return callback(null, true);
-        }
-        
-        // Allow netlify.app, vercel.app, and onrender.com domains
-        if (origin.includes('netlify.app') || origin.includes('vercel.app') || origin.includes('onrender.com')) {
             return callback(null, true);
         }
         

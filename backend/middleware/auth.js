@@ -19,9 +19,20 @@ const verifyToken = async (req, res, next) => {
         const token = authHeader.split(' ')[1];
         
         const decoded = jwt.verify(token, JWT_SECRET);
+
+        const staff = await Staff.findById(decoded.id).select('name email role status');
+        if (!staff || staff.status !== 'Active') {
+            return res.status(401).json({ error: 'Invalid token or inactive account.' });
+        }
         
         // Attach user info to request
-        req.user = decoded;
+        req.user = {
+            id: staff._id.toString(),
+            email: staff.email,
+            role: staff.role,
+            name: staff.name,
+            twoFactorVerified: decoded.twoFactorVerified === true
+        };
         req.userId = decoded.id;
         
         next();
@@ -64,6 +75,10 @@ const isAdmin = async (req, res, next) => {
 
         if (req.user.role !== 'admin') {
             return res.status(403).json({ error: 'Admin access required.' });
+        }
+
+        if (req.user.twoFactorVerified !== true) {
+            return res.status(403).json({ error: 'Admin 2FA verification required.' });
         }
 
         next();

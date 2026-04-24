@@ -41,6 +41,33 @@ const staffSchema = new mongoose.Schema({
     lastLogin: {
         type: Date
     },
+    twoFactorSecret: {
+        type: String,
+        select: false
+    },
+    twoFactorEnabled: {
+        type: Boolean,
+        default: false
+    },
+    failedLoginAttempts: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    lockUntil: {
+        type: Date,
+        default: null
+    },
+    lastLoginIp: {
+        type: String,
+        trim: true,
+        maxlength: 100
+    },
+    lastLoginUserAgent: {
+        type: String,
+        trim: true,
+        maxlength: 300
+    },
     createdAt: {
         type: Date,
         default: Date.now
