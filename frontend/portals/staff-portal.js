@@ -1009,36 +1009,62 @@
       });
     });
 
-    $('demoTeacherBtn').addEventListener('click', () => {
-      $('userId').value = 'TCH-555';
-      $('password').value = 'demo';
-      $('role').value = 'teacher';
-    });
-
-    $('loginForm').addEventListener('submit', (e) => {
+    $('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const role = safeTrim($('role').value);
-      const userId = normalizeId($('userId').value);
+      const email = safeTrim($('email').value);
+      const password = $('password').value;
+      const btn = e.target.querySelector('button[type="submit"]');
 
-      if (!userId) {
-        toast('Enter ID');
+      if (!email || !password) {
+        toast('Enter email and password');
         return;
       }
 
-      const directory = ensureDirectory();
-      const existing = directory.find(u => u.userId === userId);
-      const department = existing?.department ?? ROLE_DEFAULT_DEPT[role] ?? 'operations';
-      const college = existing?.college ?? 'hope-foundation';
-      const email = existing?.email ?? '';
-      const displayName = existing?.displayName ?? `${ROLE_LABELS[role] ?? role} ${userId}`;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
 
-      const user = { userId, displayName, role, department, college, email };
-      upsertDirectoryUser(user);
-      setCurrentUser(user);
-      toast('Login successful');
-      renderLoggedInPanels(user);
-      setTabs('inbox');
+      try {
+        const res = await fetch('https://ooc-backend.onrender.com/api/staff/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.token) {
+          // Prevent admin users from using the standard staff portal, and vice versa
+          if (data.staff.role === 'admin') {
+              alert('Administrators must use the dedicated Admin Portal.');
+              return;
+          }
+
+          const userId = data.staff.id || data.staff._id || email.split('@')[0].toUpperCase();
+          const role = data.staff.role.toLowerCase();
+          const department = (data.staff.department || ROLE_DEFAULT_DEPT[role] || 'operations').toLowerCase();
+          const displayName = data.staff.name || email.split('@')[0];
+          const college = 'hope-foundation';
+
+          const user = { userId, displayName, role, department, college, email };
+          upsertDirectoryUser(user);
+          setCurrentUser(user);
+          
+          // Save Token securely
+          sessionStorage.setItem('staffToken', data.token);
+
+          toast('Login successful');
+          renderLoggedInPanels(user);
+          setTabs('inbox');
+        } else {
+          toast(data.error || 'Invalid credentials');
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        toast('Unable to connect to server.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-right-to-bracket"></i> Secure Login';
+      }
     });
   }
 

@@ -276,7 +276,7 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:3000/api';
+        const API_BASE = 'https://ooc-backend.onrender.com/api';
 
         // Clear any existing login state when visiting login page
         sessionStorage.removeItem('adminToken');
@@ -301,6 +301,12 @@
                 const data = await res.json();
 
                 if (res.ok && data.token) {
+                    // Role Based Access Control enforcement
+                    if (data.staff.role !== 'admin') {
+                        alert('Access Denied. Only administrators can use this portal.');
+                        return;
+                    }
+
                     sessionStorage.setItem('adminToken', data.token);
                     sessionStorage.setItem('adminLoggedIn', 'true');
                     sessionStorage.setItem('adminRole', data.staff?.role || 'admin');
