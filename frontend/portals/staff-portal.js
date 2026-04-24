@@ -14,6 +14,21 @@
     messages: 'ooc_portal_messages_v1'
   };
 
+  function clearLegacyAppStorage() {
+    const keysToRemove = [];
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (!key) continue;
+      if (key === 'ngoData' || key.startsWith('ooc_portal_') || key.startsWith('ooc_user_read_')) {
+        keysToRemove.push(key);
+      }
+    }
+
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+  }
+
+  clearLegacyAppStorage();
+
   const DEFAULT_DIRECTORY = [
     { userId: 'ADMIN', displayName: 'Admin', role: 'admin', department: 'management', college: 'hope-foundation', email: 'admin@hope.org' },
     { userId: 'TCH-101', displayName: 'Demo Teacher', role: 'teacher', department: 'education', college: 'hope-foundation', email: 'teacher@hope.org' },

@@ -355,6 +355,7 @@ const translations = {
 
 // Initialize session-scoped app data from seed file and merge missing data
 async function initData() {
+    clearLegacyAppStorage();
     const existing = sessionStorage.getItem('ngoData');
     try {
         const response = await fetch('data/ngo-data.json');
@@ -394,6 +395,19 @@ function mergeEvents(existing, seed) {
     seed.forEach(evt => map.set(evt.id, evt));
     existing.forEach(evt => map.set(evt.id, evt));
     return Array.from(map.values());
+}
+
+function clearLegacyAppStorage() {
+    const keysToRemove = [];
+    for (let index = 0; index < localStorage.length; index += 1) {
+        const key = localStorage.key(index);
+        if (!key) continue;
+        if (key === 'ngoData' || key.startsWith('ooc_portal_') || key.startsWith('ooc_user_read_')) {
+            keysToRemove.push(key);
+        }
+    }
+
+    keysToRemove.forEach(key => localStorage.removeItem(key));
 }
 
 // --- THEME ---
