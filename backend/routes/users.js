@@ -211,6 +211,7 @@ router.get('/me', authenticateUser, async (req, res) => {
                 name: user.name,
                 email: user.email,
                 phone: user.phone,
+                createdAt: user.createdAt,
                 role: user.role,
                 status: user.status
             }
