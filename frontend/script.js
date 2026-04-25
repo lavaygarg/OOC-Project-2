@@ -2073,6 +2073,27 @@ function setSharedJson(key, value) {
     sessionStorage.setItem(key, serialized);
 }
 
+function normalizePortalMessages(messages) {
+    if (!Array.isArray(messages)) return [];
+    return messages.map(msg => ({
+        ...msg,
+        id: msg.id || msg._id
+    }));
+}
+
+async function syncAdminPortalState() {
+    const payload = await apiGet('messages/portal');
+    if (!payload) return false;
+
+    if (Array.isArray(payload.messages)) {
+        saveUnifiedMessages(normalizePortalMessages(payload.messages));
+    }
+    if (Array.isArray(payload.directory)) {
+        setSharedJson(UNIFIED_DIRECTORY_STORAGE, payload.directory);
+    }
+    return true;
+}
+
 function loadUnifiedMessages() {
     return getSharedJson(UNIFIED_MSG_STORAGE, []);
 }
@@ -2152,7 +2173,8 @@ function showAdminMsgPanel(panelId) {
     if (panelId === 'directory') renderAdminDirectory();
 }
 
-function renderAdminInbox() {
+async function renderAdminInbox() {
+    await syncAdminPortalState();
     const inbox = getAdminInbox();
     const listEl = document.getElementById('admin-inbox-list');
     const badge = document.getElementById('adminUnreadBadge');
@@ -2192,7 +2214,8 @@ function renderAdminInbox() {
     }).join('');
 }
 
-function renderAdminSent() {
+async function renderAdminSent() {
+    await syncAdminPortalState();
     const sent = getAdminSent();
     const listEl = document.getElementById('admin-sent-list');
     
@@ -2234,7 +2257,8 @@ function formatAdminRecipients(tokens) {
     return tokens.map(t => labels[t] || t).join(', ');
 }
 
-function renderAdminDirectory() {
+async function renderAdminDirectory() {
+    await syncAdminPortalState();
     const directory = loadUnifiedDirectory();
     const listEl = document.getElementById('admin-directory-list');
     
@@ -2344,7 +2368,7 @@ function replyToAdminMessage(toUserId, subject) {
     showAdminMsgPanel('compose');
 }
 
-function handleAdminSendMessage(event) {
+async function handleAdminSendMessage(event) {
     event.preventDefault();
     
     const to = document.getElementById('adminMsgTo').value;
@@ -2356,33 +2380,19 @@ function handleAdminSendMessage(event) {
         return;
     }
     
-    const messages = loadUnifiedMessages();
-    const newMsg = {
-        id: 'msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
-        from: ADMIN_USER,
-        recipientTokens: [to],
+    const result = await apiPost('messages/portal', {
+        to,
         subject,
         body,
-        createdAt: new Date().toISOString()
-    };
-    
-    messages.push(newMsg);
-    saveUnifiedMessages(messages);
-    
-    // Also update directory with the recipient if it's a specific user
-    if (to.startsWith('user:')) {
-        const userId = to.replace('user:', '');
-        const directory = loadUnifiedDirectory();
-        if (!directory.find(d => d.userId === userId)) {
-            directory.push({
-                userId,
-                displayName: userId,
-                role: 'user',
-                email: ''
-            });
-            setSharedJson(UNIFIED_DIRECTORY_STORAGE, directory);
-        }
+        type: 'message'
+    });
+
+    if (!result || result.error) {
+        alert(result?.error || 'Failed to send message. Please try again.');
+        return;
     }
+
+    await syncAdminPortalState();
     
     // Reset form
     document.getElementById('adminComposeForm').reset();
@@ -2458,7 +2468,7 @@ function getRoleLabel(roleToken) {
 }
 
 // Handle task assignment
-function handleAssignTask(event) {
+async function handleAssignTask(event) {
     event.preventDefault();
     
     const assignee = document.getElementById('task-assignee').value;
@@ -2490,7 +2500,7 @@ function handleAssignTask(event) {
     saveTasks(tasks);
     
     // Send message notification to assignee
-    sendTaskNotification(task);
+    await sendTaskNotification(task);
     
     // Reset form
     document.getElementById('assignTaskForm').reset();
@@ -2503,8 +2513,7 @@ function handleAssignTask(event) {
 }
 
 // Send task notification as a message
-function sendTaskNotification(task) {
-    const messages = loadUnifiedMessages();
+async function sendTaskNotification(task) {
     
     const priorityEmoji = {
         'low': '🟢',
@@ -2513,18 +2522,22 @@ function sendTaskNotification(task) {
         'urgent': '🚨'
     };
     
-    const newMsg = {
-        id: 'msg-task-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
-        from: ADMIN_USER,
-        recipientTokens: [task.assignee],
+    const body = `${priorityEmoji[task.priority]} **Priority:** ${task.priority.toUpperCase()}\n\n**Task:** ${task.title}\n\n**Description:**\n${task.description}\n\n**Due Date:** ${formatDateDisplay(task.dueDate)}\n\n---\n_Please complete this task by the due date. Contact admin if you have any questions._`;
+
+    const result = await apiPost('messages/portal', {
+        to: task.assignee,
         subject: `📋 New Task Assigned: ${task.title}`,
-        body: `${priorityEmoji[task.priority]} **Priority:** ${task.priority.toUpperCase()}\n\n**Task:** ${task.title}\n\n**Description:**\n${task.description}\n\n**Due Date:** ${formatDateDisplay(task.dueDate)}\n\n---\n_Please complete this task by the due date. Contact admin if you have any questions._`,
-        createdAt: new Date().toISOString(),
+        body,
         type: 'task'
-    };
-    
-    messages.push(newMsg);
-    saveUnifiedMessages(messages);
+    });
+
+    if (!result || result.error) {
+        console.warn('Task notification send failed:', result?.error || 'Unknown error');
+        return false;
+    }
+
+    await syncAdminPortalState();
+    return true;
 }
 
 // Render tasks list
@@ -2583,7 +2596,7 @@ function deleteTask(taskId) {
 }
 
 // Handle shift scheduling
-function handleScheduleShift(event) {
+async function handleScheduleShift(event) {
     event.preventDefault();
     
     const assignee = document.getElementById('shift-assignee').value;
@@ -2618,7 +2631,7 @@ function handleScheduleShift(event) {
     saveShifts(shifts);
     
     // Send shift notification as a message
-    sendShiftNotification(shift);
+    await sendShiftNotification(shift);
     
     // Reset form
     document.getElementById('scheduleShiftForm').reset();
@@ -2630,8 +2643,7 @@ function handleScheduleShift(event) {
 }
 
 // Send shift notification as a message
-function sendShiftNotification(shift) {
-    const messages = loadUnifiedMessages();
+async function sendShiftNotification(shift) {
     
     const typeLabels = {
         'regular': '📅 Regular Shift',
@@ -2643,18 +2655,22 @@ function sendShiftNotification(shift) {
         'emergency': '🚨 Emergency/On-Call'
     };
     
-    const newMsg = {
-        id: 'msg-shift-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
-        from: ADMIN_USER,
-        recipientTokens: [shift.assignee],
+    const body = `${typeLabels[shift.type]}\n\n**Date:** ${formatDateDisplay(shift.date)}\n**Time:** ${formatTime(shift.startTime)} - ${formatTime(shift.endTime)}\n**Location:** ${shift.location}\n\n${shift.notes ? '**Notes:**\n' + shift.notes : ''}\n\n---\n_Please be on time. Contact admin if you have any scheduling conflicts._`;
+
+    const result = await apiPost('messages/portal', {
+        to: shift.assignee,
         subject: `🗓️ Shift Scheduled: ${formatDateDisplay(shift.date)}`,
-        body: `${typeLabels[shift.type]}\n\n**Date:** ${formatDateDisplay(shift.date)}\n**Time:** ${formatTime(shift.startTime)} - ${formatTime(shift.endTime)}\n**Location:** ${shift.location}\n\n${shift.notes ? '**Notes:**\n' + shift.notes : ''}\n\n---\n_Please be on time. Contact admin if you have any scheduling conflicts._`,
-        createdAt: new Date().toISOString(),
+        body,
         type: 'shift'
-    };
-    
-    messages.push(newMsg);
-    saveUnifiedMessages(messages);
+    });
+
+    if (!result || result.error) {
+        console.warn('Shift notification send failed:', result?.error || 'Unknown error');
+        return false;
+    }
+
+    await syncAdminPortalState();
+    return true;
 }
 
 // Format date for display
