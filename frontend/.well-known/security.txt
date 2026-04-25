@@ -1,0 +1,7 @@
+Contact: mailto:security@hopefoundation.org
+Contact: mailto:hello@hopefoundation.org
+Expires: 2027-04-25T00:00:00Z
+Preferred-Languages: en, hi
+Policy: https://hopefoundation.onrender.com/
+Acknowledgments: https://hopefoundation.onrender.com/#contact
+Canonical: https://hopefoundation.onrender.com/.well-known/security.txt

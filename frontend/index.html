@@ -481,7 +481,7 @@
                             <h3>Subscribe to Our Newsletter</h3>
                             <p>Get monthly updates about our programs, success stories, and upcoming events.</p>
                         </div>
-                        <form class="newsletter-form" onsubmit="handleNewsletterSubscribe(event)">
+                        <form class="newsletter-form" method="post" action="javascript:void(0);" onsubmit="handleNewsletterSubscribe(event)">
                             <input type="email" id="newsletter-email" placeholder="Enter your email address" required>
                             <button type="submit" class="btn btn-primary"><i class="fas fa-envelope"></i> Subscribe</button>
                         </form>
@@ -794,7 +794,7 @@
                             <p data-i18n="volunteerSubtitle">Fill out the form to join our team of change-makers.</p>
                         </div>
 
-                        <form id="volunteer-form" onsubmit="handleVolunteerSubmit(event)">
+                        <form id="volunteer-form" method="post" action="javascript:void(0);" onsubmit="handleVolunteerSubmit(event)">
                             <div class="form-group">
                                 <label data-i18n="volunteerName"><i class="fas fa-user"></i> Full Name</label>
                                 <input type="text" id="vol-name" placeholder="Enter your full name" required>
@@ -897,7 +897,7 @@
                 <button type="button" class="chip">₹2,500</button>
                 <button type="button" class="chip">₹5,000</button>
             </div>
-            <form id="donation-form" onsubmit="handleDonationSubmit(event)">
+            <form id="donation-form" method="post" action="javascript:void(0);" onsubmit="handleDonationSubmit(event)">
                 <div class="form-group">
                     <label data-i18n="donateDonorName">Donor Name</label>
                     <input type="text" id="don-name" required>
@@ -1155,7 +1155,7 @@
                                 <p class="muted">We'd love to hear about your journey with Hope Foundation.</p>
                             </div>
                         </div>
-                        <form onsubmit="submitFeedback(event)">
+                        <form method="post" action="javascript:void(0);" onsubmit="submitFeedback(event)">
                         <div class="feedback-form-grid">
                             <div class="form-group">
                                 <label for="feedback-name" data-i18n="feedbackName">Your Name</label>
@@ -1340,7 +1340,7 @@
                             <p>Fill out the form and we'll get back to you within 24 hours.</p>
                         </div>
 
-                        <form class="enhanced-contact-form" onsubmit="handleContactSubmit(event)">
+                        <form class="enhanced-contact-form" method="post" action="javascript:void(0);" onsubmit="handleContactSubmit(event)">
                             <div class="form-row">
                                 <div class="form-group">
                                     <label data-i18n="contactName"><i class="fas fa-user"></i> Your Name</label>
@@ -1408,7 +1408,7 @@
         </div>
     </section>
 
-    <!-- ADMIN SECTIONS -->
+    <!-- Dashboard sections -->
 
     <!-- Admin Login -->
     <section id="admin-login/" class="page-section" style="display: none; background: #f5f5f5; min-height: 100vh;">
@@ -1416,7 +1416,7 @@
             <div class="login-container" style="background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px;">
                 <a href="#" onclick="showSection('home'); return false;" class="back-link" style="display: inline-block; margin-bottom: 1rem; color: #666; text-decoration: none; font-size: 0.9rem;"><i class="fas fa-arrow-left"></i> <span data-i18n="backToHome">Back to Home</span></a>
                 <h2 style="text-align: center; color: #14213d; margin-bottom: 1.5rem;" data-i18n="adminLoginTitle">Admin Login</h2>
-                <form onsubmit="handleAdminLogin(event)">
+                <form method="post" action="javascript:void(0);" onsubmit="handleAdminLogin(event)">
                     <div class="form-group" style="margin-bottom: 1rem;">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #14213d;" data-i18n="adminUsername">Username</label>
                         <input type="text" id="admin-user" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 0.5rem; font-size: 0.95rem;" required>
@@ -1498,7 +1498,7 @@
                             <h3>Fund Allocation by Sector</h3>
                             <p class="muted">Adjust allocation percentages to reflect how funds are utilized.</p>
                         </div>
-                        <form id="allocation-form" onsubmit="updateAllocation(event)">
+                        <form id="allocation-form" method="post" action="javascript:void(0);" onsubmit="updateAllocation(event)">
                             <div class="allocation-grid">
                                 <div class="form-group">
                                     <label>Education (%)</label>
@@ -1612,7 +1612,7 @@
                     <!-- Add Disbursement Form -->
                     <div class="card" style="margin: 20px 0;">
                         <h3><i class="fas fa-paper-plane"></i> Record Fund Disbursement</h3>
-                        <form onsubmit="handleAddDisbursement(event)" class="disbursement-form">
+                        <form method="post" action="javascript:void(0);" onsubmit="handleAddDisbursement(event)" class="disbursement-form">
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Recipient/Institution</label>
@@ -1673,7 +1673,7 @@
                     <h2>Manage Events</h2>
                     <div class="card" style="margin-bottom: 20px; text-align: left;">
                         <h3>Add New Event</h3>
-                        <form onsubmit="handleAddEvent(event)">
+                        <form method="post" action="javascript:void(0);" onsubmit="handleAddEvent(event)">
                             <div class="form-group">
                                 <label>Title</label>
                                 <input type="text" id="evt-title" required>
@@ -1760,7 +1760,7 @@
                                 <div class="admin-msg-panel-header">
                                     <h3><i class="fas fa-pen"></i> Compose Message</h3>
                                 </div>
-                                <form id="adminComposeForm" onsubmit="handleAdminSendMessage(event)" style="padding:1rem;">
+                                <form id="adminComposeForm" method="post" action="javascript:void(0);" onsubmit="handleAdminSendMessage(event)" style="padding:1rem;">
                                     <div class="form-group">
                                         <label>To</label>
                                         <select id="adminMsgTo" class="form-control" required>
@@ -1843,7 +1843,7 @@
                         <!-- Assign New Task Form -->
                         <div class="card" style="margin-bottom: 1.5rem;">
                             <h3><i class="fas fa-plus-circle" style="color: #2ecc71;"></i> Assign New Task</h3>
-                            <form id="assignTaskForm" onsubmit="handleAssignTask(event)">
+                            <form id="assignTaskForm" method="post" action="javascript:void(0);" onsubmit="handleAssignTask(event)">
                                 <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                                     <div class="form-group">
                                         <label>Assign To</label>
@@ -1904,7 +1904,7 @@
                         <!-- Create Shift Form -->
                         <div class="card" style="margin-bottom: 1.5rem;">
                             <h3><i class="fas fa-clock" style="color: #9b59b6;"></i> Schedule New Shift</h3>
-                            <form id="scheduleShiftForm" onsubmit="handleScheduleShift(event)">
+                            <form id="scheduleShiftForm" method="post" action="javascript:void(0);" onsubmit="handleScheduleShift(event)">
                                 <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
                                     <div class="form-group">
                                         <label>Assign To</label>
@@ -1977,7 +1977,7 @@
 
                 <div id="dash-institutions" class="dash-tab" style="display: none;">
                     <h2>Institutions & Distribution</h2>
-                    <form id="institutions-form" onsubmit="updateInstitutionsAllocation(event)">
+                    <form id="institutions-form" method="post" action="javascript:void(0);" onsubmit="updateInstitutionsAllocation(event)">
                         <div id="institutions-table"></div>
                         <div class="allocation-footer">
                             <div class="muted" id="inst-total-label">Total: 0%</div>
@@ -1986,7 +1986,7 @@
                     </form>
                     <div class="card" style="margin-top: 20px; text-align: left;">
                         <h3>Add Institution</h3>
-                        <form onsubmit="handleAddInstitution(event)" class="inst-form">
+                        <form method="post" action="javascript:void(0);" onsubmit="handleAddInstitution(event)" class="inst-form">
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label data-i18n="contactName">Name</label>
@@ -2029,7 +2029,7 @@
                 <h4><i class="fas fa-comment-dots"></i> Send Feedback</h4>
                 <button class="feedback-close" onclick="toggleFeedback()" aria-label="Close feedback form">&times;</button>
             </div>
-            <form onsubmit="submitFeedback(event)">
+            <form method="post" action="javascript:void(0);" onsubmit="submitFeedback(event)">
                 <div class="feedback-group">
                     <label>How would you rate your experience?</label>
                     <div class="rating-stars">
@@ -2141,7 +2141,7 @@
                     </div>
                 </div>
             </div>
-            <form id="chatbot-form" class="chatbot-input" onsubmit="handleChatSubmit(event)">
+            <form id="chatbot-form" class="chatbot-input" method="post" action="javascript:void(0);" onsubmit="handleChatSubmit(event)">
                 <input type="text" id="chatbot-input" placeholder="Type your message..." autocomplete="off">
                 <button type="submit" aria-label="Send message">
                     <i class="fas fa-paper-plane"></i>

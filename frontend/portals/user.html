@@ -370,7 +370,7 @@
         
         <!-- Login Form -->
         <div id="login-tab" class="tab-content active">
-            <form onsubmit="handleUserLogin(event)">
+            <form method="post" action="javascript:void(0);" onsubmit="handleUserLogin(event)">
                 <div class="form-group">
                     <label for="login-email">Email</label>
                     <div class="input-wrapper">
@@ -414,7 +414,7 @@
                 <p>Enter the 6-digit code from your authenticator app to finish signing in. During account creation, keep your secret key safe and add it to Google Authenticator, Microsoft Authenticator, or any compatible app.</p>
                 <div id="twofa-status" class="twofa-note"></div>
             </div>
-            <form onsubmit="handleTwoFactorVerify(event)">
+            <form method="post" action="javascript:void(0);" onsubmit="handleTwoFactorVerify(event)">
                 <div class="form-group">
                     <label for="twofa-code">Verification Code</label>
                     <div class="input-wrapper">
@@ -431,7 +431,7 @@
         
         <!-- Signup Form -->
         <div id="signup-tab" class="tab-content">
-            <form onsubmit="handleUserSignup(event)">
+            <form method="post" action="javascript:void(0);" onsubmit="handleUserSignup(event)">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="signup-fname">First Name</label>
