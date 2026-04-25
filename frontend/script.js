@@ -540,11 +540,19 @@ async function apiPost(endpoint, data) {
             credentials: 'include',
             body: JSON.stringify(data)
         });
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
-        return await res.json();
+        const payload = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+            return {
+                error: payload?.error || `API error: ${res.status}`,
+                details: payload?.details || []
+            };
+        }
+
+        return payload;
     } catch (error) {
         console.error(`API POST /${endpoint} failed:`, error);
-        return null;
+        return { error: 'Network error. Please try again.', details: [] };
     }
 }
 
@@ -896,11 +904,22 @@ async function handleVolunteerSubmit(e) {
     const email = document.getElementById('vol-email').value;
     const phone = document.getElementById('vol-phone')?.value || '';
     const interest = document.getElementById('vol-interest').value;
+    const message = document.getElementById('vol-message')?.value || '';
+    const cleanedPhone = String(phone).replace(/\D/g, '');
 
     const submitBtn = e.target.querySelector('button[type="submit"]');
     if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    }
+
+    if (phone && (cleanedPhone.length < 10 || cleanedPhone.length > 12)) {
+        alert('Please enter a valid phone number (10 to 12 digits).');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Application';
+        }
+        return;
     }
 
     // Save to database API
@@ -909,6 +928,7 @@ async function handleVolunteerSubmit(e) {
         email,
         phone,
         interest,
+        message,
         status: 'Pending'
     });
 
@@ -928,7 +948,10 @@ async function handleVolunteerSubmit(e) {
         e.target.reset();
         showSection('home');
     } else {
-        alert(result?.error || 'Failed to submit application. Please try again.');
+        const details = Array.isArray(result?.details) && result.details.length
+            ? `\n${result.details.join('\n')}`
+            : '';
+        alert((result?.error || 'Failed to submit application. Please try again.') + details);
     }
 
     if (submitBtn) {

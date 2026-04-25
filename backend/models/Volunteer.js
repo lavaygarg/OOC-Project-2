@@ -19,7 +19,18 @@ const volunteerSchema = new mongoose.Schema({
     },
     interest: {
         type: String,
-        enum: ['Teaching', 'Fundraising', 'Healthcare', 'Event Management', 'Admin Support', 'Other'],
+        enum: [
+            'Teaching',
+            'Fundraising',
+            'Healthcare',
+            'Event Management',
+            'Admin Support',
+            'Photography',
+            'Tech',
+            'Logistics',
+            'Social Media',
+            'Other'
+        ],
         default: 'Other'
     },
     message: {

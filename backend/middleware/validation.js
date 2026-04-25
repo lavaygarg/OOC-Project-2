@@ -64,7 +64,18 @@ const validateVolunteer = (req, res, next) => {
         errors.push('Invalid phone number');
     }
 
-    const validInterests = ['Teaching', 'Fundraising', 'Healthcare', 'Event Management', 'Admin Support', 'Other'];
+    const validInterests = [
+        'Teaching',
+        'Fundraising',
+        'Healthcare',
+        'Event Management',
+        'Admin Support',
+        'Photography',
+        'Tech',
+        'Logistics',
+        'Social Media',
+        'Other'
+    ];
     if (interest && !validInterests.includes(interest)) {
         errors.push('Invalid interest selected');
     }
