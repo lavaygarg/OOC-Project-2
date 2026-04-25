@@ -53,11 +53,24 @@ app.use(hpp());
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+const normalizeOrigin = (value) => {
+    if (!value) return '';
+    const raw = String(value).trim();
+    if (!raw) return '';
+    try {
+        return new URL(raw).origin.toLowerCase();
+    } catch {
+        return raw.replace(/\/+$/, '').toLowerCase();
+    }
+};
+
 // CORS configuration - permissive in development, explicit in production
 const allowedOrigins = [
     process.env.FRONTEND_URL,
-    ...(process.env.FRONTEND_URLS ? process.env.FRONTEND_URLS.split(',').map(url => url.trim()) : [])
-].filter(Boolean);
+    ...(process.env.FRONTEND_URLS ? process.env.FRONTEND_URLS.split(',') : [])
+]
+    .map(normalizeOrigin)
+    .filter(Boolean);
 
 const localOrigins = [
     'http://localhost:5500',
@@ -67,10 +80,12 @@ const localOrigins = [
     'http://127.0.0.1:5173',
     'http://localhost:8080',
     'http://127.0.0.1:8080'
-];
+].map(normalizeOrigin);
 
 app.use(cors({
     origin: function(origin, callback) {
+        const normalizedOrigin = normalizeOrigin(origin);
+
         // Allow requests with no origin only in development (curl, server-side tools, local file access)
         if (!origin) {
             return isProduction
@@ -79,14 +94,19 @@ app.use(cors({
         }
 
         // Allow localhost with any port only in development
-        if (!isProduction && localOrigins.includes(origin)) {
+        if (!isProduction && (
+            localOrigins.includes(normalizedOrigin) ||
+            /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(normalizedOrigin)
+        )) {
             return callback(null, true);
         }
         
         // Allow specific origins from the list in all environments
-        if (allowedOrigins.includes(origin)) {
+        if (allowedOrigins.includes(normalizedOrigin)) {
             return callback(null, true);
         }
+
+        console.warn(`CORS blocked origin: ${origin}`);
 
         return callback(new Error('Not allowed by CORS'));
     },
