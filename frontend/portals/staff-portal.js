@@ -19,7 +19,12 @@
     for (let index = 0; index < localStorage.length; index += 1) {
       const key = localStorage.key(index);
       if (!key) continue;
-      if (key === 'ngoData' || key.startsWith('ooc_portal_') || key.startsWith('ooc_user_read_')) {
+      // Keep shared messaging/directory/current-user keys intact for cross-portal communication
+      if (
+        key === 'ngoData' ||
+        key.startsWith('ooc_user_read_') ||
+        key.startsWith('ooc_legacy_')
+      ) {
         keysToRemove.push(key);
       }
     }

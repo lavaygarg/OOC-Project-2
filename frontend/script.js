@@ -2047,24 +2047,45 @@ const ADMIN_USER = {
     email: 'admin@hope.org'
 };
 
-function loadUnifiedMessages() {
+function getSharedJson(key, fallback) {
     try {
-        const raw = sessionStorage.getItem(UNIFIED_MSG_STORAGE);
-        return raw ? JSON.parse(raw) : [];
-    } catch {
-        return [];
-    }
+        const localRaw = localStorage.getItem(key);
+        if (localRaw) return JSON.parse(localRaw);
+    } catch {}
+
+    // Backward compatibility: migrate old sessionStorage data to localStorage
+    try {
+        const sessionRaw = sessionStorage.getItem(key);
+        if (sessionRaw) {
+            const parsed = JSON.parse(sessionRaw);
+            localStorage.setItem(key, sessionRaw);
+            return parsed;
+        }
+    } catch {}
+
+    return fallback;
+}
+
+function setSharedJson(key, value) {
+    const serialized = JSON.stringify(value);
+    localStorage.setItem(key, serialized);
+    // Keep session copy for compatibility with older reads in the app
+    sessionStorage.setItem(key, serialized);
+}
+
+function loadUnifiedMessages() {
+    return getSharedJson(UNIFIED_MSG_STORAGE, []);
 }
 
 function saveUnifiedMessages(messages) {
-    sessionStorage.setItem(UNIFIED_MSG_STORAGE, JSON.stringify(messages));
+    setSharedJson(UNIFIED_MSG_STORAGE, messages);
 }
 
 function loadUnifiedDirectory() {
-    try {
-        const raw = sessionStorage.getItem(UNIFIED_DIRECTORY_STORAGE);
-        if (raw) return JSON.parse(raw);
-    } catch {}
+    const existing = getSharedJson(UNIFIED_DIRECTORY_STORAGE, null);
+    if (existing && Array.isArray(existing) && existing.length) {
+        return existing;
+    }
     
     // Default directory
     const defaultDir = [
@@ -2074,7 +2095,7 @@ function loadUnifiedDirectory() {
         { userId: 'MGT-401', displayName: 'Management', role: 'management', department: 'management', email: 'management@hope.org' },
         { userId: 'FND-301', displayName: 'Fundraising', role: 'fundraiser', department: 'fundraising', email: 'fundraise@hope.org' }
     ];
-    sessionStorage.setItem(UNIFIED_DIRECTORY_STORAGE, JSON.stringify(defaultDir));
+    setSharedJson(UNIFIED_DIRECTORY_STORAGE, defaultDir);
     return defaultDir;
 }
 
@@ -2359,7 +2380,7 @@ function handleAdminSendMessage(event) {
                 role: 'user',
                 email: ''
             });
-            sessionStorage.setItem(UNIFIED_DIRECTORY_STORAGE, JSON.stringify(directory));
+            setSharedJson(UNIFIED_DIRECTORY_STORAGE, directory);
         }
     }
     

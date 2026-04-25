@@ -2764,6 +2764,31 @@
         /* ========================= */
         const USER_MSG_STORAGE = 'ooc_portal_messages_v1';
 
+        function getSharedJson(key, fallback) {
+            try {
+                const localRaw = localStorage.getItem(key);
+                if (localRaw) return JSON.parse(localRaw);
+            } catch {}
+
+            // Backward compatibility: migrate old sessionStorage values
+            try {
+                const sessionRaw = sessionStorage.getItem(key);
+                if (sessionRaw) {
+                    const parsed = JSON.parse(sessionRaw);
+                    localStorage.setItem(key, sessionRaw);
+                    return parsed;
+                }
+            } catch {}
+
+            return fallback;
+        }
+
+        function setSharedJson(key, value) {
+            const serialized = JSON.stringify(value);
+            localStorage.setItem(key, serialized);
+            sessionStorage.setItem(key, serialized);
+        }
+
         function clearLegacyAppStorage() {
             const keysToRemove = [];
             for (let index = 0; index < localStorage.length; index += 1) {
@@ -2876,16 +2901,11 @@
         }
         
         function loadUserMessages() {
-            try {
-                const raw = sessionStorage.getItem(USER_MSG_STORAGE);
-                return raw ? JSON.parse(raw) : [];
-            } catch {
-                return [];
-            }
+            return getSharedJson(USER_MSG_STORAGE, []);
         }
         
         function saveUserMessages(messages) {
-            sessionStorage.setItem(USER_MSG_STORAGE, JSON.stringify(messages));
+            setSharedJson(USER_MSG_STORAGE, messages);
         }
         
         function getUserInbox() {
@@ -3101,7 +3121,7 @@
         function registerUserInDirectory() {
             const DIRECTORY_KEY = 'ooc_portal_directory_v1';
             try {
-                let directory = JSON.parse(sessionStorage.getItem(DIRECTORY_KEY) || '[]');
+                let directory = getSharedJson(DIRECTORY_KEY, []);
                 const existing = directory.find(d => d.userId === USER_CURRENT.userId);
                 if (!existing) {
                     directory.push({
@@ -3111,7 +3131,7 @@
                         department: 'donors',
                         email: ''
                     });
-                    sessionStorage.setItem(DIRECTORY_KEY, JSON.stringify(directory));
+                    setSharedJson(DIRECTORY_KEY, directory);
                 }
             } catch (e) {
                 console.error('Error registering user:', e);
