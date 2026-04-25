@@ -72,6 +72,9 @@ const allowedOrigins = [
     .map(normalizeOrigin)
     .filter(Boolean);
 
+const deployedFrontendHost = normalizeOrigin('https://hopefoundation.onrender.com');
+const renderPreviewHost = normalizeOrigin('https://*.onrender.com');
+
 const localOrigins = [
     'http://localhost:5500',
     'http://127.0.0.1:5500',
@@ -102,7 +105,11 @@ app.use(cors({
         }
         
         // Allow specific origins from the list in all environments
-        if (allowedOrigins.includes(normalizedOrigin)) {
+        if (
+            allowedOrigins.includes(normalizedOrigin) ||
+            normalizedOrigin === deployedFrontendHost ||
+            normalizedOrigin.endsWith('.onrender.com')
+        ) {
             return callback(null, true);
         }
 
