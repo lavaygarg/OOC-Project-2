@@ -1,7 +1,5 @@
-/* Staff Portal Messaging (client-side demo)
-   Notes:
-  - Works within the same browser tab session (sessionStorage).
-   - Cross-device / real-time “background” delivery requires a backend (Firebase/Supabase/WebSocket). */
+/* Staff Portal Messaging
+  Server-synced with live updates (SSE) for multi-device communication. */
 
 (() => {
   const API_BASE_URL = ['localhost', '127.0.0.1', '0.0.0.0'].includes(window.location.hostname)
@@ -13,6 +11,8 @@
     directory: 'ooc_portal_directory_v1',
     messages: 'ooc_portal_messages_v1'
   };
+  let portalStream = null;
+  let reconnectTimer = null;
 
   function clearLegacyAppStorage() {
     const keysToRemove = [];
@@ -97,16 +97,27 @@
 
   function loadJson(key, fallback) {
     try {
-      const raw = sessionStorage.getItem(key);
-      if (!raw) return fallback;
-      return JSON.parse(raw);
+      const localRaw = localStorage.getItem(key);
+      if (localRaw) return JSON.parse(localRaw);
+    } catch {
+      // Try session fallback for backward compatibility.
+    }
+
+    try {
+      const sessionRaw = sessionStorage.getItem(key);
+      if (!sessionRaw) return fallback;
+      const parsed = JSON.parse(sessionRaw);
+      localStorage.setItem(key, sessionRaw);
+      return parsed;
     } catch {
       return fallback;
     }
   }
 
   function saveJson(key, value) {
-    sessionStorage.setItem(key, JSON.stringify(value));
+    const serialized = JSON.stringify(value);
+    localStorage.setItem(key, serialized);
+    sessionStorage.setItem(key, serialized);
   }
 
   function ensureDirectory() {
@@ -132,7 +143,133 @@
   }
 
   function clearCurrentUser() {
+    disconnectPortalStream();
     sessionStorage.removeItem(STORAGE.currentUser);
+    localStorage.removeItem(STORAGE.currentUser);
+  }
+
+  function normalizeMessage(message) {
+    if (!message) return null;
+    return {
+      ...message,
+      id: message.id || message._id
+    };
+  }
+
+  function mergeMessagesIntoCache(incoming) {
+    const nextMessages = Array.isArray(incoming)
+      ? incoming.map(normalizeMessage).filter(Boolean)
+      : [normalizeMessage(incoming)].filter(Boolean);
+
+    if (!nextMessages.length) return ensureMessages();
+
+    const merged = new Map();
+    ensureMessages().forEach(msg => {
+      const normalized = normalizeMessage(msg);
+      if (normalized?.id) merged.set(normalized.id, normalized);
+    });
+
+    nextMessages.forEach(msg => {
+      if (msg?.id) merged.set(msg.id, msg);
+    });
+
+    const ordered = Array.from(merged.values())
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    saveJson(STORAGE.messages, ordered);
+    return ordered;
+  }
+
+  function rerenderMessagingPanels() {
+    const user = getCurrentUser();
+    if (!user) return;
+    renderRoleHome(user);
+    renderInbox(user);
+    renderSent(user);
+    renderDirectory();
+    updateUnreadBadge(user);
+  }
+
+  async function syncPortalState() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/messages/portal`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error(`Portal sync failed with status ${response.status}`);
+      }
+
+      const payload = await response.json();
+      if (Array.isArray(payload?.messages)) {
+        mergeMessagesIntoCache(payload.messages);
+      }
+      if (Array.isArray(payload?.directory) && payload.directory.length) {
+        saveJson(STORAGE.directory, payload.directory);
+      }
+
+      rerenderMessagingPanels();
+      return true;
+    } catch (error) {
+      console.warn('Portal sync failed:', error.message);
+      return false;
+    }
+  }
+
+  function applyLiveMessage(message) {
+    if (!message) return;
+    mergeMessagesIntoCache(message);
+    rerenderMessagingPanels();
+  }
+
+  function disconnectPortalStream() {
+    if (portalStream) {
+      portalStream.close();
+      portalStream = null;
+    }
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
+  }
+
+  function connectPortalStream() {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    disconnectPortalStream();
+
+    try {
+      portalStream = new EventSource(`${API_BASE_URL}/api/messages/portal/stream`, { withCredentials: true });
+    } catch (error) {
+      console.warn('Unable to start live portal stream:', error.message);
+      return;
+    }
+
+    ['message:new', 'message:reply'].forEach(eventName => {
+      portalStream.addEventListener(eventName, (event) => {
+        try {
+          const payload = JSON.parse(event.data || '{}');
+          applyLiveMessage(payload?.message);
+        } catch (error) {
+          console.warn('Invalid live message payload:', error.message);
+        }
+      });
+    });
+
+    portalStream.addEventListener('conversation:update', () => {
+      rerenderMessagingPanels();
+    });
+
+    portalStream.onerror = () => {
+      disconnectPortalStream();
+      reconnectTimer = setTimeout(async () => {
+        await syncPortalState();
+        connectPortalStream();
+      }, 2500);
+    };
   }
 
   function upsertDirectoryUser(user) {
@@ -550,26 +687,30 @@
     return [...tokens];
   }
 
-  function sendMessage({ fromUser, recipientTokens, subject, body }) {
-    const messages = ensureMessages();
-    const msg = {
-      id: `msg_${Date.now()}_${Math.random().toString(16).slice(2)}`,
-      createdAt: nowIso(),
-      from: {
-        userId: fromUser.userId,
-        displayName: fromUser.displayName,
-        role: fromUser.role,
-        department: fromUser.department,
-        college: fromUser.college
-      },
-      recipientTokens,
-      subject: safeTrim(subject) || '(No subject)',
-      body: safeTrim(body),
-      readBy: []
-    };
-    messages.unshift(msg);
-    saveJson(STORAGE.messages, messages);
-    return msg;
+  async function sendMessage({ recipientTokens, subject, body }) {
+    const response = await fetch(`${API_BASE_URL}/api/messages/portal`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        recipientTokens,
+        subject: safeTrim(subject) || '(No subject)',
+        body: safeTrim(body),
+        type: 'message'
+      })
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(payload?.error || 'Failed to send message');
+    }
+
+    const persisted = normalizeMessage(payload?.data);
+    if (persisted) {
+      mergeMessagesIntoCache(persisted);
+    }
+
+    return persisted;
   }
 
   function inboxForUser(user) {
@@ -803,7 +944,7 @@
       `).join('');
 
     $('panel-directory').innerHTML = `
-      <div class="muted-inline">Directory (saved on this browser)</div>
+      <div class="muted-inline">Directory (server-synced)</div>
       <div class="hr"></div>
       <div class="list">${rows || '<div class="muted-inline">No directory entries.</div>'}</div>
     `;
@@ -902,7 +1043,7 @@
       if (!collegeOtherCheck.checked) collegeOtherInput.value = '';
     });
 
-    $('composeForm').addEventListener('submit', (e) => {
+    $('composeForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const selectedUserIds = [...toUsers.selectedOptions].map(o => o.value);
@@ -937,24 +1078,33 @@
         return;
       }
 
-      sendMessage({ fromUser: user, recipientTokens, subject, body });
-      toast('Message sent');
-      renderSent(user);
-      setTabs('sent');
-      updateUnreadBadge(user);
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+      try {
+        await sendMessage({ recipientTokens, subject, body });
+        toast('Message sent');
+        await syncPortalState();
+        renderSent(user);
+        setTabs('sent');
+        updateUnreadBadge(user);
+      } catch (error) {
+        toast(error.message || 'Failed to send message');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+      }
     });
 
-    $('clearMessagesBtn').addEventListener('click', () => {
-      if (!confirm('Clear ALL messages stored in this browser?')) return;
-      saveJson(STORAGE.messages, []);
-      toast('Messages cleared');
-      renderInbox(user);
-      renderSent(user);
-      updateUnreadBadge(user);
+    $('clearMessagesBtn').addEventListener('click', async () => {
+      const refreshed = await syncPortalState();
+      toast(refreshed ? 'Messages refreshed from server' : 'Unable to refresh messages');
     });
   }
 
   function renderLoggedOutPanels() {
+    disconnectPortalStream();
     $('topbarRight').innerHTML = 'Not logged in';
     $('panel-inbox').innerHTML = '<div class="muted-inline">Login to view your inbox.</div>';
     $('panel-compose').innerHTML = '<div class="muted-inline">Login to send messages.</div>';
@@ -1052,6 +1202,7 @@
         const res = await fetch(`${API_BASE_URL}/api/staff/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ email, password })
         });
         const data = await res.json();
@@ -1075,6 +1226,8 @@
           
           toast('Login successful');
           renderLoggedInPanels(user);
+          await syncPortalState();
+          connectPortalStream();
           setTabs('inbox');
         } else {
           toast(data.error || 'Invalid credentials');
@@ -1091,6 +1244,7 @@
 
   function init() {
     document.body.classList.add('staff-portal');
+    window.addEventListener('beforeunload', disconnectPortalStream, { once: true });
 
     ensureDirectory();
     ensureMessages();
@@ -1098,8 +1252,14 @@
     setupEvents();
 
     const current = getCurrentUser();
-    if (current) renderLoggedInPanels(current);
-    else renderLoggedOutPanels();
+    if (current) {
+      renderLoggedInPanels(current);
+      syncPortalState().finally(() => {
+        connectPortalStream();
+      });
+      return;
+    }
+    renderLoggedOutPanels();
   }
 
   if (document.readyState === 'loading') {

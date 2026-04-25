@@ -10,6 +10,9 @@ const { validateMessage } = require('../middleware/validation');
 const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const SSE_RETRY_MS = 3000;
+const HEARTBEAT_INTERVAL_MS = 25000;
+const portalSubscribers = new Map();
 
 const toPortalUserId = (kind, id, role) => {
     const normalized = String(id || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
@@ -38,6 +41,66 @@ const sanitizeRecipientTokens = (input) => {
                 token.startsWith('user:')
             ))
     )];
+};
+
+const getPortalAudienceTokens = (current) => {
+    const tokens = [
+        'all',
+        `role:${current.role}`,
+        `user:${current.userId}`
+    ];
+
+    if (current.role === 'admin') {
+        tokens.push('admin', 'role:management');
+    }
+
+    return tokens;
+};
+
+const canPortalUserAccessMessage = (current, messageDoc) => {
+    if (!current || !messageDoc) return false;
+    if (messageDoc?.from?.userId === current.userId) return true;
+
+    const audience = new Set(getPortalAudienceTokens(current));
+    const recipients = Array.isArray(messageDoc.recipientTokens)
+        ? messageDoc.recipientTokens
+        : [];
+
+    return recipients.some(token => audience.has(token));
+};
+
+const normalizePortalPayload = (messageDoc) => {
+    if (!messageDoc) return null;
+    if (typeof messageDoc.toObject === 'function') {
+        return messageDoc.toObject();
+    }
+    return messageDoc;
+};
+
+const emitSseEvent = (res, event, payload) => {
+    res.write(`event: ${event}\n`);
+    res.write(`data: ${JSON.stringify(payload)}\n\n`);
+};
+
+const broadcastPortalEvent = (event, payload, options = {}) => {
+    const message = payload?.message;
+    if (!message) return;
+
+    for (const [, subscriber] of portalSubscribers) {
+        if (!subscriber?.res || !subscriber?.portalUser) continue;
+
+        if (!canPortalUserAccessMessage(subscriber.portalUser, message)) {
+            continue;
+        }
+
+        emitSseEvent(subscriber.res, event, payload);
+        if (options.includeConversationUpdate) {
+            emitSseEvent(subscriber.res, 'conversation:update', {
+                messageId: message._id || message.id,
+                updatedAt: message.createdAt || new Date().toISOString()
+            });
+        }
+    }
 };
 
 const verifyPortalAuth = async (req, res, next) => {
@@ -82,22 +145,24 @@ const verifyPortalAuth = async (req, res, next) => {
 router.get('/portal', verifyPortalAuth, async (req, res) => {
     try {
         const current = req.portalUser;
-        const recipientTokens = [
-            'all',
-            `role:${current.role}`,
-            `user:${current.userId}`
-        ];
+        const recipientTokens = getPortalAudienceTokens(current);
+        const sinceParam = String(req.query?.since || '').trim();
+        const createdAfter = sinceParam ? new Date(sinceParam) : null;
 
-        if (current.role === 'admin') {
-            recipientTokens.push('admin', 'role:management');
-        }
-
-        const messages = await PortalMessage.find({
+        const baseQuery = {
             $or: [
                 { 'from.userId': current.userId },
                 { recipientTokens: { $in: recipientTokens } }
             ]
-        }).sort({ createdAt: -1 }).lean();
+        };
+
+        if (createdAfter && !Number.isNaN(createdAfter.getTime())) {
+            baseQuery.createdAt = { $gt: createdAfter };
+        }
+
+        const messages = await PortalMessage.find(baseQuery)
+            .sort({ createdAt: -1 })
+            .lean();
 
         const [staffMembers, users] = await Promise.all([
             Staff.find({ status: 'Active' }).select('name email role department').lean(),
@@ -127,6 +192,45 @@ router.get('/portal', verifyPortalAuth, async (req, res) => {
     }
 });
 
+// Live stream for portal messages (authenticated user/staff/admin)
+router.get('/portal/stream', verifyPortalAuth, (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    if (typeof res.flushHeaders === 'function') {
+        res.flushHeaders();
+    }
+
+    res.write(`retry: ${SSE_RETRY_MS}\n\n`);
+
+    const subscriberId = `${req.portalUser.userId}:${Date.now()}:${Math.random().toString(36).slice(2)}`;
+    const heartbeat = setInterval(() => {
+        res.write(': ping\n\n');
+    }, HEARTBEAT_INTERVAL_MS);
+
+    portalSubscribers.set(subscriberId, {
+        res,
+        portalUser: req.portalUser,
+        heartbeat
+    });
+
+    emitSseEvent(res, 'connection:ready', {
+        subscriberId,
+        userId: req.portalUser.userId,
+        role: req.portalUser.role,
+        connectedAt: new Date().toISOString()
+    });
+
+    req.on('close', () => {
+        const subscriber = portalSubscribers.get(subscriberId);
+        if (subscriber?.heartbeat) {
+            clearInterval(subscriber.heartbeat);
+        }
+        portalSubscribers.delete(subscriberId);
+    });
+});
+
 // POST unified portal message (authenticated user/staff/admin)
 router.post('/portal', verifyPortalAuth, async (req, res) => {
     try {
@@ -151,7 +255,17 @@ router.post('/portal', verifyPortalAuth, async (req, res) => {
             type: ['message', 'task', 'shift', 'notification'].includes(type) ? type : 'message'
         });
 
-        return res.status(201).json({ message: 'Portal message sent', data: message });
+        const payloadMessage = normalizePortalPayload(message);
+        const isReply = safeSubject.toLowerCase().startsWith('re:');
+        broadcastPortalEvent(isReply ? 'message:reply' : 'message:new', {
+            message: payloadMessage
+        }, { includeConversationUpdate: true });
+
+        return res.status(201).json({
+            message: 'Portal message sent',
+            data: payloadMessage,
+            delivered: true
+        });
     } catch (error) {
         return res.status(500).json({ error: 'Failed to send portal message', detail: error.message });
     }
