@@ -2763,6 +2763,8 @@
         /* Messaging System for User */
         /* ========================= */
         const USER_MSG_STORAGE = 'ooc_portal_messages_v1';
+        let userPortalStream = null;
+        let userPortalReconnectTimer = null;
 
         function getSharedJson(key, fallback) {
             try {
@@ -2797,17 +2799,100 @@
             }));
         }
 
+        function mergeUserMessages(incoming) {
+            const incomingList = Array.isArray(incoming)
+                ? normalizePortalMessages(incoming)
+                : normalizePortalMessages([incoming]);
+
+            if (!incomingList.length) return loadUserMessages();
+
+            const merged = new Map();
+            loadUserMessages().forEach(msg => {
+                if (msg?.id) merged.set(msg.id, msg);
+            });
+            incomingList.forEach(msg => {
+                if (msg?.id) merged.set(msg.id, msg);
+            });
+
+            const ordered = Array.from(merged.values())
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            saveUserMessages(ordered);
+            return ordered;
+        }
+
         async function syncUserPortalMessages() {
             try {
                 const payload = await dashboardFetch('messages/portal');
                 if (Array.isArray(payload?.messages)) {
-                    saveUserMessages(normalizePortalMessages(payload.messages));
+                    mergeUserMessages(payload.messages);
                 }
                 return true;
             } catch (error) {
                 console.warn('Portal message sync failed:', error.message);
                 return false;
             }
+        }
+
+        function rerenderUserMessagingIfVisible() {
+            const visiblePanel = document.querySelector('.msg-panel[style*="display: block"]')?.id || 'user-panel-inbox';
+            if (visiblePanel === 'user-panel-sent') {
+                renderUserSent();
+                return;
+            }
+            if (visiblePanel === 'user-panel-detail') {
+                renderUserInbox();
+                return;
+            }
+            renderUserInbox();
+        }
+
+        function stopUserPortalLiveUpdates() {
+            if (userPortalStream) {
+                userPortalStream.close();
+                userPortalStream = null;
+            }
+            if (userPortalReconnectTimer) {
+                clearTimeout(userPortalReconnectTimer);
+                userPortalReconnectTimer = null;
+            }
+        }
+
+        function startUserPortalLiveUpdates() {
+            stopUserPortalLiveUpdates();
+
+            try {
+                userPortalStream = new EventSource(`${API_BASE_URL}/api/messages/portal/stream`, { withCredentials: true });
+            } catch (error) {
+                console.warn('Unable to start user live updates:', error.message);
+                return;
+            }
+
+            const handleLivePayload = (event) => {
+                try {
+                    const payload = JSON.parse(event.data || '{}');
+                    if (payload?.message) {
+                        mergeUserMessages(payload.message);
+                        rerenderUserMessagingIfVisible();
+                    }
+                } catch (error) {
+                    console.warn('Invalid user live payload:', error.message);
+                }
+            };
+
+            userPortalStream.addEventListener('message:new', handleLivePayload);
+            userPortalStream.addEventListener('message:reply', handleLivePayload);
+            userPortalStream.addEventListener('conversation:update', () => {
+                rerenderUserMessagingIfVisible();
+            });
+
+            userPortalStream.onerror = () => {
+                stopUserPortalLiveUpdates();
+                userPortalReconnectTimer = setTimeout(async () => {
+                    await syncUserPortalMessages();
+                    rerenderUserMessagingIfVisible();
+                    startUserPortalLiveUpdates();
+                }, 2500);
+            };
         }
 
         function clearLegacyAppStorage() {
@@ -3171,6 +3256,7 @@
         }
         
         async function logoutUserAndRedirect() {
+            stopUserPortalLiveUpdates();
             try {
                 await dashboardFetch('users/logout', { method: 'POST' });
             } catch {
@@ -3182,6 +3268,8 @@
 
         // Initialize messaging on page load
         document.addEventListener('DOMContentLoaded', async () => {
+            window.addEventListener('beforeunload', stopUserPortalLiveUpdates, { once: true });
+
             try {
                 await initializeUserSession();
             } catch {
@@ -3200,6 +3288,7 @@
             updateProfileUI();
             await syncUserPortalMessages();
             renderUserInbox();
+            startUserPortalLiveUpdates();
             bindDashboardActionButtons();
             
             // Mobile sidebar toggle functionality

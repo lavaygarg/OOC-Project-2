@@ -2038,6 +2038,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 /* =========================================== */
 const UNIFIED_MSG_STORAGE = 'ooc_portal_messages_v1';
 const UNIFIED_DIRECTORY_STORAGE = 'ooc_portal_directory_v1';
+let adminPortalStream = null;
+let adminPortalReconnectTimer = null;
 
 const ADMIN_USER = {
     userId: 'ADMIN',
@@ -2081,17 +2083,106 @@ function normalizePortalMessages(messages) {
     }));
 }
 
+function mergeUnifiedMessages(incoming) {
+    const incomingList = Array.isArray(incoming)
+        ? normalizePortalMessages(incoming)
+        : normalizePortalMessages([incoming]);
+
+    if (!incomingList.length) return loadUnifiedMessages();
+
+    const merged = new Map();
+    loadUnifiedMessages().forEach(msg => {
+        if (msg?.id) merged.set(msg.id, msg);
+    });
+    incomingList.forEach(msg => {
+        if (msg?.id) merged.set(msg.id, msg);
+    });
+
+    const ordered = Array.from(merged.values())
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    saveUnifiedMessages(ordered);
+    return ordered;
+}
+
 async function syncAdminPortalState() {
     const payload = await apiGet('messages/portal');
     if (!payload) return false;
 
     if (Array.isArray(payload.messages)) {
-        saveUnifiedMessages(normalizePortalMessages(payload.messages));
+        mergeUnifiedMessages(payload.messages);
     }
     if (Array.isArray(payload.directory)) {
         setSharedJson(UNIFIED_DIRECTORY_STORAGE, payload.directory);
     }
     return true;
+}
+
+function rerenderAdminMessagingIfVisible() {
+    if (!document.getElementById('admin-inbox-list')) return;
+
+    const visiblePanel = document.querySelector('.admin-msg-panel[style*="display: block"]')?.id || 'admin-panel-inbox';
+    if (visiblePanel === 'admin-panel-sent') {
+        renderAdminSent();
+        return;
+    }
+    if (visiblePanel === 'admin-panel-directory') {
+        renderAdminDirectory();
+        return;
+    }
+    if (visiblePanel === 'admin-panel-detail') {
+        renderAdminInbox();
+        return;
+    }
+    renderAdminInbox();
+}
+
+function stopAdminPortalLiveUpdates() {
+    if (adminPortalStream) {
+        adminPortalStream.close();
+        adminPortalStream = null;
+    }
+    if (adminPortalReconnectTimer) {
+        clearTimeout(adminPortalReconnectTimer);
+        adminPortalReconnectTimer = null;
+    }
+}
+
+function startAdminPortalLiveUpdates() {
+    stopAdminPortalLiveUpdates();
+
+    try {
+        adminPortalStream = new EventSource(`${API_BASE_URL}/api/messages/portal/stream`, { withCredentials: true });
+    } catch (error) {
+        console.warn('Unable to start admin live updates:', error.message);
+        return;
+    }
+
+    const handleLivePayload = (event) => {
+        try {
+            const payload = JSON.parse(event.data || '{}');
+            if (payload?.message) {
+                mergeUnifiedMessages(payload.message);
+                rerenderAdminMessagingIfVisible();
+            }
+        } catch (error) {
+            console.warn('Invalid admin live payload:', error.message);
+        }
+    };
+
+    adminPortalStream.addEventListener('message:new', handleLivePayload);
+    adminPortalStream.addEventListener('message:reply', handleLivePayload);
+    adminPortalStream.addEventListener('conversation:update', () => {
+        rerenderAdminMessagingIfVisible();
+    });
+
+    adminPortalStream.onerror = () => {
+        stopAdminPortalLiveUpdates();
+        adminPortalReconnectTimer = setTimeout(async () => {
+            await syncAdminPortalState();
+            rerenderAdminMessagingIfVisible();
+            startAdminPortalLiveUpdates();
+        }, 2500);
+    };
 }
 
 function loadUnifiedMessages() {
@@ -2418,8 +2509,11 @@ function initAdminMessaging() {
     setTimeout(() => {
         if (document.getElementById('admin-inbox-list')) {
             renderAdminInbox();
+            startAdminPortalLiveUpdates();
         }
     }, 100);
+
+    window.addEventListener('beforeunload', stopAdminPortalLiveUpdates, { once: true });
 }
 
 // --- TASK ASSIGNMENT & SHIFT MANAGEMENT ---
