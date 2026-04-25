@@ -89,11 +89,9 @@ app.use(cors({
     origin: function(origin, callback) {
         const normalizedOrigin = normalizeOrigin(origin);
 
-        // Allow requests with no origin only in development (curl, server-side tools, local file access)
+        // Allow requests with no origin in all environments (Render health checks, curl, server-to-server)
         if (!origin) {
-            return isProduction
-                ? callback(new Error('Not allowed by CORS'))
-                : callback(null, true);
+            return callback(null, true);
         }
 
         // Allow localhost with any port only in development
