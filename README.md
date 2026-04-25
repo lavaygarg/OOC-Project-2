@@ -1,131 +1,177 @@
-# Hope Foundation  
-### *Empowering Underprivileged Children Through Education, Nutrition, and Healthcare*
+# Hope Foundation
+### Empowering Underprivileged Children Through Education, Nutrition, and Healthcare
 
 🌍 **Live Demo:** [hopefoundation.onrender.com](https://hopefoundation.onrender.com)
 
 ---
 
-## 📖 About The Project
+## Overview
 
-**Hope Foundation** is not just a website; it is a full-stack digital ecosystem designed to modernize the operations of non-profit organizations. 
+Hope Foundation is a production-ready full-stack NGO management platform that addresses a critical gap in non-profit operations: managing donations transparently, coordinating volunteers efficiently, and maintaining secure records.
 
-We identified a critical gap in how NGOs operate: managing donations transparency, coordinating volunteers efficiently, and maintaining secure records is often chaotic. This project was conceived and built from the ground up to address these specific challenges.
-
-Our platform serves as a bridge between compassionate donors, dedicated volunteers, and the administration, ensuring that every resource—whether time or money—reaches the children who need it most.
+Built from the ground up with security and usability at its core, this platform serves as a bridge between donors, volunteers, and administrators—ensuring every resource reaches the children who need it most.
 
 ---
 
-## 🌟 Comprehensive Functionality Guide
+## Key Features
 
-We have built a feature-rich platform catering to four distinct user groups: Public Visitors, Donors, Volunteers, and Administrators.
+### 🌏 Public Interface
+- **Dynamic landing page** with hero section and impact metrics
+- **Program showcase** highlighting Education, Nutrition, and Healthcare initiatives
+- **Media gallery** with masonry-style layout of on-ground activities
+- **Events calendar** with upcoming drives and registration
+- **Impact stories** featuring real testimonials
+- **Bilingual support** (English/Hindi) with instant toggle
+- **Dark/Light theme** for accessibility
+- **Contact form** integrated with backend message system
 
-### 1. 🌏 Public User Interface (Frontend)
-Designed for accessibility and engagement.
-*   **Dynamic Landing Page:** Features a hero section with a visual impact summary and quick access to core actions (Donate, Volunteer).
-*   **Program Showcase:** Detailed cards displaying various NGO initiatives like Education, Nutrition, and Healthcare.
-*   **Media Gallery:** A masonry-style gallery showing real photos of on-ground activities.
-*   **Events Calendar:** Upcoming events listing with dates, locations, and descriptions.
-*   **Impact Stories:** Real testimonials and success stories to build trust.
-*   **Contact & Inquiry:** Integrated contact form for general queries.
-*   **Accessibility Features:**
-    *   **Bilingual Support (English/Hindi):** Instant content translation toggle for wider reach.
-    *   **Dark/Light Mode:** Reduces eye strain and saves battery on mobile devices.
+### 💳 Donation System
+- **Razorpay integration** supporting Credit Card, NetBanking, and UPI
+- **Order creation → Payment → Webhook verification** complete flow
+- **Digital receipts** generated instantly
+- **Donation history** visible on impact page
+- **80G tax exemption** certificate generation (simulated)
 
-### 2. 💳 Donor Ecosystem
-Focused on trust, speed, and security.
-*   **Seamless Donation Process:**
-    *   One-click donation button accessible from all pages.
-    *   Integration with **Razorpay** for secure Credit Card, NetBanking, and UPI transactions.
-*   **Transparency & Trust:**
-    *   Instant digital receipt generation upon successful payment.
-    *   History of recent donations shown on the impact page.
-*   **Tax Benefits:** Automated generation of 80G tax exemption certificates (simulated).
+### 🤝 Volunteer Management
+- **Online application** form with skills and availability tracking
+- **Dedicated portal** for volunteers with:
+  - Personal dashboard with assigned tasks
+  - Event registration and RSVP
+  - Service hours logging for certification
 
-### 3. 🤝 Volunteer Management System
-Streamlining the workforce.
-*   **Digital Recruitment:**
-    *   Online application form collecting skills, availability, and interests.
-*   **Dedicated Volunteer Portal:**
-    *   **Personal Dashboard:** View assigned tasks and upcoming schedules.
-    *   **Event Registration:** RSVP for specific NGO drives.
-    *   **Hours Tracking:** Log service hours for certification.
-
-### 4. 🛡️ Administration & Operations (Staff Portal)
-The backend powerhouse for managing the organization.
-*   **Secure Authentication:** Role-based login (RBAC) ensuring only authorized personnel access sensitive data.
-*   **Dashboard Analytics:** Visual charts (**Chart.js**) displaying:
-    *   Total Donations (Monthly/Yearly).
-    *   Active Volunteer Count.
-    *   Distribution of funds across programs.
-*   **Entity Management Modules:**
-    *   **Donation Manager:** View all transaction logs, filter by date, and export reports.
-    *   **Volunteer Manager:** Approve/Reject applications and assign roles.
-    *   **Staff Registry:** HR management for internal employees.
-    *   **Institution Partnering:** Manage relationships with schools and orphanages receiving aid.
-    *   **Disbursement Tracker:** Log every rupee spent to ensure financial transparency.
-*   **Message Center:** Centralized inbox for website contact form submissions.
-
-### 5. 🔒 Security & Infrastructure
-*   **Secure REST API:** Built with **Node.js & Express**, featuring strictly defined routes and controller logic.
-*   **Advanced Security:** 
-    *   **Helmet.js** for secure HTTP headers.
-    *   **Rate Limiting** to prevent brute-force attacks across various endpoints.
-    *   **NoSQL Injection Protection** using `express-mongo-sanitize` and **XSS Protection** via `xss-clean`.
-    *   **Authentication & Authorization:** Secure **JWT** sessions via HTTP-only cookies, structured **RBAC**, and password encryption via `bcryptjs`.
-    *   **Multi-Factor Authentication (2FA):** Time-based OTP (TOTP) enforcement using `speakeasy` for secure access.
-    *   **Intrusion Detection & Alerts:** Account lockout mechanisms for failed login attempts and automated security alerts via Email (`nodemailer`).
-    *   **Network Security:** Environment-aware strict **CORS** rules and explicitly enforced TLS certificate validation for production databases.
-*   **Database:** Scalable **MongoDB** architecture with complex relationships (Donors, Volunteers, Events).
+### 🛡️ Admin & Staff Portals
+- **Role-based access control** (Admin, Staff, Manager, HR)
+- **Two-factor authentication** (TOTP) for admin operations
+- **Account lockout** after failed login attempts
+- **Security event logging** with email alerts
+- **Analytics dashboard** with Chart.js visualizations:
+  - Monthly/yearly donation trends
+  - Active volunteer counts
+  - Fund distribution across programs
+- **Entity management**:
+  - Donations: transaction logs, filters, export reports
+  - Volunteers: approve/reject applications, assign roles
+  - Staff: HR registry management
+  - Institutions: partner school/orphanage relationships
+  - Disbursements: complete fund utilization tracking
+- **Unified messaging system** with live updates (SSE)
 
 ---
 
-## 🛠️ Technology Stack
+## Tech Stack
 
-This project was built using the MERN stack ecosystem, optimized for performance and security.
-
-| Category | Technologies Used |
-|----------|-------------------|
-| **Frontend** | HTML5, CSS3 (Custom variable system), JavaScript (ES6+), Chart.js |
-| **Backend** | Node.js, Express.js |
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | HTML5, CSS3 (Custom Variables), Vanilla JavaScript (ES6+), Chart.js |
+| **Backend** | Node.js v18+, Express.js |
 | **Database** | MongoDB Atlas, Mongoose ODM |
-| **Security** | Helmet, JWT, Bcrypt, Speakeasy (2FA), Express-Rate-Limit, Mongo-Sanitize, CORS, HPP |
-| **Payment** | Razorpay SDK |
-| **Deployment** | Render (Full-Stack Blueprint Architecture) |
+| **Authentication** | JWT (HTTP-only cookies), bcryptjs, speakeasy (TOTP 2FA) |
+| **Security** | helmet, cors, hpp, express-rate-limit, express-mongo-sanitize, xss-clean, validator |
+| **Payments** | Razorpay SDK (Orders + Webhooks) |
+| **Notifications** | Nodemailer (Security alerts) |
+| **Deployment** | Render (Blueprint architecture) |
 
 ---
 
-## 📁 Project Architecture
-
-The codebase is structured for scalability and separation of concerns:
+## Project Structure
 
 ```
 OOC-Project-2/
-├── backend/                  # The API Heart
-│   ├── config/              # Database connections
-│   ├── middleware/          # Auth, Validation, Rate Limiters
-│   ├── models/              # Mongoose Schemas (Donation, User, Event)
-│   ├── routes/              # API Endpoints
-│   └── server.js            # Entry point
+├── backend/
+│   ├── config/
+│   │   └── database.js              # MongoDB connection
+│   ├── middleware/
+│   │   ├── auth.js                  # JWT + role verification
+│   │   ├── rateLimiter.js           # Route-specific rate limits
+│   │   └── validation.js            # Input sanitization
+│   ├── models/                      # Mongoose schemas
+│   │   ├── Donation.js
+│   │   ├── Disbursement.js
+│   │   ├── Event.js
+│   │   ├── Institution.js
+│   │   ├── Message.js
+│   │   ├── PortalMessage.js
+│   │   ├── SecurityEvent.js
+│   │   ├── Staff.js
+│   │   ├── User.js
+│   │   └── Volunteer.js
+│   ├── routes/                      # API endpoints
+│   │   ├── donations.js
+│   │   ├── volunteers.js
+│   │   ├── staff.js
+│   │   ├── users.js
+│   │   └── messages.js
+│   ├── utils/
+│   │   └── securityAlerts.js        # Email notification system
+│   ├── seed.js                      # Database seeding script
+│   ├── server.js                    # Application entry point
+│   └── .env.example                 # Environment template
 │
-└── frontend/                 # The User Interface
-    ├── portals/             # Dashboards (Admin, Staff, User)
-    ├── data/                # Static data resources
-    ├── style.css            # Custom CSS system
-    └── script.js            # Frontend logic & API consumption
+├── frontend/
+│   ├── index.html                   # Main public page
+│   ├── script.js                    # Frontend logic + API calls
+│   ├── style.css                    # Custom CSS system
+│   ├── data/
+│   │   └── ngo-data.json           # Frontend seed data
+│   └── portals/
+│       ├── index.html              # Portal chooser
+│       ├── admin.html              # Admin login + 2FA
+│       ├── staff.html              # Staff portal
+│       ├── staff-portal.js         # Staff portal logic
+│       ├── staff-portal.css        # Staff portal styles
+│       ├── user.html               # User registration/login
+│       └── user-dashboard.html     # User portal with messaging
+│
+├── render.yaml                      # Render Blueprint config
+└── DEPLOYMENT_RENDER.md            # Deployment documentation
 ```
 
 ---
 
-## 🚀 Getting Started (Local Setup)
+## API Endpoints
 
-Follow these steps to run the complete system locally for development.
+### Public
+- `GET /` - Health check
+- `GET /api/health` - API status
+- `POST /api/create-order` - Initiate Razorpay order
+- `POST /api/verify-payment` - Verify payment signature
+- `POST /api/webhook` - Razorpay webhook handler
+
+### Authentication
+- `POST /api/users/register` - User registration
+- `POST /api/users/login` - User login
+- `POST /api/users/verify-2fa` - Verify TOTP
+- `POST /api/users/logout` - Clear session
+- `GET /api/users/me` - Get current user
+- `POST /api/staff/login` - Staff/admin login
+- `POST /api/staff/verify-2fa` - Admin 2FA verification
+- `POST /api/staff/logout` - Staff logout
+- `GET /api/staff/session-check` - Verify session
+
+### Protected Resources
+- **Donations**: Full CRUD + filtering
+- **Volunteers**: Application management
+- **Events**: Event CRUD + registration
+- **Messages**: Contact form submissions
+- **Institutions**: Partner management
+- **Disbursements**: Fund tracking
+- **Staff**: HR registry
+- **Portal Messages**: 
+  - `GET /api/messages/portal` - Fetch messages
+  - `GET /api/messages/portal/stream` - SSE live updates
+  - `POST /api/messages/portal` - Send message
+
+---
+
+## Local Development Setup
 
 ### Prerequisites
-*   Node.js (v14 or higher)
-*   MongoDB Account (Atlas)
-*   Razorpay Test Account
+- Node.js 18 or higher
+- MongoDB Atlas account
+- Razorpay test account
 
-### 1. Backend Setup
+### Backend Setup
+
 ```bash
 # Navigate to backend
 cd backend
@@ -133,49 +179,140 @@ cd backend
 # Install dependencies
 npm install
 
-# Configure Environment
-# Create a .env file and add details (See .env.example)
+# Configure environment
+cp .env.example .env
+# Edit .env with your credentials:
+# - MONGODB_URI
+# - JWT_SECRET
+# - RAZORPAY_KEY_ID
+# - RAZORPAY_KEY_SECRET
+# - FRONTEND_URL=http://localhost:5500
 
-# Start the Server
+# Seed the database (optional)
+node seed.js
+
+# Start development server
 npm run dev
 ```
 
-### 2. Frontend Setup
+Backend runs on `http://localhost:3000`
+
+### Frontend Setup
+
 ```bash
 # Navigate to frontend
 cd frontend
 
-# Simply serve the static files
-# You can use Live Server (VS Code) or:
-npx serve .
+# Serve with any static server
+# Option 1: VS Code Live Server (port 5500)
+# Option 2: Python
+python -m http.server 5500
+
+# Option 3: Node serve
+npx serve -p 5500
 ```
 
-*Note: Update the `API_BASE_URL` in `frontend/script.js` to `http://localhost:3000` when running locally.*
+Frontend runs on `http://localhost:5500`
+
+**Important:** The `script.js` file auto-detects localhost and points to `http://localhost:3000` for API calls.
 
 ---
 
-## 🔮 Future Roadmap
 
-We are constantly working to improve this platform. Upcoming features include:
-*   **Automated Email Reports**: Monthly impact newsletters for donors.
-*   **Chatbot Integration**: AI-driven support for instant queries.
-*   **Blockchain Ledger**: For immutable proof of fund utilization.
+## Database Seeding
 
----
+The seed script creates default accounts and sample data:
 
-## 👥 Team Members
+```bash
+cd backend
+node seed.js
+```
 
-This project was passionately developed by:
-*   **Riya Ghoshi** - *Frontend Developer*
-*   **Lavay Garg** - *Full Stack Developer & Cybersec Expert*
-*   **Jatin** - *Frontend Developer and UI & UX Designer*
-
----
-
-## 🤝 Contribution
-
-This project is the result of dedicated teamwork. We welcome contributions to help us make a bigger impact.
+**Creates:**
+- Admin account (from env: `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_TOTP_SECRET`)
+- Staff accounts (Manager, HR, Standard)
+- Sample volunteers, donations, events, institutions, disbursements
 
 ---
 
-*“We make a living by what we get, but we make a life by what we give.”*
+## Security Features
+
+### Authentication & Authorization
+- JWT-based sessions with HTTP-only cookies
+- Role-based access control (Admin, Manager, Staff, HR, User)
+- TOTP two-factor authentication for admin operations
+- Password hashing with bcryptjs (10 rounds)
+
+### Attack Prevention
+- Rate limiting on all `/api/*` endpoints
+- NoSQL injection protection (`express-mongo-sanitize`)
+- XSS attack prevention (`xss-clean`)
+- HTTP parameter pollution protection (`hpp`)
+- Secure HTTP headers (`helmet`)
+- Strict CORS configuration
+
+### Monitoring & Alerts
+- Account lockout after failed attempts
+- Security event audit trail
+- Email alerts for suspicious activity
+- Session validation on protected routes
+
+---
+
+## Deployment
+
+### Render Blueprint
+
+This project uses Render Blueprint for one-click deployment:
+
+1. Fork this repository
+2. Connect to Render
+3. Deploy using `render.yaml`
+
+See `DEPLOYMENT_RENDER.md` for detailed instructions.
+
+### Manual Deployment
+
+1. Set up MongoDB Atlas cluster
+2. Configure Razorpay production keys
+3. Set environment variables in hosting platform
+4. Deploy backend as web service
+5. Deploy frontend as static site
+6. Update `FRONTEND_URL` and `FRONTEND_URLS` in backend env
+
+---
+
+## Future Roadmap
+
+- [ ] **Email automation**: Monthly impact newsletters for donors
+- [ ] **AI chatbot**: Instant query resolution using NLP
+- [ ] **Blockchain ledger**: Immutable proof of fund utilization
+- [ ] **Mobile app**: React Native companion app
+- [ ] **Analytics dashboard**: Advanced reporting with filters and exports
+- [ ] **Multi-language support**: Expand beyond English/Hindi
+
+---
+
+## Team
+
+| Name | Role |
+|------|------|
+| **Riya Ghoshi** | Frontend Developer |
+| **Lavay Garg** | Full Stack Developer & Cybersecurity Expert |
+| **Jatin** | Frontend Developer & UI/UX Designer |
+
+---
+
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+*"We make a living by what we get, but we make a life by what we give."* — Winston Churchill
