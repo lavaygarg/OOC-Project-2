@@ -3,16 +3,24 @@ const mongoose = require('mongoose');
 const connectDB = async () => {
     try {
         const mongoURI = process.env.MONGODB_URI;
+        const isProduction = process.env.NODE_ENV === 'production';
         
         if (!mongoURI) {
             console.error('MONGODB_URI is not defined in environment variables');
             process.exit(1);
         }
 
-        const conn = await mongoose.connect(mongoURI, {
+        const mongooseOptions = {
             dbName: 'hope-foundation',
-            tls: true,
-            tlsAllowInvalidCertificates: true
+            tls: true
+        };
+
+        if (!isProduction) {
+            mongooseOptions.tlsAllowInvalidCertificates = true;
+        }
+
+        const conn = await mongoose.connect(mongoURI, {
+            ...mongooseOptions
         });
 
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);

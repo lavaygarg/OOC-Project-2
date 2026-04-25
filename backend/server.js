@@ -51,35 +51,44 @@ app.use(xssClean());
 // Prevent HTTP Parameter Pollution
 app.use(hpp());
 
-// CORS configuration - Allow all origins for development and production
+const isProduction = process.env.NODE_ENV === 'production';
+
+// CORS configuration - permissive in development, explicit in production
 const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    ...(process.env.FRONTEND_URLS ? process.env.FRONTEND_URLS.split(',').map(url => url.trim()) : [])
+].filter(Boolean);
+
+const localOrigins = [
     'http://localhost:5500',
     'http://127.0.0.1:5500',
     'http://localhost:3000',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     'http://localhost:8080',
-    'http://127.0.0.1:8080',
-    process.env.FRONTEND_URL,
-    ...(process.env.FRONTEND_URLS ? process.env.FRONTEND_URLS.split(',').map(url => url.trim()) : [])
-].filter(Boolean);
+    'http://127.0.0.1:8080'
+];
 
 app.use(cors({
     origin: function(origin, callback) {
-        // Allow requests with no origin (mobile apps, curl, file://, etc.)
-        if (!origin) return callback(null, true);
-        
-        // Allow localhost with any port
-        if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        // Allow requests with no origin only in development (curl, server-side tools, local file access)
+        if (!origin) {
+            return isProduction
+                ? callback(new Error('Not allowed by CORS'))
+                : callback(null, true);
+        }
+
+        // Allow localhost with any port only in development
+        if (!isProduction && localOrigins.includes(origin)) {
             return callback(null, true);
         }
         
-        // Allow specific origins from the list
+        // Allow specific origins from the list in all environments
         if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
+            return callback(null, true);
         }
+
+        return callback(new Error('Not allowed by CORS'));
     },
     credentials: true
 }));
@@ -205,7 +214,6 @@ app.use('/api/institutions', institutionRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Server Error:', err);
-    const isProduction = process.env.NODE_ENV === 'production';
     res.status(err.status || 500).json({
         error: err.message === 'Not allowed by CORS' ? 'Origin not allowed' : 'Internal server error',
         ...(isProduction ? {} : { detail: err.message })

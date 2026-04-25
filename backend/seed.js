@@ -78,11 +78,17 @@ const ensureStaffAccount = async ({ name, email, password, role, department, lab
 
 const seedData = async () => {
     try {
-        await mongoose.connect(MONGODB_URI, { 
+        const isProduction = process.env.NODE_ENV === 'production';
+        const mongooseOptions = {
             dbName: 'hope-foundation',
-            tls: true,
-            tlsAllowInvalidCertificates: true
-        });
+            tls: true
+        };
+
+        if (!isProduction) {
+            mongooseOptions.tlsAllowInvalidCertificates = true;
+        }
+
+        await mongoose.connect(MONGODB_URI, mongooseOptions);
         console.log('✅ Connected to MongoDB');
 
         // Clear existing data (optional - comment out if you want to keep existing data)

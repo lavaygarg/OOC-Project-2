@@ -1,6 +1,8 @@
 # Hope Foundation  
 ### *Empowering Underprivileged Children Through Education, Nutrition, and Healthcare*
 
+🌍 **Live Demo:** [hopefoundation.onrender.com](https://hopefoundation.onrender.com)
+
 ---
 
 ## 📖 About The Project
@@ -12,14 +14,7 @@ We identified a critical gap in how NGOs operate: managing donations transparenc
 Our platform serves as a bridge between compassionate donors, dedicated volunteers, and the administration, ensuring that every resource—whether time or money—reaches the children who need it most.
 
 ---
-## Credentials for Demo Access
-* Admin Panel:
-  - username:admin
-    - password:iiita@123
-* Staff Panel: click on demo login and select staff
-* Username Panel: 
-    - username: anything
-    - password: anything
+
 ## 🌟 Comprehensive Functionality Guide
 
 We have built a feature-rich platform catering to four distinct user groups: Public Visitors, Donors, Volunteers, and Administrators.
@@ -74,9 +69,12 @@ The backend powerhouse for managing the organization.
 *   **Secure REST API:** Built with **Node.js & Express**, featuring strictly defined routes and controller logic.
 *   **Advanced Security:** 
     *   **Helmet.js** for secure HTTP headers.
-    *   **Rate Limiting** to prevent brute-force attacks.
-    *   **NoSQL Injection Protection** using `express-mongo-sanitize`.
-    *   **XSS Protection** mechanisms.
+    *   **Rate Limiting** to prevent brute-force attacks across various endpoints.
+    *   **NoSQL Injection Protection** using `express-mongo-sanitize` and **XSS Protection** via `xss-clean`.
+    *   **Authentication & Authorization:** Secure **JWT** sessions via HTTP-only cookies, structured **RBAC**, and password encryption via `bcryptjs`.
+    *   **Multi-Factor Authentication (2FA):** Time-based OTP (TOTP) enforcement using `speakeasy` for secure access.
+    *   **Intrusion Detection & Alerts:** Account lockout mechanisms for failed login attempts and automated security alerts via Email (`nodemailer`).
+    *   **Network Security:** Environment-aware strict **CORS** rules and explicitly enforced TLS certificate validation for production databases.
 *   **Database:** Scalable **MongoDB** architecture with complex relationships (Donors, Volunteers, Events).
 
 ---
@@ -90,9 +88,9 @@ This project was built using the MERN stack ecosystem, optimized for performance
 | **Frontend** | HTML5, CSS3 (Custom variable system), JavaScript (ES6+), Chart.js |
 | **Backend** | Node.js, Express.js |
 | **Database** | MongoDB Atlas, Mongoose ODM |
-| **Security** | Helmet, HPP, CORS, Express-Rate-Limit, Mongo-Sanitize |
+| **Security** | Helmet, JWT, Bcrypt, Speakeasy (2FA), Express-Rate-Limit, Mongo-Sanitize, CORS, HPP |
 | **Payment** | Razorpay SDK |
-| **Deployment** | Render (Backend), Netlify (Frontend) |
+| **Deployment** | Render (Full-Stack Blueprint Architecture) |
 
 ---
 
@@ -169,9 +167,8 @@ We are constantly working to improve this platform. Upcoming features include:
 
 This project was passionately developed by:
 *   **Riya Ghoshi** - *Frontend Developer*
-*   **Lavay Garg** - *Full Stack Developer*
+*   **Lavay Garg** - *Full Stack Developer & Cybersec Expert*
 *   **Jatin** - *Frontend Developer and UI & UX Designer*
-*   **Bhaskar Sarate** - *Designer*
 
 ---
 
@@ -182,5 +179,3 @@ This project is the result of dedicated teamwork. We welcome contributions to he
 ---
 
 *“We make a living by what we get, but we make a life by what we give.”*
-
-Based on **OOC Project Guidelines** | Created by **[Pathway]**
