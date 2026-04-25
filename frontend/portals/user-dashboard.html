@@ -2919,6 +2919,7 @@
             userId: 'USER-GUEST',
             displayName: 'User',
             role: 'user',
+            department: 'donors',
             email: ''
         };
         let USER_PROFILE = {
@@ -2937,6 +2938,7 @@
 
                 USER_CURRENT.userId = 'USER-' + String(user.id).replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
                 USER_CURRENT.displayName = user.name || 'User';
+                USER_CURRENT.department = user.department || 'donors';
                 USER_CURRENT.email = user.email || '';
 
                 USER_PROFILE = {
@@ -3021,13 +3023,15 @@
         
         function getUserInbox() {
             const messages = loadUserMessages();
+            const audienceTokens = new Set([
+                'all',
+                `user:${USER_CURRENT.userId}`,
+                'role:user',
+                `dept:${USER_CURRENT.department || 'donors'}`
+            ]);
             return messages.filter(m => {
                 if (!m.recipientTokens) return false;
-                return m.recipientTokens.some(t => 
-                    t === 'all' || 
-                    t === `user:${USER_CURRENT.userId}` ||
-                    t === 'role:user'
-                );
+                return m.recipientTokens.some(t => audienceTokens.has(t));
             }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
         
@@ -3146,6 +3150,7 @@
                 'role:events': 'Events Team',
                 'role:fundraiser': 'Fundraising Team',
                 'role:user': 'All Users',
+                'dept:donors': 'Donors',
                 'all': 'Everyone'
             };
             return tokens.map(t => labels[t] || t).join(', ');

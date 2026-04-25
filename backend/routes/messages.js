@@ -50,6 +50,14 @@ const getPortalAudienceTokens = (current) => {
         `user:${current.userId}`
     ];
 
+    if (current.department) {
+        tokens.push(`dept:${current.department}`);
+    }
+
+    if (current.college) {
+        tokens.push(`college:${current.college}`);
+    }
+
     if (current.role === 'admin') {
         tokens.push('admin', 'role:management');
     }
