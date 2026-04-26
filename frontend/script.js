@@ -2976,15 +2976,32 @@ function getStarsHtml(rating) {
     return '★'.repeat(rating) + '☆'.repeat(5 - rating);
 }
 
-function renderTestimonials() {
+async function fetchRemoteTestimonials() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/testimonials?limit=200`, {
+            method: 'GET',
+            mode: 'cors'
+        });
+        if (!res.ok) return [];
+        const payload = await res.json();
+        return Array.isArray(payload?.testimonials) ? payload.testimonials : [];
+    } catch {
+        return [];
+    }
+}
+
+async function renderTestimonials() {
     const grid = document.getElementById('testimonials-grid');
     if (!grid) return;
     
-    // Get user feedbacks from session storage
+    // Remote testimonials (shared across devices)
+    const remoteTestimonials = await fetchRemoteTestimonials();
+
+    // Local fallback testimonials (device-only, legacy)
     const userFeedbacks = JSON.parse(sessionStorage.getItem('feedbacks') || '[]');
     
-    // Combine default testimonials with user feedbacks
-    const allTestimonials = [...defaultTestimonials, ...userFeedbacks];
+    // Combine default + remote + local
+    const allTestimonials = [...defaultTestimonials, ...remoteTestimonials, ...userFeedbacks];
     
     grid.innerHTML = '';
     
@@ -3117,9 +3134,7 @@ function submitFeedback(e) {
         return;
     }
     
-    // Save feedback to session storage
-    const feedbacks = JSON.parse(sessionStorage.getItem('feedbacks') || '[]');
-    feedbacks.push({
+    const localFallbackEntry = {
         id: Date.now(),
         name,
         role,
@@ -3128,21 +3143,43 @@ function submitFeedback(e) {
         message,
         image: getRandomAvatar(),
         date: new Date().toISOString()
-    });
-    sessionStorage.setItem('feedbacks', JSON.stringify(feedbacks));
-    
-    // Reset form
-    e.target.reset();
-    setRating(0);
-    
-    // Re-render testimonials
-    renderTestimonials();
-    
-    // Show success
-    alert('Thank you for sharing your story! It has been added to our Success Stories.');
-    
-    // Scroll to testimonials grid
-    document.getElementById('testimonials-grid').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const submitRemote = async () => {
+        const res = await fetch(`${API_BASE_URL}/api/testimonials`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name,
+                role,
+                city,
+                rating: parseInt(rating),
+                message,
+                image: localFallbackEntry.image
+            }),
+            mode: 'cors'
+        });
+        if (!res.ok) {
+            const text = await res.text().catch(() => '');
+            throw new Error(text || 'Failed to submit testimonial');
+        }
+        return true;
+    };
+
+    submitRemote()
+        .catch(() => {
+            // Fallback: keep old device-only behavior if backend is unavailable
+            const feedbacks = JSON.parse(sessionStorage.getItem('feedbacks') || '[]');
+            feedbacks.push(localFallbackEntry);
+            sessionStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+        })
+        .finally(async () => {
+            e.target.reset();
+            setRating(0);
+            await renderTestimonials();
+            alert('Thank you for sharing your story! It has been added to our Success Stories.');
+            document.getElementById('testimonials-grid').scrollIntoView({ behavior: 'smooth' });
+        });
 }
 
 // ===== CHATBOT FUNCTIONALITY =====

@@ -19,6 +19,7 @@ const disbursementRoutes = require('./routes/disbursements');
 const eventRoutes = require('./routes/events');
 const messageRoutes = require('./routes/messages');
 const institutionRoutes = require('./routes/institutions');
+const testimonialRoutes = require('./routes/testimonials');
 
 // Import Middleware
 const { apiLimiter } = require('./middleware/rateLimiter');
@@ -235,6 +236,7 @@ app.use('/api/disbursements', disbursementRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/institutions', institutionRoutes);
+app.use('/api/testimonials', testimonialRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
