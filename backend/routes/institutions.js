@@ -1,7 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const Institution = require('../models/Institution');
+const { validateObjectIdParam } = require('../middleware/validation');
 const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
+
+const pickInstitutionFields = (payload = {}) => {
+    const allowedFields = [
+        'name',
+        'city',
+        'address',
+        'sector',
+        'allocation',
+        'impact',
+        'contactPerson',
+        'contactEmail',
+        'contactPhone',
+        'status'
+    ];
+
+    return Object.fromEntries(
+        Object.entries(payload).filter(([key]) => allowedFields.includes(key))
+    );
+};
 
 // GET all institutions
 router.get('/', async (req, res) => {
@@ -40,7 +60,7 @@ router.get('/stats', async (req, res) => {
 });
 
 // GET single institution
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateObjectIdParam('id'), async (req, res) => {
     try {
         const institution = await Institution.findById(req.params.id);
         if (!institution) {
@@ -55,7 +75,7 @@ router.get('/:id', async (req, res) => {
 // POST create institution (staff/admin only)
 router.post('/', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
-        const institution = new Institution(req.body);
+        const institution = new Institution(pickInstitutionFields(req.body));
         await institution.save();
         res.status(201).json({ message: 'Institution created successfully', institution });
     } catch (error) {
@@ -64,11 +84,11 @@ router.post('/', verifyToken, isStaffOrAdmin, async (req, res) => {
 });
 
 // PUT update institution (staff/admin only)
-router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.put('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const institution = await Institution.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            pickInstitutionFields(req.body),
             { new: true, runValidators: true }
         );
         
@@ -83,7 +103,7 @@ router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
 });
 
 // DELETE institution (staff/admin only)
-router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.delete('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const institution = await Institution.findByIdAndDelete(req.params.id);
         if (!institution) {

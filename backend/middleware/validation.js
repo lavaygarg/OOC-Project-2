@@ -30,6 +30,15 @@ const isValidObjectId = (id) => {
     return validator.isMongoId(String(id));
 };
 
+// Validate ObjectId route params (default: :id)
+const validateObjectIdParam = (paramName = 'id') => (req, res, next) => {
+    const value = req.params?.[paramName];
+    if (!isValidObjectId(value)) {
+        return res.status(400).json({ error: `Invalid ${paramName} format` });
+    }
+    return next();
+};
+
 // Validate URL
 const isValidUrl = (url) => {
     if (!url) return true;
@@ -213,6 +222,7 @@ module.exports = {
     isValidPhone,
     isValidAmount,
     isValidObjectId,
+    validateObjectIdParam,
     isValidUrl,
     isStrongPassword,
     validateVolunteer,

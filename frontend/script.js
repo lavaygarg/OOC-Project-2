@@ -517,9 +517,75 @@ function saveData(data) {
 // --- DATABASE API FUNCTIONS ---
 // These functions communicate with the MongoDB backend
 
+const CSRF_STATE = {
+    token: '',
+    inflight: null
+};
+
+function isStateChangingMethod(method = 'GET') {
+    return ['POST', 'PUT', 'PATCH', 'DELETE'].includes(String(method).toUpperCase());
+}
+
+async function getCsrfToken(forceRefresh = false) {
+    if (!forceRefresh && CSRF_STATE.token) return CSRF_STATE.token;
+    if (!forceRefresh && CSRF_STATE.inflight) return CSRF_STATE.inflight;
+
+    CSRF_STATE.inflight = fetch(`${API_BASE_URL}/api/csrf-token`, {
+        method: 'GET',
+        credentials: 'include'
+    })
+        .then(async (res) => {
+            const payload = await res.json().catch(() => ({}));
+            if (!res.ok || !payload?.csrfToken) {
+                throw new Error(payload?.error || 'Failed to fetch CSRF token');
+            }
+            CSRF_STATE.token = payload.csrfToken;
+            return CSRF_STATE.token;
+        })
+        .finally(() => {
+            CSRF_STATE.inflight = null;
+        });
+
+    return CSRF_STATE.inflight;
+}
+
+async function secureFetch(url, options = {}) {
+    const method = String(options.method || 'GET').toUpperCase();
+    const headers = {
+        ...(options.headers || {})
+    };
+
+    if (isStateChangingMethod(method)) {
+        const csrfToken = await getCsrfToken();
+        headers['x-csrf-token'] = csrfToken;
+    }
+
+    let response = await fetch(url, {
+        ...options,
+        method,
+        headers,
+        credentials: options.credentials || 'include'
+    });
+
+    if (isStateChangingMethod(method) && response.status === 403) {
+        const refreshed = await getCsrfToken(true);
+        response = await fetch(url, {
+            ...options,
+            method,
+            headers: {
+                ...headers,
+                'x-csrf-token': refreshed
+            },
+            credentials: options.credentials || 'include'
+        });
+    }
+
+    return response;
+}
+
 async function apiGet(endpoint) {
     try {
-        const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+        const res = await secureFetch(`${API_BASE_URL}/api/${endpoint}`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
@@ -534,7 +600,7 @@ async function apiGet(endpoint) {
 
 async function apiPost(endpoint, data) {
     try {
-        const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+        const res = await secureFetch(`${API_BASE_URL}/api/${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -558,7 +624,7 @@ async function apiPost(endpoint, data) {
 
 async function apiPut(endpoint, data) {
     try {
-        const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+        const res = await secureFetch(`${API_BASE_URL}/api/${endpoint}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -574,7 +640,7 @@ async function apiPut(endpoint, data) {
 
 async function apiDelete(endpoint) {
     try {
-        const res = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+        const res = await secureFetch(`${API_BASE_URL}/api/${endpoint}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
@@ -1235,7 +1301,7 @@ async function handleStaffLogin(e) {
 
 function logout() {
     if(confirm('Are you sure you want to log out?')) {
-        fetch(`${API_BASE_URL}/api/staff/logout`, {
+        secureFetch(`${API_BASE_URL}/api/staff/logout`, {
             method: 'POST',
             credentials: 'include'
         }).finally(() => {

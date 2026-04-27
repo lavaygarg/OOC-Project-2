@@ -23,6 +23,8 @@ const testimonialRoutes = require('./routes/testimonials');
 
 // Import Middleware
 const { apiLimiter } = require('./middleware/rateLimiter');
+const { csrfProtection, issueCsrfToken } = require('./middleware/csrf');
+const sanitizeErrorResponses = require('./middleware/errorResponseSanitizer');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -74,7 +76,6 @@ const allowedOrigins = [
     .filter(Boolean);
 
 const deployedFrontendHost = normalizeOrigin('https://hopefoundation.onrender.com');
-const renderPreviewHost = normalizeOrigin('https://*.onrender.com');
 
 const localOrigins = [
     'http://localhost:5500',
@@ -106,8 +107,7 @@ app.use(cors({
         // Allow specific origins from the list in all environments
         if (
             allowedOrigins.includes(normalizedOrigin) ||
-            normalizedOrigin === deployedFrontendHost ||
-            normalizedOrigin.endsWith('.onrender.com')
+            normalizedOrigin === deployedFrontendHost
         ) {
             return callback(null, true);
         }
@@ -119,12 +119,6 @@ app.use(cors({
     credentials: true
 }));
 
-app.use(cookieParser());
-
-// Body parser with size limits
-app.use(express.json({ limit: '10kb' })); // Limit body size to prevent large payload attacks
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
-
 const keyId = process.env.RAZORPAY_KEY_ID;
 const keySecret = process.env.RAZORPAY_KEY_SECRET;
 const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET || '';
@@ -134,6 +128,46 @@ if (!keyId || !keySecret) {
 }
 
 const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+
+app.use(cookieParser());
+
+// Razorpay webhook must use raw body for signature verification
+app.post('/api/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+    const receivedSignature = req.headers['x-razorpay-signature'];
+    if (!webhookSecret || !receivedSignature) {
+        return res.status(400).send('Webhook secret/signature missing');
+    }
+
+    const payload = req.body;
+    const expected = crypto.createHmac('sha256', webhookSecret).update(payload).digest('hex');
+    if (expected !== receivedSignature) {
+        return res.status(400).send('Invalid signature');
+    }
+
+    let eventName = 'unknown';
+    try {
+        const parsed = JSON.parse(payload.toString('utf8'));
+        eventName = parsed?.event || 'unknown';
+    } catch {
+        // Keep default unknown event name
+    }
+
+    console.log('Razorpay webhook received:', eventName);
+    return res.status(200).send('OK');
+});
+
+// Body parser with size limits
+app.use(express.json({ limit: '10kb' })); // Limit body size to prevent large payload attacks
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// Remove potentially sensitive error details from JSON responses in production.
+app.use(sanitizeErrorResponses({ isProduction }));
+
+// CSRF protection for cookie-authenticated state-changing API requests.
+app.use('/api', csrfProtection);
+
+// CSRF token bootstrap endpoint for frontend apps.
+app.get('/api/csrf-token', issueCsrfToken);
 
 // Health check endpoint
 app.get('/', (req, res) => {
@@ -205,24 +239,6 @@ app.post('/api/verify-payment', (req, res) => {
     const digest = hmac.digest('hex');
     const verified = digest === razorpay_signature;
     return res.json({ verified });
-});
-
-// Webhook for Razorpay events
-app.post('/api/webhook', (req, res) => {
-    const payload = JSON.stringify(req.body);
-    const receivedSignature = req.headers['x-razorpay-signature'];
-    if (!webhookSecret || !receivedSignature) {
-        return res.status(400).send('Webhook secret/signature missing');
-    }
-
-    const expected = crypto.createHmac('sha256', webhookSecret).update(payload).digest('hex');
-    if (expected !== receivedSignature) {
-        return res.status(400).send('Invalid signature');
-    }
-
-    // Log event - you can persist to database later
-    console.log('Razorpay webhook received:', req.body?.event);
-    res.status(200).send('OK');
 });
 
 // =====================

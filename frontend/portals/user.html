@@ -556,15 +556,59 @@
             sessionStorage.setItem('registeredUsers', JSON.stringify(users));
         }
 
+        let userCsrfToken = '';
+        let userCsrfInflight = null;
+
+        async function getUserCsrfToken(forceRefresh = false) {
+            if (!forceRefresh && userCsrfToken) return userCsrfToken;
+            if (!forceRefresh && userCsrfInflight) return userCsrfInflight;
+
+            userCsrfInflight = fetch(`${API_BASE_URL}/api/csrf-token`, {
+                method: 'GET',
+                credentials: 'include'
+            })
+                .then(async (res) => {
+                    const payload = await res.json().catch(() => ({}));
+                    if (!res.ok || !payload?.csrfToken) {
+                        throw new Error(payload?.error || 'Unable to fetch CSRF token');
+                    }
+                    userCsrfToken = payload.csrfToken;
+                    return userCsrfToken;
+                })
+                .finally(() => {
+                    userCsrfInflight = null;
+                });
+
+            return userCsrfInflight;
+        }
+
         async function apiRequest(endpoint, options = {}) {
-            const response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(options.headers || {})
-                },
-                credentials: 'include',
-                ...options
+            const method = String(options.method || 'GET').toUpperCase();
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(options.headers || {})
+            };
+
+            if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+                headers['x-csrf-token'] = await getUserCsrfToken();
+            }
+
+            let response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+                ...options,
+                method,
+                headers,
+                credentials: 'include'
             });
+
+            if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && response.status === 403) {
+                headers['x-csrf-token'] = await getUserCsrfToken(true);
+                response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+                    ...options,
+                    method,
+                    headers,
+                    credentials: 'include'
+                });
+            }
 
             const payload = await response.json().catch(() => ({}));
             if (!response.ok) {

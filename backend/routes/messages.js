@@ -6,7 +6,7 @@ const PortalMessage = require('../models/PortalMessage');
 const Staff = require('../models/Staff');
 const User = require('../models/User');
 const { contactLimiter } = require('../middleware/rateLimiter');
-const { validateMessage } = require('../middleware/validation');
+const { validateMessage, validateObjectIdParam } = require('../middleware/validation');
 const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -309,8 +309,8 @@ router.get('/stats', verifyToken, isStaffOrAdmin, async (req, res) => {
     }
 });
 
-// GET single message
-router.get('/:id', async (req, res) => {
+// GET single message (staff/admin only)
+router.get('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const message = await Message.findById(req.params.id)
             .populate('repliedBy', 'name email');
@@ -345,13 +345,13 @@ router.post('/', contactLimiter, validateMessage, async (req, res) => {
 });
 
 // PUT update message status (staff/admin only)
-router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.put('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
-        const { status, replyMessage, repliedBy } = req.body;
+        const { status, replyMessage } = req.body;
         
         const message = await Message.findByIdAndUpdate(
             req.params.id,
-            { status, replyMessage, repliedBy },
+            { status, replyMessage, repliedBy: req.userId },
             { new: true, runValidators: true }
         );
         
@@ -366,7 +366,7 @@ router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
 });
 
 // PUT mark as read (staff/admin only)
-router.put('/:id/read', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.put('/:id/read', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const message = await Message.findByIdAndUpdate(
             req.params.id,
@@ -385,7 +385,7 @@ router.put('/:id/read', verifyToken, isStaffOrAdmin, async (req, res) => {
 });
 
 // DELETE message (staff/admin only)
-router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.delete('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const message = await Message.findByIdAndDelete(req.params.id);
         if (!message) {

@@ -7,7 +7,7 @@ const Staff = require('../models/Staff');
 const SecurityEvent = require('../models/SecurityEvent');
 const { sendSecurityAlert } = require('../utils/securityAlerts');
 const { loginLimiter, registerLimiter } = require('../middleware/rateLimiter');
-const { validateLogin, validateStaffRegistration } = require('../middleware/validation');
+const { validateLogin, validateStaffRegistration, validateObjectIdParam, isStrongPassword } = require('../middleware/validation');
 const { verifyToken, isAdmin, generateToken, generateRefreshToken, refreshAccessToken } = require('../middleware/auth');
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -510,7 +510,7 @@ router.post('/register', verifyToken, isAdmin, async (req, res) => {
 });
 
 // GET single staff (authenticated)
-router.get('/:id', verifyToken, async (req, res) => {
+router.get('/:id', verifyToken, validateObjectIdParam('id'), async (req, res) => {
     try {
         const isSelfRequest = String(req.user.id) === String(req.params.id);
         if (req.user.role !== 'admin' && !isSelfRequest) {
@@ -528,7 +528,7 @@ router.get('/:id', verifyToken, async (req, res) => {
 });
 
 // PUT update staff (admin only)
-router.put('/:id', verifyToken, isAdmin, async (req, res) => {
+router.put('/:id', verifyToken, isAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const { name, phone, role, department, status } = req.body;
         
@@ -549,7 +549,7 @@ router.put('/:id', verifyToken, isAdmin, async (req, res) => {
 });
 
 // PUT change password (authenticated - own account only)
-router.put('/:id/password', verifyToken, async (req, res) => {
+router.put('/:id/password', verifyToken, validateObjectIdParam('id'), async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
 
@@ -568,6 +568,15 @@ router.put('/:id/password', verifyToken, async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ error: 'Current password is incorrect' });
         }
+
+        if (!newPassword || !isStrongPassword(newPassword)) {
+            return res.status(400).json({ error: 'New password must be at least 6 characters and include a number.' });
+        }
+
+        const sameAsCurrent = await staff.comparePassword(newPassword);
+        if (sameAsCurrent) {
+            return res.status(400).json({ error: 'New password must be different from current password.' });
+        }
         
         staff.password = newPassword;
         await staff.save();
@@ -579,7 +588,7 @@ router.put('/:id/password', verifyToken, async (req, res) => {
 });
 
 // DELETE staff (admin only)
-router.delete('/:id', verifyToken, isAdmin, async (req, res) => {
+router.delete('/:id', verifyToken, isAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const staff = await Staff.findByIdAndDelete(req.params.id);
         if (!staff) {

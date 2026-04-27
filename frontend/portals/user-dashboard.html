@@ -2396,21 +2396,65 @@
             ? 'http://localhost:3000'
             : 'https://ooc-backend.onrender.com';
 
-        function dashboardFetch(endpoint, options = {}) {
-            return fetch(`${DASHBOARD_API_BASE_URL}/api/${endpoint}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(options.headers || {})
-                },
-                credentials: 'include',
-                ...options
-            }).then(async response => {
-                const payload = await response.json().catch(() => ({}));
-                if (!response.ok) {
-                    throw new Error(payload.error || payload.message || 'Request failed');
-                }
-                return payload;
+        let dashboardCsrfToken = '';
+        let dashboardCsrfInflight = null;
+
+        async function getDashboardCsrfToken(forceRefresh = false) {
+            if (!forceRefresh && dashboardCsrfToken) return dashboardCsrfToken;
+            if (!forceRefresh && dashboardCsrfInflight) return dashboardCsrfInflight;
+
+            dashboardCsrfInflight = fetch(`${DASHBOARD_API_BASE_URL}/api/csrf-token`, {
+                method: 'GET',
+                credentials: 'include'
+            })
+                .then(async response => {
+                    const payload = await response.json().catch(() => ({}));
+                    if (!response.ok || !payload?.csrfToken) {
+                        throw new Error(payload?.error || 'Unable to fetch CSRF token');
+                    }
+                    dashboardCsrfToken = payload.csrfToken;
+                    return dashboardCsrfToken;
+                })
+                .finally(() => {
+                    dashboardCsrfInflight = null;
+                });
+
+            return dashboardCsrfInflight;
+        }
+
+        async function dashboardFetch(endpoint, options = {}) {
+            const method = String(options.method || 'GET').toUpperCase();
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(options.headers || {})
+            };
+
+            if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+                headers['x-csrf-token'] = await getDashboardCsrfToken();
+            }
+
+            let response = await fetch(`${DASHBOARD_API_BASE_URL}/api/${endpoint}`, {
+                ...options,
+                method,
+                headers,
+                credentials: 'include'
             });
+
+            if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && response.status === 403) {
+                headers['x-csrf-token'] = await getDashboardCsrfToken(true);
+                response = await fetch(`${DASHBOARD_API_BASE_URL}/api/${endpoint}`, {
+                    ...options,
+                    method,
+                    headers,
+                    credentials: 'include'
+                });
+            }
+
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(payload.error || payload.message || 'Request failed');
+            }
+            return payload;
         }
 
         function ensureRazorpayLoaded() {

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Disbursement = require('../models/Disbursement');
+const { validateObjectIdParam } = require('../middleware/validation');
 const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
 // GET all disbursements (staff/admin only)
@@ -50,8 +51,8 @@ router.get('/stats', async (req, res) => {
     }
 });
 
-// GET single disbursement
-router.get('/:id', async (req, res) => {
+// GET single disbursement (staff/admin only)
+router.get('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const disbursement = await Disbursement.findById(req.params.id)
             .populate('approvedBy', 'name email');
@@ -67,7 +68,7 @@ router.get('/:id', async (req, res) => {
 // POST create disbursement (staff/admin only)
 router.post('/', verifyToken, isStaffOrAdmin, async (req, res) => {
     try {
-        const { recipient, amount, category, description, date, approvedBy } = req.body;
+        const { recipient, amount, category, description, date } = req.body;
         
         const disbursement = new Disbursement({
             recipient,
@@ -75,7 +76,7 @@ router.post('/', verifyToken, isStaffOrAdmin, async (req, res) => {
             category,
             description,
             date: date || new Date(),
-            approvedBy,
+            approvedBy: req.userId,
             status: 'Disbursed'
         });
         
@@ -87,11 +88,16 @@ router.post('/', verifyToken, isStaffOrAdmin, async (req, res) => {
 });
 
 // PUT update disbursement (staff/admin only)
-router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.put('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
+        const allowedFields = ['recipient', 'amount', 'category', 'description', 'date', 'approvedBy', 'status'];
+        const updates = Object.fromEntries(
+            Object.entries(req.body || {}).filter(([key]) => allowedFields.includes(key))
+        );
+
         const disbursement = await Disbursement.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            updates,
             { new: true, runValidators: true }
         );
         
@@ -106,7 +112,7 @@ router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
 });
 
 // DELETE disbursement (staff/admin only)
-router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.delete('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const disbursement = await Disbursement.findByIdAndDelete(req.params.id);
         if (!disbursement) {

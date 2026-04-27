@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Donation = require('../models/Donation');
 const { donationLimiter } = require('../middleware/rateLimiter');
-const { validateDonation } = require('../middleware/validation');
+const { validateDonation, validateObjectIdParam } = require('../middleware/validation');
 const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
 // GET all donations (staff/admin only)
@@ -50,8 +50,8 @@ router.get('/stats', async (req, res) => {
     }
 });
 
-// GET single donation
-router.get('/:id', async (req, res) => {
+// GET single donation (staff/admin only)
+router.get('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const donation = await Donation.findById(req.params.id);
         if (!donation) {
@@ -88,11 +88,16 @@ router.post('/', donationLimiter, validateDonation, async (req, res) => {
 });
 
 // PUT update donation (staff/admin only)
-router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.put('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
+        const allowedFields = ['donorName', 'donorEmail', 'donorPhone', 'amount', 'method', 'paymentId', 'orderId', 'status', 'notes'];
+        const updates = Object.fromEntries(
+            Object.entries(req.body || {}).filter(([key]) => allowedFields.includes(key))
+        );
+
         const donation = await Donation.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            updates,
             { new: true, runValidators: true }
         );
         
@@ -107,7 +112,7 @@ router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
 });
 
 // DELETE donation (staff/admin only)
-router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.delete('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const donation = await Donation.findByIdAndDelete(req.params.id);
         if (!donation) {

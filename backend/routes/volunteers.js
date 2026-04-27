@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Volunteer = require('../models/Volunteer');
 const { volunteerLimiter } = require('../middleware/rateLimiter');
-const { validateVolunteer } = require('../middleware/validation');
+const { validateVolunteer, validateObjectIdParam } = require('../middleware/validation');
 const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
 // GET all volunteers (staff/admin only)
@@ -21,8 +21,8 @@ router.get('/', verifyToken, isStaffOrAdmin, async (req, res) => {
     }
 });
 
-// GET single volunteer
-router.get('/:id', async (req, res) => {
+// GET single volunteer (staff/admin only)
+router.get('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const volunteer = await Volunteer.findById(req.params.id);
         if (!volunteer) {
@@ -62,7 +62,7 @@ router.post('/', volunteerLimiter, validateVolunteer, async (req, res) => {
 });
 
 // PUT update volunteer status (staff/admin only)
-router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.put('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const { status, interest } = req.body;
         const volunteer = await Volunteer.findByIdAndUpdate(
@@ -82,7 +82,7 @@ router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
 });
 
 // DELETE volunteer (staff/admin only)
-router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.delete('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const volunteer = await Volunteer.findByIdAndDelete(req.params.id);
         if (!volunteer) {

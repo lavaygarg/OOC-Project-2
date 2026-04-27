@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
+const { validateObjectIdParam } = require('../middleware/validation');
 const { verifyToken, isStaffOrAdmin } = require('../middleware/auth');
 
 // GET all events
@@ -22,7 +23,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET single event
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateObjectIdParam('id'), async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);
         if (!event) {
@@ -57,11 +58,16 @@ router.post('/', verifyToken, isStaffOrAdmin, async (req, res) => {
 });
 
 // PUT update event (staff/admin only)
-router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.put('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
+        const allowedFields = ['title', 'description', 'date', 'location', 'organizer', 'maxParticipants', 'status'];
+        const updates = Object.fromEntries(
+            Object.entries(req.body || {}).filter(([key]) => allowedFields.includes(key))
+        );
+
         const event = await Event.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            updates,
             { new: true, runValidators: true }
         );
         
@@ -76,7 +82,7 @@ router.put('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
 });
 
 // POST register for event
-router.post('/:id/register', async (req, res) => {
+router.post('/:id/register', validateObjectIdParam('id'), async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);
         
@@ -98,7 +104,7 @@ router.post('/:id/register', async (req, res) => {
 });
 
 // DELETE event (staff/admin only)
-router.delete('/:id', verifyToken, isStaffOrAdmin, async (req, res) => {
+router.delete('/:id', verifyToken, isStaffOrAdmin, validateObjectIdParam('id'), async (req, res) => {
     try {
         const event = await Event.findByIdAndDelete(req.params.id);
         if (!event) {

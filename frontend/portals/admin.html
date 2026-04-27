@@ -286,6 +286,62 @@
             ? 'http://localhost:3000/api'
             : 'https://ooc-backend.onrender.com/api';
         let pendingAdminTempToken = '';
+        let adminCsrfToken = '';
+        let adminCsrfInflight = null;
+
+        async function getAdminCsrfToken(forceRefresh = false) {
+            if (!forceRefresh && adminCsrfToken) return adminCsrfToken;
+            if (!forceRefresh && adminCsrfInflight) return adminCsrfInflight;
+
+            adminCsrfInflight = fetch(`${API_BASE}/csrf-token`, {
+                method: 'GET',
+                credentials: 'include'
+            })
+                .then(async (res) => {
+                    const payload = await res.json().catch(() => ({}));
+                    if (!res.ok || !payload?.csrfToken) {
+                        throw new Error(payload?.error || 'Failed to fetch CSRF token');
+                    }
+                    adminCsrfToken = payload.csrfToken;
+                    return adminCsrfToken;
+                })
+                .finally(() => {
+                    adminCsrfInflight = null;
+                });
+
+            return adminCsrfInflight;
+        }
+
+        async function adminApiRequest(endpoint, options = {}) {
+            const method = String(options.method || 'GET').toUpperCase();
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(options.headers || {})
+            };
+
+            if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+                headers['x-csrf-token'] = await getAdminCsrfToken();
+            }
+
+            let response = await fetch(`${API_BASE}/${endpoint}`, {
+                ...options,
+                method,
+                headers,
+                credentials: 'include'
+            });
+
+            if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && response.status === 403) {
+                headers['x-csrf-token'] = await getAdminCsrfToken(true);
+                response = await fetch(`${API_BASE}/${endpoint}`, {
+                    ...options,
+                    method,
+                    headers,
+                    credentials: 'include'
+                });
+            }
+
+            return response;
+        }
 
         // Clear any existing login state when visiting login page
         sessionStorage.removeItem('adminLoggedIn');
@@ -320,10 +376,8 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
 
             try {
-                const res = await fetch(`${API_BASE}/staff/login`, {
+                const res = await adminApiRequest('staff/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
                     body: JSON.stringify({ email: user, password: pass })
                 });
 
@@ -402,10 +456,8 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
 
             try {
-                const res = await fetch(`${API_BASE}/staff/verify-2fa`, {
+                const res = await adminApiRequest('staff/verify-2fa', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
                     body: JSON.stringify({ tempToken, code })
                 });
 

@@ -87,6 +87,66 @@
     return String(value ?? '').trim();
   }
 
+  const csrfState = {
+    token: '',
+    inflight: null
+  };
+
+  function isWriteMethod(method = 'GET') {
+    return ['POST', 'PUT', 'PATCH', 'DELETE'].includes(String(method).toUpperCase());
+  }
+
+  async function fetchCsrfToken(forceRefresh = false) {
+    if (!forceRefresh && csrfState.token) return csrfState.token;
+    if (!forceRefresh && csrfState.inflight) return csrfState.inflight;
+
+    csrfState.inflight = fetch(`${API_BASE_URL}/api/csrf-token`, {
+      method: 'GET',
+      credentials: 'include'
+    })
+      .then(async (res) => {
+        const payload = await res.json().catch(() => ({}));
+        if (!res.ok || !payload?.csrfToken) {
+          throw new Error(payload?.error || 'Unable to fetch CSRF token');
+        }
+        csrfState.token = payload.csrfToken;
+        return csrfState.token;
+      })
+      .finally(() => {
+        csrfState.inflight = null;
+      });
+
+    return csrfState.inflight;
+  }
+
+  async function portalFetch(endpoint, options = {}) {
+    const method = String(options.method || 'GET').toUpperCase();
+    const headers = { ...(options.headers || {}) };
+
+    if (isWriteMethod(method)) {
+      headers['x-csrf-token'] = await fetchCsrfToken();
+    }
+
+    let response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+      ...options,
+      method,
+      headers,
+      credentials: 'include'
+    });
+
+    if (isWriteMethod(method) && response.status === 403) {
+      headers['x-csrf-token'] = await fetchCsrfToken(true);
+      response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
+        ...options,
+        method,
+        headers,
+        credentials: 'include'
+      });
+    }
+
+    return response;
+  }
+
   function normalizeId(value) {
     return safeTrim(value).replace(/\s+/g, '-').toUpperCase();
   }
@@ -192,10 +252,9 @@
 
   async function syncPortalState() {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/messages/portal`, {
+      const response = await portalFetch('messages/portal', {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include'
+        headers: { 'Content-Type': 'application/json' }
       });
 
       if (!response.ok) {
@@ -688,10 +747,9 @@
   }
 
   async function sendMessage({ recipientTokens, subject, body }) {
-    const response = await fetch(`${API_BASE_URL}/api/messages/portal`, {
+    const response = await portalFetch('messages/portal', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
       body: JSON.stringify({
         recipientTokens,
         subject: safeTrim(subject) || '(No subject)',
@@ -1199,10 +1257,9 @@
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
 
       try {
-        const res = await fetch(`${API_BASE_URL}/api/staff/login`, {
+        const res = await portalFetch('staff/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
           body: JSON.stringify({ email, password })
         });
         const data = await res.json();
